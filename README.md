@@ -5,7 +5,7 @@ This repo contains a TensorFlow 2.x compatible implementation of accumulated gra
 Simply wrap the accumulator over any optimizer, and specify `accum_steps` to control number of accumulations.
 
 Precompiled wheel compatible with Python 3.7-3.9 and TensorFlow 2.5-2.9 exist in [Release](https://github.com/andreped/GradientAccumulator/releases/tag/v0.1.0),
-but you can build from source if you want to test if it works in your setup (see [here]()).
+but you can build from source if you want to test if it works in your setup (see [here](https://github.com/andreped/GradientAccumulator#or-from-source-code)).
 
 ## Install
 
