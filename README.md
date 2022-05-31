@@ -4,10 +4,22 @@ This repo contains a TensorFlow 2.x compatible implementation of accumulated gra
 
 Simply wrap the accumulator over any optimizer, and specify `accum_steps` to control number of accumulations.
 
-Example:
+### Install
+
+From latest release:
+```
+pip install GradientAccumulator@git+https://github.com/andreped/GradientAccumulator
+```
+
+Or from source code:
+```
+pip install https://github.com/andreped/GradientAccumulator.git
+```
+
+### Usage
 
 ```
-from accumulator import GradientAccumulator
+from GradientAccumulator.accumulator import GradientAccumulator
 from tensorflow.keras.optimizers import Adam
 
 opt = Adam(1e-3)
