@@ -58,7 +58,7 @@ jobs:
           pip install ${{github.workspace}}/dist/GradientAccumulator-*.whl
 
       - name: Test library accessibility
-      - run: python -c "from GradientAccumulator.accumulator import GradientAccumulator"
+        run: python -c "from GradientAccumulator.accumulator import GradientAccumulator"
 
       - name: Run test
         run: python test.py
