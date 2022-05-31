@@ -32,3 +32,10 @@ jobs:
 
       - name: Run test
         run: python test.py
+
+      - name: Upload Python wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: Python wheel
+          path: ${{github.workspace}}/dist/SimpleCRF-*.whl
+          if-no-files-found: error
