@@ -55,7 +55,14 @@ jobs:
           pip install tensorflow==${{ matrix.tf-version }}
           pip install tensorflow-addons
           pip install tensorflow-datasets
-          pip install ${{github.workspace}}/dist/GradientAccumulator-*.whl
+
+      - name: Download artifact
+        uses: actions/download-artifact@master
+        with:
+          name: "Python wheel"
+
+      - name: Install wheel
+        run: pip install --find-links=${{github.workspace}} GradientAccumulator
 
       - name: Test library accessibility
         run: python -c "from GradientAccumulator.accumulator import GradientAccumulator"
