@@ -27,8 +27,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install tensorflow==${{ matrix.tf-version }}
-          pip install tensorflow-addons==${{ matrix.tf-version }}
-          pip install tensorflow-datasets==${{ matrix.tf-version }}
+          pip install tensorflow-addons
+          pip install tensorflow-datasets
 
       - name: Run test
         run: python test.py
