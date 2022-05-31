@@ -1,5 +1,6 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
+from tensorflow.keras.models import load_model
 
 
 def normalize_img(image, label):
@@ -32,21 +33,31 @@ if __name__ == "__main__":
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
-    # create and train model
+    # create model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(10)
     ])
 
+    # compile model
     model.compile(
         optimizer=tf.keras.optimizers.Adam(1e-3),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
 
+    # train model
     model.fit(
         ds_train,
         epochs=3,
         validation_data=ds_test,
     )
+
+    model.save("./trained_model")
+
+    # load trained model and test
+    del model
+    trained_model = load_model("./trained_model", compile=True)
+
+    result = trained_model.evaluate(ds_test, verbose=1)
