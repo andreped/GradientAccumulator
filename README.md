@@ -66,7 +66,7 @@ model = load_model("./path-to-model", compile=True, custom_objects={"GradientAcc
 ```
 
 ## Acknowledgements
-This implementation is derived from the work of @fsx950223, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons.
-Hence, all credit to him and the people who contributed to the work! Sadly, the proposed implementation was not merged,
-as there were some unresolved issues with it. However, I think it is close to working, and I will use this project
-to try to solve it.
+This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons.
+Hence, all credit to them and the people who contributed to the work! Sadly, the proposed implementation was not merged,
+as there were some unresolved issues with it, especially regarding multi-GPU training. However, I think it is
+close to working, and I will use this project to try to solve it.
