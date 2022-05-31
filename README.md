@@ -59,3 +59,7 @@ However, a TF 1 implementation can be found in the [H2G-Net repository](https://
 ## Tips
 Remember to pass the wrapper to the `custom_objects` in `load_model` if you wish to load a trained model. This is only
 necessary if you are setting `compile=True` in `load_model`, which is relevant for finetuning or to use `model.evaluate()`.
+```
+from tensorflow.keras.models import load_model
+model = load_model("./path-to-model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
+```
