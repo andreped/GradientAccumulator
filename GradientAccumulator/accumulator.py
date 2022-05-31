@@ -190,7 +190,7 @@ class GradientAccumulator(tf.keras.optimizers.Optimizer):
 
     @lr.setter
     def lr(self, lr):
-        self._optimizer._set_hyper("learning_rate", lr)  #
+        self._optimizer._set_hyper("learning_rate", lr)
 
     @property
     def learning_rate(self):
