@@ -55,3 +55,7 @@ newer versions of TF 2 instead, as it has become more stable and feature rich th
 
 Also note that this implementation **does not work with TF 1**. For the same reason as it does not work with older TF 2 versions.
 However, a TF 1 implementation can be found in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139).
+
+## Tips
+Remember to pass the wrapper to the `custom_objects` in `load_model` if you wish to load a trained model. This is only
+necessary if you are setting `compile=True` in `load_model`, which is relevant for finetuning or to use `model.evaluate()`.

@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True)
+    trained_model = load_model("./trained_model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)

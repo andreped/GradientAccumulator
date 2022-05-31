@@ -12,7 +12,7 @@ class GradientAccumulator(tf.keras.optimizers.Optimizer):
         self,
         inner_optimizer: types.Optimizer,
         accum_steps: types.TensorLike = 4,
-        reduction: str = "SUM",
+        reduction: str = "SUM",  # @TODO: Why "SUM" and not "MEAN"? The latter makes more sense in my head.
         name: str = "GradientAccumulator",
         **kwargs,
     ):
