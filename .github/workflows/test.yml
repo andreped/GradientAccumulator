@@ -1,4 +1,4 @@
-name: Test
+name: Build and test wheel
 
 on:
   push:
@@ -10,6 +10,31 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Install dependencies
+        run: |
+          pip install wheel setuptools
+          pip install tensorflow==2.8.0 tensorflow-addons
+
+      - name: Build wheel
+        run: python setup.py bdist_wheel
+
+      - name: Upload Python wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: Python wheel
+          path: ${{github.workspace}}/dist/GradientAccumulator-*.whl
+          if-no-files-found: error
+
+  test:
+    needs: build
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -26,16 +51,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pip install wheel setuptools
           pip install tensorflow==${{ matrix.tf-version }}
           pip install tensorflow-addons
           pip install tensorflow-datasets
+          pip install ${{github.workspace}}/dist/GradientAccumulator-*.whl
+
+      - name: Test library accessibility
+      - run: python -c "from GradientAccumulator.accumulator import GradientAccumulator"
 
       - name: Run test
         run: python test.py
-
-      - name: Upload Python wheel
-        uses: actions/upload-artifact@v2
-        with:
-          name: Python wheel
-          path: ${{github.workspace}}/dist/SimpleCRF-*.whl
-          if-no-files-found: error
