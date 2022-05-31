@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
+from GradientAccumulator.accumulator import GradientAccumulator
 
 
 def normalize_img(image, label):
@@ -42,7 +43,7 @@ if __name__ == "__main__":
 
     # compile model
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(1e-3),
+        optimizer=GradientAccumulator(tf.keras.optimizers.Adam(1e-3), accum_steps=4),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
