@@ -46,6 +46,7 @@ The implementation is derived and adjusted from the discussion at [this](https:/
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Test method for memory leaks
 - [ ] Verify that implementation works in multi-GPU setups
+- [ ] Add benchmarks to verfiy that accumulated gradients actually work as intended
 
 ## Disclaimer
 Note that this implementation is only compatible with newer versions of TensorFlow. This is because the way Optimizers behave in TF
