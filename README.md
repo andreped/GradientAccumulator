@@ -1,5 +1,7 @@
 # GradientAccumulator
 
+![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
+
 This repo contains a TensorFlow 2.x compatible implementation of accumulated gradients.
 
 Simply wrap the accumulator over any optimizer, and specify `accum_steps` to control number of accumulations.
