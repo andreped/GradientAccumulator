@@ -13,7 +13,7 @@ pip install GradientAccumulator@git+https://github.com/andreped/GradientAccumula
 
 Or from source code:
 ```
-pip install https://github.com/andreped/GradientAccumulator.git
+pip install git+https://github.com/andreped/GradientAccumulator
 ```
 
 ### Usage
