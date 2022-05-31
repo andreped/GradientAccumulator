@@ -1,6 +1,6 @@
 # GradientAccumulator
 
-![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
+![CI](https://github.com/andreped/GradientAccumulator/workflows/test/badge.svg)
 
 This repo contains a TensorFlow 2.x compatible implementation of accumulated gradients.
 
