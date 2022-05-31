@@ -8,7 +8,7 @@ Simply wrap the accumulator over any optimizer, and specify `accum_steps` to con
 
 From latest release:
 ```
-pip install GradientAccumulator@git+https://github.com/andreped/GradientAccumulator
+pip install git+https://github.com/andreped/GradientAccumulator#egg=GradientAccumulator
 ```
 
 Or from source code:
