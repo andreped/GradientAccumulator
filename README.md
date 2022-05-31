@@ -41,6 +41,8 @@ model.compile(optimizer=wrapped_opt, ...)
 The implementation is derived and adjusted from the discussion at [this](https://github.com/tensorflow/addons/issues/2260#issuecomment-1136967629) TensorFlow Issue.
 
 ## TODOs:
+- [x] Add generic wrapper class for adding accumulated gradients to any optimizer
+- [x] Add CI to build wheel and test that it works across different python versions, TF versions, and operating systems.
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Test method for memory leaks
 - [ ] Verify that implementation works in multi-GPU setups
