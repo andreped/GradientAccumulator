@@ -47,6 +47,7 @@ The implementation is derived and adjusted from the discussion at [this](https:/
 - [ ] Test method for memory leaks
 - [ ] Verify that implementation works in multi-GPU setups
 - [ ] Add benchmarks to verfiy that accumulated gradients actually work as intended
+- [ ] Add proper multi-GPU support
 
 ## Disclaimer
 Note that this implementation is only compatible with newer versions of TensorFlow. This is because the way Optimizers behave in TF
@@ -63,3 +64,9 @@ necessary if you are setting `compile=True` in `load_model`, which is relevant f
 from tensorflow.keras.models import load_model
 model = load_model("./path-to-model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
 ```
+
+## Acknowledgements
+This implementation is derived from the work of @fsx950223, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons.
+Hence, all credit to him and the people who contributed to the work! Sadly, the proposed implementation was not merged,
+as there were some unresolved issues with it. However, I think it is close to working, and I will use this project
+to try to solve it.
