@@ -61,3 +61,4 @@ if __name__ == "__main__":
     trained_model = load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
+    print(result)
