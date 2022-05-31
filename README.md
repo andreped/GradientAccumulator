@@ -2,7 +2,7 @@
 
 This repo contains a TensorFlow 2.x compatible implementation of accumulated gradients.
 
-Simply wrap the accumulator over any optimizer.
+Simply wrap the accumulator over any optimizer, and specify `accum_steps` to control number of accumulations.
 
 Example:
 
@@ -18,3 +18,5 @@ Then pass wrapped_opt to `model.compile()` as optimizer, like so:
 ```
 model.compile(optimizer=wrapped_opt, ...)
 ```
+
+The implementation is derived and adjusted from the discussion at [this](https://github.com/tensorflow/addons/issues/2260#issuecomment-1136967629) TensorFlow Issue.
