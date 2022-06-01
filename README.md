@@ -15,7 +15,14 @@ but you can build from source if you want to test if it works in your setup (see
 For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead.
 
 ## Experiments
-To perform the benchmark, just run:
+To perform the benchmark, create a virtual environment and install dependencies:
+```
+virtualenv -ppython3 venv --clear
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Then just run this command to perform the benchmark:
 ```
 python benchmark.py
 ```
