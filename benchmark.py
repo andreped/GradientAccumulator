@@ -1,7 +1,9 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 import numpy as np
 import tensorflow as tf
 import random as python_random
-import os
 
 # The below is necessary for starting Numpy generated random numbers
 # in a well-defined initial state.
