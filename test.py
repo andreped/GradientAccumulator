@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
+    trained_model = load_model("./trained_model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator(tf.keras.optimizers.Adam(1e-3), accum_steps=4)})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
