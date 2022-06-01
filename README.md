@@ -3,8 +3,6 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
 
-### **DISCLAIMER: This is an experimental project - current solution is not stable. Use with caution.**
-
 This repo contains a TensorFlow 2 compatible implementation of accumulated gradients.
 
 The proposed implementation simply overloads the train_step of a given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps.
