@@ -93,13 +93,6 @@ if __name__ == "__main__":
                         help="which gradient accumulator approach to use. Four available: {0, 1, 2, 3, -1}.")
     ret = parser.parse_args(sys.argv[1:]); print(ret)
 
-
-    # params
-    #batchsize = 64  # 8 vs 32
-    #accum_steps = 1  # 4 vs 1
-    #nb_epochs = 3  # 3
-    #accum_opt = 2  # which implementation of accumulated gradients to use. Default 2 (should be the best one)
-
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
