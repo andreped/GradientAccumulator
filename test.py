@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from GradientAccumulator.accumulator import GradientAccumulator
+from GradientAccumulator.accumulator import GAModelWrapper
 
 
 def normalize_img(image, label):
@@ -41,9 +41,12 @@ if __name__ == "__main__":
         tf.keras.layers.Dense(10)
     ])
 
+    # wrap model to use gradient accumulation
+    model = GAModelWrapper(nb_gradients=4, inputs=model.input, outputs=model.output)
+
     # compile model
     model.compile(
-        optimizer=GradientAccumulator(tf.keras.optimizers.Adam(1e-3), accum_steps=4),
+        optimizer=tf.keras.optimizers.Adam(1e-3),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
@@ -59,7 +62,7 @@ if __name__ == "__main__":
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
+    trained_model = load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
