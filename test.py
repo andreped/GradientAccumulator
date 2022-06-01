@@ -42,7 +42,7 @@ if __name__ == "__main__":
     ])
 
     # wrap model to use gradient accumulation
-    model = GAModelWrapper(nb_gradients=4, inputs=model.input, outputs=model.output)
+    model = GAModelWrapper(n_gradients=4, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(
