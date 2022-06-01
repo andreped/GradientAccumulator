@@ -74,6 +74,6 @@ Also note that this implementation **does not work with TF 1**. For the same rea
 However, a TF 1 implementation can be found in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139).
 
 ## Acknowledgements
-This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons. Hence, all credit to them and the people who contributed to the work! Sadly, the proposed implementation was not merged,
-as there were some unresolved issues with it, especially regarding multi-GPU training. However, I believe the current implementation is working well
-for single-GPU scenarios, which should already be of interest to the community.
+This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons. The model wrapper solution was also inspired by [this thread](https://stackoverflow.com/a/66524901) on stack overflow. Hence, all credit to them and the people who contributed to the work! This could not have been possible without the people asking the right questions and the people contributing with solutions!
+
+This repository serves as a open solution for everyone to use, until TF/Keras integrates a proper solution into their framework(s).
