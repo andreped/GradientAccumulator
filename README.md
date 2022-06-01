@@ -53,7 +53,7 @@ Then just run this command:
 python benchmark.py
 ```
 
-An in-detail discussion and experiment results was presented in Issue https://github.com/andreped/GradientAccumulator/issues/2.
+An in-detail discussion and experiment results were presented in Issue https://github.com/andreped/GradientAccumulator/issues/2.
 
 ## TODOs:
 - [x] Add generic wrapper class for adding accumulated gradients to any optimizer
