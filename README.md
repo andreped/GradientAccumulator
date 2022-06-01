@@ -1,5 +1,6 @@
 # GradientAccumulator
 
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
 
 ### **DISCLAIMER: This is an experimental project - current solution is not stable. Use with caution.**
