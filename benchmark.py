@@ -154,7 +154,7 @@ if __name__ == "__main__":
     # train model
     model.fit(
         ds_train,
-        epochs=ret.epochs * ret.accum_steps,
+        epochs=ret.epochs,
         validation_data=ds_test,
     )
 
