@@ -14,6 +14,22 @@ but you can build from source if you want to test if it works in your setup (see
 
 For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead.
 
+## Experiments
+To perform the benchmark, just run:
+```
+python benchmark.py
+```
+
+You should get the same model performance from using batch_size=64 & accum_steps=1 vs batch_size=8 & accum_steps=4, but that is **not** the case currently! Need to debug the issue further...
+
+To reproduce issue, just run:
+```
+python benchmark.py --batchsize 64 --accum_steps 1
+python benchmark.py --batchsize 8 --accum_steps 4
+```
+
+Note that using accumulated gradients, the training runs `accum_steps` more epochs to reach the same number of updates.
+
 ## Install
 
 #### From latest release:
@@ -27,7 +43,6 @@ pip install git+https://github.com/andreped/GradientAccumulator
 ```
 
 ## Usage
-
 ```
 from GradientAccumulator.accumulator import GradientAccumulator
 from tensorflow.keras.optimizers import Adam
