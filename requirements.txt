@@ -1,0 +1,4 @@
+tensorflow
+tensorflow-addons
+tensorflow-datasets
+numpy
