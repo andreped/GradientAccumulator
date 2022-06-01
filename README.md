@@ -31,8 +31,8 @@ You should get the same model performance from using batch_size=64 & accum_steps
 
 To reproduce issue, just run:
 ```
-python benchmark.py --batchsize 64 --accum_steps 1
-python benchmark.py --batchsize 8 --accum_steps 4
+python benchmark.py --accum_opt 2 --epochs 3 --batchsize 64 --accum_steps 1
+python benchmark.py --accum_opt 2 --epochs 3 --batchsize 8 --accum_steps 4
 ```
 
 Note that using accumulated gradients, the training runs `accum_steps` more epochs to reach the same number of updates.
