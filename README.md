@@ -62,11 +62,11 @@ Remember to pass the wrapper to the `custom_objects` in `load_model` if you wish
 necessary if you are setting `compile=True` in `load_model`, which is relevant for finetuning or to use `model.evaluate()`.
 ```
 from tensorflow.keras.models import load_model
-model = load_model("./path-to-model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
+
+model = load_model("/path/to/model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
 ```
 
 ## Acknowledgements
-This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons.
-Hence, all credit to them and the people who contributed to the work! Sadly, the proposed implementation was not merged,
-as there were some unresolved issues with it, especially regarding multi-GPU training. However, I think it is
-close to working, and I will use this project to try to solve it.
+This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons. Hence, all credit to them and the people who contributed to the work! Sadly, the proposed implementation was not merged,
+as there were some unresolved issues with it, especially regarding multi-GPU training. However, I believe the current implementation is working well
+for single-GPU scenarios, which should already be of interest to the community.
