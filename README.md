@@ -19,7 +19,7 @@ For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repo
 
 #### From latest release:
 ```
-pip install https://github.com/andreped/GradientAccumulator/releases/download/v0.1.0/GradientAccumulator-0.1.0-py3-none-any.whl
+pip install https://github.com/andreped/GradientAccumulator/releases/download/v0.1.1/GradientAccumulator-0.1.1-py3-none-any.whl
 ```
 
 #### Or from source code:
