@@ -3,39 +3,17 @@
 ![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
 
 ### **DISCLAIMER: This is an experimental project - current solution is not stable. Use with caution.**
-- Current benchmark produces different results with and without accumulated gradients - weights are likely updated too often using GA.
 
 This repo contains a TensorFlow 2 compatible implementation of accumulated gradients.
 
-Simply wrap the accumulator over any optimizer, and specify `accum_steps` to control number of accumulations.
+The proposed implementation simply overloads the train_step of a given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps.
+
+This enables gradient accumulation, which reduces memory consumption and enables usage of theoretically infinitely large batch size (among other things), at the cost of increased training runtime.
 
 Precompiled wheel compatible with Python 3.7-3.9 and TensorFlow 2.7-2.9 exist in [Release](https://github.com/andreped/GradientAccumulator/releases/tag/v0.1.0),
 but you can build from source if you want to test if it works in your setup (see [here](https://github.com/andreped/GradientAccumulator#or-from-source-code)).
 
-For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead.
-
-## Experiments
-To perform the benchmark, create a virtual environment and install dependencies:
-```
-virtualenv -ppython3 venv --clear
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-Then just run this command to perform the benchmark:
-```
-python benchmark.py
-```
-
-You should get the same model performance from using batch_size=64 & accum_steps=1 vs batch_size=8 & accum_steps=4, but that is **not** the case currently! Need to debug the issue further...
-
-To reproduce issue, just run:
-```
-python benchmark.py --accum_opt 2 --epochs 3 --batchsize 64 --accum_steps 1
-python benchmark.py --accum_opt 2 --epochs 3 --batchsize 8 --accum_steps 4
-```
-
-Note that using accumulated gradients, the training runs `accum_steps` more epochs to reach the same number of updates.
+For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead, which wraps the optimizer instead of overloading the train_step of the Model itself (new feature in TF2).
 
 ## Install
 
@@ -51,27 +29,39 @@ pip install git+https://github.com/andreped/GradientAccumulator
 
 ## Usage
 ```
-from GradientAccumulator.accumulator import GradientAccumulator
-from tensorflow.keras.optimizers import Adam
+from GradientAccumulator.GAModelWrapper import GAModelWrapper
+from tensorflow.keras.models import Model
 
-opt = Adam(1e-3)
-wrapped_opt = GradientAccumulator(opt, accum_steps=4)
+model = Model(...)
+model = GAModelWrapper(nb_gradients=4, inputs=model.input, outputs=model.output)
 ```
 
-Then pass wrapped_opt to `model.compile()` as optimizer, like so:
+Then simply use the `model` as you normally would!
+
+## Experiments
+To verify that this implementation works, a benchmark was performed, comparing multiple alternative solutions proposed by others.
+
+To perform the benchmark, create a virtual environment and install dependencies:
 ```
-model.compile(optimizer=wrapped_opt, ...)
+virtualenv -ppython3 venv --clear
+source venv/bin/activate
+pip install -r requirements.txt
 ```
 
-The implementation is derived and adjusted from the discussion at [this](https://github.com/tensorflow/addons/issues/2260#issuecomment-1136967629) TensorFlow Issue.
+Then just run this command:
+```
+python benchmark.py
+```
+
+An in-detail discussion and experiment results was presented in Issue https://github.com/andreped/GradientAccumulator/issues/2.
 
 ## TODOs:
 - [x] Add generic wrapper class for adding accumulated gradients to any optimizer
 - [x] Add CI to build wheel and test that it works across different python versions, TF versions, and operating systems.
+- [x] Add benchmarks to verfiy that accumulated gradients actually work as intended
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Test method for memory leaks
 - [ ] Verify that implementation works in multi-GPU setups
-- [ ] Add benchmarks to verfiy that accumulated gradients actually work as intended
 - [ ] Add proper multi-GPU support
 
 ## Disclaimer
@@ -81,15 +71,6 @@ newer versions of TF 2 instead, as it has become more stable and feature rich th
 
 Also note that this implementation **does not work with TF 1**. For the same reason as it does not work with older TF 2 versions.
 However, a TF 1 implementation can be found in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139).
-
-## Tips
-Remember to pass the wrapper to the `custom_objects` in `load_model` if you wish to load a trained model. This is only
-necessary if you are setting `compile=True` in `load_model`, which is relevant for finetuning or to use `model.evaluate()`.
-```
-from tensorflow.keras.models import load_model
-
-model = load_model("/path/to/model", compile=True, custom_objects={"GradientAccumulator": GradientAccumulator})
-```
 
 ## Acknowledgements
 This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons. Hence, all credit to them and the people who contributed to the work! Sadly, the proposed implementation was not merged,
