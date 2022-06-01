@@ -12,7 +12,7 @@ class GradientAccumulator(tf.keras.optimizers.Optimizer):
         self,
         inner_optimizer: types.Optimizer,
         accum_steps: types.TensorLike = 4,
-        reduction: str = "MEAN",
+        reduction: str = "SUM",
         name: str = "GradientAccumulator",
         **kwargs,
     ):
