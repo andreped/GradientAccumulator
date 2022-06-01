@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from GradientAccumulator.accumulator import GAModelWrapper
+from GradientAccumulator.GAModelWrapper import GAModelWrapper
 
 
 def normalize_img(image, label):

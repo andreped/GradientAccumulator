@@ -65,7 +65,7 @@ jobs:
         run: pip install --find-links=${{github.workspace}} GradientAccumulator
 
       - name: Test library accessibility
-        run: python -c "from GradientAccumulator.accumulator import GradientAccumulator"
+        run: python -c "from GradientAccumulator.GAModelWrapper import GAModelWrapper"
 
       - name: Run test
         run: python test.py
