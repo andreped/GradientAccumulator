@@ -2,6 +2,9 @@
 
 ![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
 
+### **DISCLAIMER: This is an experimental project - current solution is not stable. Use with caution.**
+- Current benchmark produces different results with and without accumulated gradients - weights are likely updated too often using GA.
+
 This repo contains a TensorFlow 2 compatible implementation of accumulated gradients.
 
 Simply wrap the accumulator over any optimizer, and specify `accum_steps` to control number of accumulations.
