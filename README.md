@@ -58,10 +58,10 @@ An in-detail discussion and experiment results were presented in Issue https://g
 - [x] Add generic wrapper class for adding accumulated gradients to any optimizer
 - [x] Add CI to build wheel and test that it works across different python versions, TF versions, and operating systems.
 - [x] Add benchmarks to verfiy that accumulated gradients actually work as intended
-- [ ] Add multi-input/-output architecture support
+- [x] Add class_weight support
+- [x] Add multi-input/-output architecture support
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Test method for memory leaks
-- [ ] Verify that implementation works in multi-GPU setups
 - [ ] Add proper multi-GPU support
 
 ## Acknowledgements
