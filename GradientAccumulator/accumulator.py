@@ -217,6 +217,7 @@ class GradientAccumulator(tf.keras.optimizers.Optimizer):
 
 
 # https://github.com/tensorflow/addons/issues/2260#issuecomment-880332273
+# @NOTE: DEPRECATED!
 class OldGradientAccumulator(tf.keras.optimizers.Optimizer):
     """Optimizer wrapper for gradient accumulation."""
     @typechecked

@@ -17,7 +17,7 @@ class GAModelWrapper(tf.keras.Model):
         # Unpack the data. Its structure depends on your model and
         # on what you pass to `fit()`.
         if len(data) == 3:
-            x, y, sample_weight = data
+            x, y, sample_weight = data  # @TODO: Does this work with multi-input/output data?
         else:
             sample_weight = None
             x, y = data
