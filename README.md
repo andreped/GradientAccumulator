@@ -63,14 +63,6 @@ An in-detail discussion and experiment results were presented in Issue https://g
 - [ ] Verify that implementation works in multi-GPU setups
 - [ ] Add proper multi-GPU support
 
-## Disclaimer
-Note that this implementation is only compatible with newer versions of TensorFlow. This is because the way Optimizers behave in TF
-has changed in TF 2. Slight modifications can likely be made to make this work for older versions, but I would recommend using
-newer versions of TF 2 instead, as it has become more stable and feature rich than recent versions.
-
-Also note that this implementation **does not work with TF 1**. For the same reason as it does not work with older TF 2 versions.
-However, a TF 1 implementation can be found in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139).
-
 ## Acknowledgements
 This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons. The model wrapper solution was also inspired by [this thread](https://stackoverflow.com/a/66524901) on stack overflow. Hence, all credit to them and the people who contributed to the work! This could not have been possible without the people asking the right questions and the people contributing with solutions!
 
