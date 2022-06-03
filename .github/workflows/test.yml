@@ -69,4 +69,4 @@ jobs:
         run: python -c "from GradientAccumulator.GAModelWrapper import GAModelWrapper"
 
       - name: Run test
-        run: pytest test/
+        run: pytest tests/
