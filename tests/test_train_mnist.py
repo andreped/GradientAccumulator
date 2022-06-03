@@ -9,7 +9,7 @@ def normalize_img(image, label):
     return tf.cast(image, tf.float32) / 255., label
 
 
-if __name__ == "__main__":
+def test_train_mnist():
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -66,3 +66,7 @@ if __name__ == "__main__":
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
+
+
+if __name__ == "__main__":
+    test_train_mnist()
