@@ -48,7 +48,7 @@ if __name__ == "__main__":
                         help="number of accumulation steps.")
     parser.add_argument('--epochs', metavar='--eps', type=int, nargs='?', default=3,
                         help="number of epochs.")
-    parser.add_argument('--accum_opt', metavar='--opt', type=int, nargs='?', default=2,
+    parser.add_argument('--accum_opt', metavar='--opt', type=int, nargs='?', default=-1,
                         help="which gradient accumulator approach to use. Four available: {0, 1, 2, 3, -1}.")
     ret = parser.parse_args(sys.argv[1:]); print(ret)
 
@@ -62,16 +62,14 @@ if __name__ == "__main__":
     )
 
     # build train pipeline
-    ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(ret.batchsize)
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # build test pipeline
-    ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds_test = ds_test.batch(ret.batchsize)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
