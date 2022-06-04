@@ -101,13 +101,13 @@ def test_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=32, accum_steps=1, epochs=4)
+    result1 = run_experiment(bs=32, accum_steps=1, epochs=2)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = run_experiment(bs=16, accum_steps=2, epochs=4)
+    result2 = run_experiment(bs=16, accum_steps=2, epochs=2)
 
     # results should be identical (theoretically, even in practice on CPU)
     assert result1 == result2

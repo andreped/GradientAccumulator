@@ -38,13 +38,13 @@ def test_train_mnist():
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(128)  # multiplum of 8
+    ds_train = ds_train.batch(256)  # multiplum of 8
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # build test pipeline
     ds_test = ds_test.map(
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-    ds_test = ds_test.batch(128)
+    ds_test = ds_test.batch(256)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
@@ -72,7 +72,7 @@ def test_train_mnist():
     # train model
     model.fit(
         ds_train,
-        epochs=3,
+        epochs=1,
         validation_data=ds_test,
     )
 
