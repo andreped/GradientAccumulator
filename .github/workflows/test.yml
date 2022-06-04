@@ -72,8 +72,59 @@ jobs:
       - name: Run test
         run: pytest tests/
 
-  #tf-compatibility:
-  #  needs: build
-  #  runs-on: ubuntu-18.04
-  #  strategy:
+  tf-compatibility:
+    needs: build
+    runs-on: ubuntu-18.04
+    strategy:
+      max-parallel: 10
+      matrix:
+        include:
+          - os: ubuntu-18
+            python-version: 3.6
+            tf-version: 2.2.0
+
+          - os: ubuntu-18
+            python-version: 3.6
+            tf-version: 2.3.0
+
+          - os: ubuntu-18
+            python-version: 3.6
+            tf-version: 2.4.0
+
+          - os: ubuntu-18
+            python-version: 3.6
+            tf-version: 2.5.0
+
+          - os: ubuntu-18
+            python-version: 3.6
+            tf-version: 2.6.0
+    steps:
+      steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install wheel setuptools
+          pip install tensorflow==${{ matrix.tf-version }}
+          pip install tensorflow-addons
+          pip install tensorflow-datasets
+          pip install pytest
+
+      - name: Download artifact
+        uses: actions/download-artifact@master
+        with:
+          name: "Python wheel"
+
+      - name: Install wheel
+        run: pip install --find-links=${{github.workspace}} GradientAccumulator
+
+      - name: Test library accessibility
+        run: python -c "from GradientAccumulator.GAModelWrapper import GAModelWrapper"
+
+      - name: Run test
+        run: python tests/test_train_mnist.py
 
