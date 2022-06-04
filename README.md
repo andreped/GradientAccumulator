@@ -45,6 +45,7 @@ It was also observed a small difference when using adaptive optimizers, which I 
 - [x] GAModelWrapper gets expected identical results to batch training!
 - [x] Test method for memory leaks
 - [x] Add multi-input/-output architecture support
+- [x] Add mixed precision support
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Add proper multi-GPU support
 
