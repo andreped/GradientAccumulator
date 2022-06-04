@@ -12,6 +12,19 @@ def normalize_img(image, label):
     return tf.cast(image, tf.float32) / 255., label
 
 
+def get_opt(opt):
+    if opt == "adam":
+        return tf.keras.optimizers.Adam(1e-3)
+    elif opt == "adadelta":
+        return tf.keras.optimizers.Adadelta(1e-3)
+    elif opt == "RMSprop":
+        return tf.keras.optimizers.RMSprop(1e-3)
+    elif opt == "SGD":
+        return tf.keras.optimizers.SGD(1e-3)
+    else:
+        raise ValueError("Unknown optimizer chosen.")
+
+
 def reset():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -72,7 +85,7 @@ def test_optimizer_invariance(bs=16, accum_steps=4, epochs=1, opt=None):
 
     # compile model
     model.compile(
-        optimizer=opt,
+        optimizer=get_opt(opt),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
@@ -101,7 +114,7 @@ if __name__ == "__main__":
     # run experiment for different optimizers, to see if GA is consistent 
     # within an optimizer. Note that it is expected for the results to
     # differ BETWEEN optimizers, as they behave differently.
-    for opt in ["Adam", "SGD", "Adadelta", "RMSprop"]:
+    for opt in ["adam", "SGD", "adadelta", "RMSprop"]:
         print("Current optimizer: " + opt)
         # set seed
         reset()
