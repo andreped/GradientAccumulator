@@ -129,4 +129,4 @@ def test_multitask():
     result2 = run_experiment(bs=16, accum_steps=2, epochs=1)
 
     # results should be "identical" (on CPU, can be different on GPU)
-    np.testing.assert_almost_equal(result1, result2, decimal=5)
+    np.testing.assert_almost_equal(result1, result2, decimal=3)
