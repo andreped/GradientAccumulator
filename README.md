@@ -13,7 +13,7 @@ Implementation is compatible with and have been tested against TF >= 2.2 and Pyt
 
 Stable release:
 ```
-https://github.com/andreped/GradientAccumulator/releases/download/v0.1.2/GradientAccumulator-0.1.2-py3-none-any.whl
+pip install https://github.com/andreped/GradientAccumulator/releases/download/v0.1.2/GradientAccumulator-0.1.2-py3-none-any.whl
 ```
 
 Or from source:
