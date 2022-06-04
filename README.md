@@ -32,6 +32,15 @@ model = GAModelWrapper(n_gradients=4, inputs=model.input, outputs=model.output)
 
 Then simply use the `model` as you normally would!
 
+#### Mixed precision
+There has also been added experimental support for mixed precision:
+```
+from tensorflow.keras import mixed_precision
+
+mixed_precision.set_global_policy('mixed_float16')
+model = GAModelWrapper(n_gradients=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+```
+
 ## Disclaimer
 In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization. It is **not** recommended to use BN with GA, as BN would update too frequently. However, you could try to adjust the `momentum` of BN (see [here](https://keras.io/api/layers/normalization_layers/batch_normalization/)).
 
@@ -45,6 +54,7 @@ It was also observed a small difference when using adaptive optimizers, which I 
 - [x] GAModelWrapper gets expected identical results to batch training!
 - [x] Test method for memory leaks
 - [x] Add multi-input/-output architecture support
+- [x] Add mixed precision support
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Add proper multi-GPU support
 
