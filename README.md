@@ -7,11 +7,13 @@ This repo contains a TensorFlow 2 compatible implementation of accumulated gradi
 
 The proposed implementation simply overloads the train_step of a given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps. This enables gradient accumulation, which reduces memory consumption and enables usage of theoretically infinitely large batch size (among other things), at the cost of increased training runtime.
 
+Implementation is compatible with and have been tested against TF >= 2.2 and Python >= 3.6, and works cross-platform (Ubuntu, Windows, macOS).
+
 ## Install
 
 Stable release:
 ```
-https://github.com/andreped/GradientAccumulator/releases/download/v0.1.2/GradientAccumulator-0.1.2-py3-none-any.whl
+pip install https://github.com/andreped/GradientAccumulator/releases/download/v0.1.2/GradientAccumulator-0.1.2-py3-none-any.whl
 ```
 
 Or from source:
@@ -53,5 +55,7 @@ This repository serves as an open solution for everyone to use, until TF/Keras i
 
 ## Troubleshooting
 Overloading of `train_step` method of tf.keras.Model was introduced in TF 2.2, hence, this code is compatible with TF >= 2.2.
+
+Also, note that TF depends on different python versions. If you are having problems getting TF working, try a different TF version or python version.
 
 For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead, which wraps the optimizer instead of overloading the train_step of the Model itself (new feature in TF2).
