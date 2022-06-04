@@ -99,7 +99,6 @@ jobs:
             python-version: 3.6
             tf-version: 2.6.0
     steps:
-      steps:
       - uses: actions/checkout@v1
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
