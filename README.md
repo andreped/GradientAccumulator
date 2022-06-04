@@ -8,6 +8,13 @@ This repo contains a TensorFlow 2 compatible implementation of accumulated gradi
 The proposed implementation simply overloads the train_step of a given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps. This enables gradient accumulation, which reduces memory consumption and enables usage of theoretically infinitely large batch size (among other things), at the cost of increased training runtime.
 
 ## Install
+
+Stable release:
+```
+https://github.com/andreped/GradientAccumulator/releases/download/v0.1.2/GradientAccumulator-0.1.2-py3-none-any.whl
+```
+
+Or from source:
 ```
 pip install git+https://github.com/andreped/GradientAccumulator
 ```
@@ -28,9 +35,9 @@ Then simply use the `model` as you normally would!
 - [x] Add CI to build wheel and test that it works across different python versions, TF versions, and operating systems.
 - [x] Add benchmarks to verfiy that accumulated gradients actually work as intended
 - [x] Add class_weight support
-- [x] Add multi-input/-output architecture support
 - [x] GAModelWrapper gets expected identical results to batch training!
 - [x] Test method for memory leaks
+- [x] Add multi-input/-output architecture support
 - [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
 - [ ] Add proper multi-GPU support
 
