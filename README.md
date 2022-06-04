@@ -30,6 +30,11 @@ model = GAModelWrapper(n_gradients=4, inputs=model.input, outputs=model.output)
 
 Then simply use the `model` as you normally would!
 
+## Disclaimer
+In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization.
+
+Nonetheless, the difference is quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested (for tests, see [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
+
 ## TODOs:
 - [x] Add generic wrapper class for adding accumulated gradients to any optimizer
 - [x] Add CI to build wheel and test that it works across different python versions, TF versions, and operating systems.
