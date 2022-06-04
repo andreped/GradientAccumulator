@@ -49,8 +49,6 @@ def test_expected_result(bs=16, accum_steps=4, epochs=1):
     # build train pipeline
     ds_train = ds_train.map(
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-    #ds_train = ds_train.cache()
-    # ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
@@ -58,7 +56,6 @@ def test_expected_result(bs=16, accum_steps=4, epochs=1):
     ds_test = ds_test.map(
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds_test = ds_test.batch(bs)
-    #ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
     # create model
@@ -75,7 +72,7 @@ def test_expected_result(bs=16, accum_steps=4, epochs=1):
 
     # compile model
     model.compile(
-        optimizer=tf.keras.optimizers.SGD(1e-3),  # results are much more different using SGD and ADAM when w/wo GA!
+        optimizer=tf.keras.optimizers.SGD(1e-3),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
