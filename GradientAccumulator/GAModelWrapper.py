@@ -18,8 +18,10 @@ class GAModelWrapper(tf.keras.Model):
 
         # Unpack the data. Its structure depends on your model and
         # on what you pass to `fit()`.
+        # NOTE that x and y are lists of inputs and outputs, 
+        # hence this wrapper supports multi-input-output models
         if len(data) == 3:
-            x, y, sample_weight = data  # @TODO: Does this work with multi-input/output data?
+            x, y, sample_weight = data
         else:
             sample_weight = None
             x, y = data
