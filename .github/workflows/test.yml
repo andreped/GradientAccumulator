@@ -97,7 +97,7 @@ jobs:
 
           - os: ubuntu-18
             python-version: 3.6
-            tf-version: 2.6.5
+            tf-version: 2.6.2
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python ${{ matrix.python-version }}
