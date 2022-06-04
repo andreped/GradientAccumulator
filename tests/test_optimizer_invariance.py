@@ -101,7 +101,7 @@ if __name__ == "__main__":
     # run experiment for different optimizers, to see if GA is consistent 
     # within an optimizer. Note that it is expected for the results to
     # differ BETWEEN optimizers, as they behave differently.
-    for opt in ["adam", "sgd"]:
+    for opt in ["Adam", "SGD", "Adadelta", "RMSprop"]:
         print("Current optimizer: " + opt)
         # set seed
         reset()
