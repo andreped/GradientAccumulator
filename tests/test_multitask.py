@@ -68,6 +68,10 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
+    # get a smaller amount of samples for running the experiment
+    ds_train = ds_train.take(1024)
+    ds_test = ds_test.take(1024)
+
     # create multi-input multi-output model
     input1 = Input(shape=(28, 28, 1))
     input2 = Input(shape=(28, 28))
