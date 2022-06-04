@@ -31,9 +31,9 @@ model = GAModelWrapper(n_gradients=4, inputs=model.input, outputs=model.output)
 Then simply use the `model` as you normally would!
 
 ## Disclaimer
-In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization.
+In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization. It is **not** recommended to use BN with GA, as BN would update too frequently. However, you could try to adjust the `momentum` of BN (see [here](https://keras.io/api/layers/normalization_layers/batch_normalization/)).
 
-Nonetheless, the difference is quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested (for tests, see [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
+It was also observed a small difference when using adaptive optimizers, which I believe might be due to how frequently they are updated. Nonetheless, for the optimizers, the difference was quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
 
 ## TODOs:
 - [x] Add generic wrapper class for adding accumulated gradients to any optimizer
