@@ -128,5 +128,5 @@ def test_optimizer_invariance():
         # run again with different batch size and number of accumulations
         result2 = run_experiment(bs=16, accum_steps=2, epochs=1, opt=opt)
 
-        # results should be identical (theoretically, even in practice on CPU)
-        assert result1 == result2
+        # results should be "identical" (on CPU, can be different on GPU)
+        np.testing.assert_almost_equal(result1, result2, decimal=3)
