@@ -49,7 +49,7 @@ def reset():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def test_optimizer_invariance(bs=16, accum_steps=4, epochs=1, opt=None):
+def test_optimizer_invariance(opt, bs=16, accum_steps=4, epochs=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
