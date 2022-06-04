@@ -36,7 +36,7 @@ def reset():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def test_expected_result(bs=16, accum_steps=4, epochs=1):
+def run_experiment(bs=16, accum_steps=4, epochs=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -96,18 +96,18 @@ def test_expected_result(bs=16, accum_steps=4, epochs=1):
     return result[1]
 
 
-if __name__ == "__main__":
+def test_expected_result():
     # set seed
     reset()
 
     # run once
-    result1 = test_expected_result(bs=32, accum_steps=1, epochs=4)
+    result1 = run_experiment(bs=32, accum_steps=1, epochs=4)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = test_expected_result(bs=16, accum_steps=2, epochs=4)
+    result2 = run_experiment(bs=16, accum_steps=2, epochs=4)
 
     # results should be identical (theoretically, even in practice on CPU)
     assert result1 == result2

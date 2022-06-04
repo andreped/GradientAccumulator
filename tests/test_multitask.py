@@ -42,7 +42,7 @@ def reset():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def test_multitask(bs=16, accum_steps=4, epochs=1):
+def run_experiment(bs=16, accum_steps=4, epochs=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -115,18 +115,18 @@ def test_multitask(bs=16, accum_steps=4, epochs=1):
     return np.array(result)
 
 
-if __name__ == "__main__":
+def test_multitask():
     # set seed
     reset()
 
     # run once
-    result1 = test_multitask(bs=32, accum_steps=1, epochs=1)
+    result1 = run_experiment(bs=32, accum_steps=1, epochs=1)
 
     # reset before second run to get reproducible results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = test_multitask(bs=16, accum_steps=2, epochs=1)
+    result2 = run_experiment(bs=16, accum_steps=2, epochs=1)
 
     # results should be "identical" (on CPU, can be different on GPU)
     np.testing.assert_almost_equal(result1, result2, decimal=5)

@@ -49,7 +49,7 @@ def reset():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def test_optimizer_invariance(opt, bs=16, accum_steps=4, epochs=1):
+def run_experiment(bs=16, accum_steps=4, epochs=1, opt=None):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -109,7 +109,7 @@ def test_optimizer_invariance(opt, bs=16, accum_steps=4, epochs=1):
     return result[1]
 
 
-if __name__ == "__main__":
+def test_optimizer_invariance():
 
     # run experiment for different optimizers, to see if GA is consistent 
     # within an optimizer. Note that it is expected for the results to
@@ -120,13 +120,13 @@ if __name__ == "__main__":
         reset()
 
         # run once
-        result1 = test_optimizer_invariance(bs=32, accum_steps=1, epochs=1, opt=opt)
+        result1 = run_experiment(bs=32, accum_steps=1, epochs=1, opt=opt)
 
         # reset before second run to get identical results
         reset()
 
         # run again with different batch size and number of accumulations
-        result2 = test_optimizer_invariance(bs=16, accum_steps=2, epochs=1, opt=opt)
+        result2 = run_experiment(bs=16, accum_steps=2, epochs=1, opt=opt)
 
         # results should be identical (theoretically, even in practice on CPU)
         assert result1 == result2
