@@ -69,8 +69,13 @@ jobs:
       - name: Test library accessibility
         run: python -c "from GradientAccumulator.GAModelWrapper import GAModelWrapper"
 
-      - name: Run test
-        run: pytest tests/
+      - name: Run tests
+        run: |
+          pytest -v tests/test_train_mnist.py
+          pytest -v tests/test_expected_result.py
+          pytest -v tests/test_mixed_precision.py
+          pytest -v tests/test_optimizer_invariance.py
+          pytest -v tests/test_multitask.py
 
   tf-compatibility:
     needs: build
