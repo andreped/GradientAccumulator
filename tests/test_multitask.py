@@ -52,6 +52,10 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
         with_info=True,
     )
 
+    # get a smaller amount of samples for running the experiment
+    ds_train = ds_train.take(1024)
+    ds_test = ds_test.take(1024)
+
     # build train pipeline
     ds_train = ds_train.map(normalize_img, 
         num_parallel_calls=tf.data.AUTOTUNE)
@@ -68,23 +72,22 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
-    # get a smaller amount of samples for running the experiment
-    ds_train = ds_train.take(1024)
-    ds_test = ds_test.take(1024)
-
     # create multi-input multi-output model
     input1 = Input(shape=(28, 28, 1))
     input2 = Input(shape=(28, 28))
 
-    x1 = Conv2D(16, (5, 5), activation="relu", padding="same")(input1)
+    x1 = Conv2D(8, (5, 5), activation="relu", padding="same")(input1)
     x1 = MaxPooling2D((2, 2))(x1)
-    x1 = Conv2D(16, (5, 5), activation="relu", padding="same")(x1)
+    x1 = Conv2D(8, (5, 5), activation="relu", padding="same")(x1)
     x1 = UpSampling2D((2, 2))(x1)
-    x1 = Conv2D(16, (5, 5), padding="same", name="reconstructor")(x1)
+    x1 = Conv2D(8, (5, 5), padding="same", name="reconstructor")(x1)
 
     x2 = Flatten()(input2)
-    x2 = Dense(128, activation="relu")(x2)
+    x2 = Dense(32, activation="relu")(x2)
     x2 = Dense(10, name="classifier")(x2)
+
+    # [2.0176000595092773, 0.09766767919063568, 1.9199140071868896, 0.46810001134872437]
+    # [1.6557999849319458, 0.08378496021032333, 1.5719828605651855, 0.6689000129699707]
 
     model = Model(inputs=[input1, input2], outputs=[x1, x2])
 
