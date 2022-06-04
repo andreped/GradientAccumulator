@@ -35,7 +35,7 @@ Then simply use the `model` as you normally would!
 - [ ] Add proper multi-GPU support
 
 ## Acknowledgements
-This implementation is derived from the work of @fsx950223, @stefan-falk, and others, which is a closed PR https://github.com/tensorflow/addons/pull/2525 to TF-addons. The model wrapper solution was also inspired by [this thread](https://stackoverflow.com/a/66524901) on stack overflow. Hence, all credit to them and the people who contributed to the work! This could not have been possible without the people asking the right questions and the people contributing with solutions!
+This implementation is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow.
 
 This repository serves as an open solution for everyone to use, until TF/Keras integrates a proper solution into their framework(s).
 
