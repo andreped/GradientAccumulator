@@ -16,7 +16,7 @@ def get_opt(opt):
     if opt == "adam":
         return tf.keras.optimizers.Adam(1e-3)
     elif opt == "adadelta":
-        return tf.keras.optimizers.Adadelta(1e-3)
+        return tf.keras.optimizers.Adadelta(1e-2)
     elif opt == "RMSprop":
         return tf.keras.optimizers.RMSprop(1e-3)
     elif opt == "SGD":
