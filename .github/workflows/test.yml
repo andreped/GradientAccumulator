@@ -135,3 +135,6 @@ jobs:
       - name: Run test
         run: python tests/test_train_mnist.py
 
+  #Deploy:
+    #needs: [test, tf-compatibility]
+    #runs-on: ubuntu-18.04
