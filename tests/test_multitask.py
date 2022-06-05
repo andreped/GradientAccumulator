@@ -93,7 +93,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GAModelWrapper(n_gradients=accum_steps, inputs=model.input, outputs=model.output)
+        model = GAModelWrapper(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(

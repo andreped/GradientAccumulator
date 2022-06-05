@@ -56,7 +56,7 @@ def test_train_mnist():
     ])
 
     # wrap model to use gradient accumulation
-    model = GAModelWrapper(n_gradients=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+    model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
 
     # need to scale optimizer for mixed precision
     opt = tf.keras.optimizers.Adam(1e-3)
