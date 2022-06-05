@@ -27,7 +27,7 @@ from gradient_accumulator.GAModelWrapper import GAModelWrapper
 from tensorflow.keras.models import Model
 
 model = Model(...)
-model = GAModelWrapper(n_gradients=4, inputs=model.input, outputs=model.output)
+model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
 ```
 
 Then simply use the `model` as you normally would!
@@ -38,7 +38,7 @@ There has also been added experimental support for mixed precision:
 from tensorflow.keras import mixed_precision
 
 mixed_precision.set_global_policy('mixed_float16')
-model = GAModelWrapper(n_gradients=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
 ```
 
 ## Disclaimer
