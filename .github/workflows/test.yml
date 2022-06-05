@@ -64,10 +64,10 @@ jobs:
           name: "Python wheel"
 
       - name: Install wheel
-        run: pip install --find-links=${{github.workspace}} GradientAccumulator
+        run: pip install --find-links=${{github.workspace}} gradient-accumulator
 
       - name: Test library accessibility
-        run: python -c "from GradientAccumulator.GAModelWrapper import GAModelWrapper"
+        run: python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
 
       - name: Run tests
         run: |
@@ -124,10 +124,10 @@ jobs:
           name: "Python wheel"
 
       - name: Install wheel
-        run: pip install --find-links=${{github.workspace}} GradientAccumulator
+        run: pip install --find-links=${{github.workspace}} gradient-accumulator
 
       - name: Test library accessibility
-        run: python -c "from GradientAccumulator.GAModelWrapper import GAModelWrapper"
+        run: python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
 
       - name: Run test
         run: python tests/test_train_mnist.py

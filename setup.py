@@ -4,7 +4,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="GradientAccumulator",
+    name="gradient-accumulator",
     version="0.1.2",
     author="André Pedersen",
     author_email="andrped94@gmail.com",
