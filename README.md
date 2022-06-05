@@ -11,9 +11,9 @@ Implementation is compatible with and have been tested against TF >= 2.2 and Pyt
 
 ## Install
 
-Stable release:
+Stable release from PyPI:
 ```
-pip install https://github.com/andreped/GradientAccumulator/releases/download/v0.1.2/GradientAccumulator-0.1.2-py3-none-any.whl
+pip install gradient-accumulator
 ```
 
 Or from source:
@@ -23,7 +23,7 @@ pip install git+https://github.com/andreped/GradientAccumulator
 
 ## Usage
 ```
-from GradientAccumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator.GAModelWrapper import GAModelWrapper
 from tensorflow.keras.models import Model
 
 model = Model(...)
