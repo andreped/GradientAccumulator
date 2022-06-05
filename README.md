@@ -4,7 +4,8 @@
 ![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
 [![GitHub Downloads](https://img.shields.io/github/downloads/andreped/GradientAccumulator/total?label=GitHub%20downloads&logo=github)](https://github.com/andreped/GradientAccumulator/releases)
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
-[![DOI](https://zenodo.org/badge/498288524.svg)](https://zenodo.org/badge/latestdoi/498288524)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6615087.svg)](https://doi.org/10.5281/zenodo.6615087)
+
 
 This repo contains a TensorFlow 2 compatible implementation of accumulated gradients.
 
@@ -76,14 +77,14 @@ For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repo
 ## How to cite
 If you use this package in your research, please, cite this reference:
 ```
-@software{andre_pedersen_2022_6615019,
+@software{andre_pedersen_2022_6615087,
   author       = {André Pedersen},
-  title        = {andreped/GradientAccumulator: v0.1.3},
+  title        = {andreped/GradientAccumulator: v0.1.4},
   month        = jun,
   year         = 2022,
   publisher    = {Zenodo},
-  version      = {v0.1.3},
-  doi          = {10.5281/zenodo.6615019},
-  url          = {https://doi.org/10.5281/zenodo.6615019}
+  version      = {v0.1.4},
+  doi          = {10.5281/zenodo.6615087},
+  url          = {https://doi.org/10.5281/zenodo.6615087}
 }
 ```
