@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Python wheel
-          path: ${{github.workspace}}/dist/gradient_accumulator-*.whl
+          path: ${{github.workspace}}/dist/gradient-accumulator-*.whl
           if-no-files-found: error
 
   test:
