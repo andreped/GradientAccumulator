@@ -4,7 +4,7 @@ import random as python_random
 import os
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import Model, load_model
-from GradientAccumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator.GAModelWrapper import GAModelWrapper
 from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D, UpSampling2D,\
     MaxPooling2D, Activation
 
