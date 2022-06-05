@@ -2,6 +2,8 @@
 
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 ![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)
+[![GitHub Downloads](https://img.shields.io/github/downloads/andreped/GradientAccumulator/total?label=GitHub%20downloads&logo=github)](https://github.com/andreped/GradientAccumulator/releases)
+[![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 
 This repo contains a TensorFlow 2 compatible implementation of accumulated gradients.
 
