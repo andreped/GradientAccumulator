@@ -4,5 +4,6 @@ __pycache__/
 trained_model/
 build/
 GradientAccumulator.egg-info/
+gradient_accumulator.egg-info/
 dist/
 *.h5
