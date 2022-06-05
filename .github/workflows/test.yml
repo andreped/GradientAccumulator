@@ -24,7 +24,10 @@ jobs:
           pip install tensorflow==2.8.0 tensorflow-addons
 
       - name: Build wheel
-        run: python setup.py bdist_wheel
+        run: |
+          python setup.py bdist_wheel
+          ls
+          ls dist/
 
       - name: Upload Python wheel
         uses: actions/upload-artifact@v2
