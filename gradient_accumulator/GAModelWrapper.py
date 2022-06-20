@@ -51,7 +51,7 @@ class GAModelWrapper(tf.keras.Model):
         gradients = tape.gradient(loss, self.trainable_variables)
 
         # apply adaptive gradient clipping
-        gradients = tf.cond(tf.convert_to_tensor(self.use_acg, lambda: agc.adaptive_clip_grad(self.trainable_variables, gradients,
+        gradients = tf.cond(tf.convert_to_tensor(self.use_acg), lambda: agc.adaptive_clip_grad(self.trainable_variables, gradients,
                                                                  clip_factor=self.clip_factor, eps=self.eps), lambda: gradients)
 
         # scale gradients if mixed precision is enabled
