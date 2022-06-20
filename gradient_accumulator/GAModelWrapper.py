@@ -1,5 +1,5 @@
 import tensorflow as tf
-import agc
+from . import agc
 
 
 # https://stackoverflow.com/a/66524901
