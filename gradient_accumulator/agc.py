@@ -32,8 +32,7 @@ def unitwise_norm(x):
     return compute_norm(x, axis, keepdims)
 
 
-def adaptive_clip_grad(parameters, gradients, clip_factor=0.01,
-                       eps=1e-3):
+def adaptive_clip_grad(parameters, gradients, clip_factor=0.01, eps=1e-3):
     new_grads = []
     for (params, grads) in zip(parameters, gradients):
         p_norm = unitwise_norm(params)
