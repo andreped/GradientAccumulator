@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6615087.svg)](https://doi.org/10.5281/zenodo.6615087)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6671449.svg)](https://doi.org/10.5281/zenodo.6671449)
 
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![GitHub Downloads](https://img.shields.io/github/downloads/andreped/GradientAccumulator/total?label=GitHub%20downloads&logo=github)](https://github.com/andreped/GradientAccumulator/releases)
