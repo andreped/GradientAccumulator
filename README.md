@@ -75,7 +75,9 @@ It was also observed a small difference when using adaptive optimizers, which I 
 - [ ] Add proper multi-GPU support
 
 ## Acknowledgements
-This implementation is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow.
+The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. 
+
+The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 
 This repository serves as an open solution for everyone to use, until TF/Keras integrates a proper solution into their framework(s).
 
