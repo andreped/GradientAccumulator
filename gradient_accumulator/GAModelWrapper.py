@@ -1,17 +1,20 @@
 import tensorflow as tf
-from time import sleep
+import agc
 
 
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
 class GAModelWrapper(tf.keras.Model):
-    def __init__(self, accum_steps, mixed_precision=False, *args, **kwargs):
+    def __init__(self, accum_steps, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.accum_steps = tf.constant(accum_steps, dtype=tf.int32)
         self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False)
         self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False) for v in
                                       self.trainable_variables]
         self.mixed_precision = mixed_precision
+        self.use_acg = use_acg
+        self.clip_factor = clip_factor
+        self.eps = eps
 
     # @tf.function  # https://www.tensorflow.org/guide/keras/writing_a_training_loop_from_scratch#speeding-up_your_training_step_with_tffunction
     def train_step(self, data):
@@ -46,6 +49,10 @@ class GAModelWrapper(tf.keras.Model):
 
         # Calculate batch gradients
         gradients = tape.gradient(loss, self.trainable_variables)
+
+        # apply adaptive gradient clipping
+        gradients = tf.cond(self.use_acg, agc.adaptive_clip_grad(self.trainable_variables, gradients,
+                                                                 clip_factor=self.clip_factor, eps=self.eps), gradients)
 
         # scale gradients if mixed precision is enabled
         if self.mixed_precision:
