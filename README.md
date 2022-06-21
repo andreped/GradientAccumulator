@@ -51,7 +51,7 @@ opt = Adam(1e-3)
 opt = mixed_precision.LossScaleOptimizer(opt)
 ```
 
-If using TPUs, use `bfloat32` instead of `float32`, like so:
+If using TPUs, use `bfloat16` instead of `float16`, like so:
 ```
 mixed_precision.set_global_policy('mixed_bfloat16')
 ```
