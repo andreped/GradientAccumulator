@@ -47,16 +47,16 @@ class GAModelWrapper(tf.keras.Model):
             if self.mixed_precision:
                 loss = self.optimizer.get_scaled_loss(loss)
 
-        # Calculate batch gradients
+        # Calculate batch gradients -> these are scaled gradients if mixed precision is enabled
         gradients = tape.gradient(loss, self.trainable_variables)
-
-        # apply adaptive gradient clipping
-        if self.use_acg:
-            gradients = agc.adaptive_clip_grad(self.trainable_variables, gradients, clip_factor=self.clip_factor, eps=self.eps)
 
         # scale gradients if mixed precision is enabled
         if self.mixed_precision:
             gradients = self.optimizer.get_unscaled_gradients(gradients)
+
+        # apply adaptive gradient clipping -> should be AFTER unscaling gradients
+        if self.use_acg:
+            gradients = agc.adaptive_clip_grad(self.trainable_variables, gradients, clip_factor=self.clip_factor, eps=self.eps)
 
         # Accumulate batch gradients
         for i in range(len(self.gradient_accumulation)):
