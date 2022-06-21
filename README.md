@@ -53,7 +53,7 @@ opt = mixed_precision.LossScaleOptimizer(opt)
 
 If using TPUs, use `bfloat32` instead of `float32`, like so:
 ```
-mixed_precision.set_global_policy('mixed_float16')
+mixed_precision.set_global_policy('mixed_bfloat16')
 ```
 
 There is also an example of how to use gradient accumulation with mixed precision [here](https://github.com/andreped/GradientAccumulator/blob/main/tests/test_mixed_precision.py#L58).
