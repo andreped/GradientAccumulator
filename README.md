@@ -42,10 +42,21 @@ Then simply use the `model` as you normally would!
 There has also been added experimental support for mixed precision:
 ```
 from tensorflow.keras import mixed_precision
+from tensorflow.keras.optimizers import Adam
 
 mixed_precision.set_global_policy('mixed_float16')
 model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+
+opt = Adam(1e-3)
+opt = mixed_precision.LossScaleOptimizer(opt)
 ```
+
+If using TPUs, use `bfloat32` instead of `float32`, like so:
+```
+mixed_precision.set_global_policy('mixed_float16')
+```
+
+There is also an example of how to use gradient accumulation with mixed precision [here](https://github.com/andreped/GradientAccumulator/blob/main/tests/test_mixed_precision.py#L58).
 
 #### Adaptive gradient clipping
 There has also been added support for adaptive gradient clipping, based on [this](https://github.com/sayakpaul/Adaptive-Gradient-Clipping) implementation:
