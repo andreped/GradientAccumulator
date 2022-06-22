@@ -67,7 +67,11 @@ def test_train_mnist():
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model.h5", compile=True)
+    trained_model = load_model("./trained_model.h5", compile=False)
 
-    result = trained_model.evaluate(ds_test, verbose=1)
+    result = []
+    for x, y in ds_test:
+        pred = trained_model.predict(x)
+        ret = tf.keras.metrics.SparseCategoricalAccuracy(pred, y)
+        result.append(ret)
     print(result)
