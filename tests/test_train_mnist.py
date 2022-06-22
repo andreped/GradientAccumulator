@@ -42,7 +42,7 @@ def test_train_mnist():
     ])
 
     # wrap model to use gradient accumulation
-    # model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
+    model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(
