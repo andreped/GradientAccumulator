@@ -79,8 +79,10 @@ class GAModelWrapper(tf.keras.Model):
             self.gradient_accumulation[i].assign(tf.zeros_like(self.trainable_variables[i], dtype=tf.float32))
 
     def get_config(self):
-        return {"accum_steps": self.accum_steps,
-                "mixed_precision": self.mixed_precision,
-                "use_acg": self.use_acg,
-                "clip_factor": self.clip_factor,
-                "eps": self.eps}
+        config = super(CustomLayer, self).get_config()
+        config.update({"accum_steps": self.accum_steps,
+                       "mixed_precision": self.mixed_precision,
+                       "use_acg": self.use_acg,
+                       "clip_factor": self.clip_factor,
+                       "eps": self.eps})
+        return config
