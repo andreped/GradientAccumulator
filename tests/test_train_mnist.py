@@ -44,11 +44,6 @@ def test_train_mnist():
     # wrap model to use gradient accumulation
     model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
 
-    # fix for when you are saving model in HDF5 format
-    # https://stackoverflow.com/questions/63753130/tensorflow-2-x-cannot-save-trained-model-in-h5-format-oserror-unable-to-creat
-    for i in range(len(model.weights)):
-        model.weights[i]._handle_name = model.weights[i].name + "_" + str(i)
-
     # compile model
     model.compile(
         optimizer=tf.keras.optimizers.Adam(1e-3),
@@ -63,11 +58,11 @@ def test_train_mnist():
         validation_data=ds_test,
     )
 
-    model.save("./trained_model.h5")
+    model.save("./trained_model")
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model.h5", compile=True, custom_objects={"GAModelWrapper": GAModelWrapper(accum_steps=4)})
+    trained_model = load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)

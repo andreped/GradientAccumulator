@@ -7,7 +7,7 @@ from . import agc
 class GAModelWrapper(tf.keras.Model):
     def __init__(self, accum_steps=1, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.accum_steps = tf.Variable(accum_steps, dtype=tf.int32, trainable=False, name="accum_steps")
+        self.accum_steps = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False, name="accum_counter")
         self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False, name="accum_" + str(i)) for i, v in
                                       enumerate(self.trainable_variables)]
@@ -77,12 +77,3 @@ class GAModelWrapper(tf.keras.Model):
         self.accum_step_counter.assign(0)
         for i in range(len(self.gradient_accumulation)):
             self.gradient_accumulation[i].assign(tf.zeros_like(self.trainable_variables[i], dtype=tf.float32))
-
-    def get_config(self):
-        config = super(CustomLayer, self).get_config()
-        config.update({"accum_steps": self.accum_steps,
-                       "mixed_precision": self.mixed_precision,
-                       "use_acg": self.use_acg,
-                       "clip_factor": self.clip_factor,
-                       "eps": self.eps})
-        return config
