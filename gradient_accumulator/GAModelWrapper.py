@@ -5,7 +5,7 @@ from . import agc
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
 class GAModelWrapper(tf.keras.Model):
-    def __init__(self, accum_steps, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
+    def __init__(self, accum_steps=1, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.accum_steps = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False, name="accum_counter")
