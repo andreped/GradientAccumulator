@@ -9,8 +9,8 @@ class GAModelWrapper(tf.keras.Model):
         super().__init__(*args, **kwargs)
         self.accum_steps = tf.constant(accum_steps, dtype=tf.int32)
         self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False)
-        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False) for v in
-                                      self.trainable_variables]
+        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False, name="accum_" + str(i)) for i, v in
+                                      enumerate(self.trainable_variables)]
         self.mixed_precision = mixed_precision
         self.use_acg = use_acg
         self.clip_factor = clip_factor
@@ -22,7 +22,7 @@ class GAModelWrapper(tf.keras.Model):
 
         # Unpack the data. Its structure depends on your model and
         # on what you pass to `fit()`.
-        # NOTE that x and y are lists of inputs and outputs, 
+        # NOTE that x and y are lists of inputs and outputs,
         # hence this wrapper supports multi-input-output models
         if len(data) == 3:
             x, y, sample_weight = data
