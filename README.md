@@ -66,6 +66,10 @@ model = GAModelWrapper(accum_steps=4, use_acg=True, clip_factor=0.01, eps=1e-3, 
 
 The hyperparameters values for `clip_factor` and `eps` presented here are the default values.
 
+#### Model format
+It is recommended to use the SavedModel format when using this implementation. That is because the model wrapper is only compatible with `TF <= 2.6`.
+However, if you are using older TF versions, both formats work out-of-the-box.
+
 
 ## Disclaimer
 In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization. It is **not** recommended to use BN with GA, as BN would update too frequently. However, you could try to adjust the `momentum` of BN (see [here](https://keras.io/api/layers/normalization_layers/batch_normalization/)).
@@ -86,7 +90,7 @@ It was also observed a small difference when using adaptive optimizers, which I 
 - [ ] Add proper multi-GPU support
 
 ## Acknowledgements
-The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. 
+The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow.
 
 The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 
