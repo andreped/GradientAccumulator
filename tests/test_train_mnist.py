@@ -44,6 +44,10 @@ def test_train_mnist():
     # wrap model to use gradient accumulation
     model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
 
+    # lets try printing stuff for debugging the weight naming issue
+    for i, w in enumerate(model.weights):
+        print(i, w.name)
+
     # compile model
     model.compile(
         optimizer=tf.keras.optimizers.Adam(1e-3),
