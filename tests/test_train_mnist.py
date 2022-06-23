@@ -47,6 +47,8 @@ def test_train_mnist():
     # lets try printing stuff for debugging the weight naming issue
     for i, w in enumerate(model.weights):
         print(i, w.name)
+        model.weights[i]._handle_name = model.weights[i]._handle_name + "_" + str(i)
+
 
     # compile model
     model.compile(
