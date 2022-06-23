@@ -4,6 +4,7 @@ from . import agc
 
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
+@tf.keras.utils.register_keras_serializable()  # adding this avoids needing to use custom_objects when loading model
 class GAModelWrapper(tf.keras.Model):
     def __init__(self, accum_steps=1, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -77,3 +78,12 @@ class GAModelWrapper(tf.keras.Model):
         self.accum_step_counter.assign(0)
         for i in range(len(self.gradient_accumulation)):
             self.gradient_accumulation[i].assign(tf.zeros_like(self.trainable_variables[i], dtype=tf.float32))
+
+    def get_config(self):
+        config = super(GAModelWrapper, self).get_config()
+        config["accum_steps"] = self.accum_steps
+        config["mixed_precision"] = self.mixed_precision
+        config["use_acg"] = self.use_acg
+        config["clip_factor"] = self.clip_factor
+        config["eps"] = self.eps
+        return config
