@@ -43,6 +43,7 @@ class GAModelWrapper(tf.keras.Model):
                 sample_weight=sample_weight,
                 regularization_losses=self.losses,
             )
+            loss = loss / tf.cast(self.accum_steps, tf.float32) # MEAN reduction here IMPORTANT! Don't do SUM reduction!!
 
             # scale loss if mixed precision is enabled
             if self.mixed_precision:
@@ -61,7 +62,7 @@ class GAModelWrapper(tf.keras.Model):
 
         # Accumulate batch gradients
         for i in range(len(self.gradient_accumulation)):
-            self.gradient_accumulation[i].assign_add(gradients[i] / tf.cast(self.accum_steps, tf.float32))  # MEAN reduction here IMPORTANT! Don't do SUM reduction!!
+            self.gradient_accumulation[i].assign_add(gradients[i])
 
         # If n_acum_step reach the accum_steps then we apply accumulated gradients to update the variables otherwise do nothing
         tf.cond(tf.equal(self.accum_step_counter, self.accum_steps), true_fn=self.apply_accu_gradients, false_fn=lambda: None)
