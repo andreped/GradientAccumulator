@@ -4,13 +4,14 @@ from . import agc
 
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
+@tf.keras.utils.register_keras_serializable()  # adding this avoids needing to use custom_objects when loading model
 class GAModelWrapper(tf.keras.Model):
-    def __init__(self, accum_steps, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
+    def __init__(self, accum_steps=1, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.accum_steps = tf.constant(accum_steps, dtype=tf.int32)
-        self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False)
-        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False) for v in
-                                      self.trainable_variables]
+        self.accum_steps = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
+        self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False, name="accum_counter")
+        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False, name="accum_" + str(i)) for i, v in
+                                      enumerate(self.trainable_variables)]
         self.mixed_precision = mixed_precision
         self.use_acg = use_acg
         self.clip_factor = clip_factor
@@ -22,7 +23,7 @@ class GAModelWrapper(tf.keras.Model):
 
         # Unpack the data. Its structure depends on your model and
         # on what you pass to `fit()`.
-        # NOTE that x and y are lists of inputs and outputs, 
+        # NOTE that x and y are lists of inputs and outputs,
         # hence this wrapper supports multi-input-output models
         if len(data) == 3:
             x, y, sample_weight = data

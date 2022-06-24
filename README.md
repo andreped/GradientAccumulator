@@ -42,10 +42,21 @@ Then simply use the `model` as you normally would!
 There has also been added experimental support for mixed precision:
 ```
 from tensorflow.keras import mixed_precision
+from tensorflow.keras.optimizers import Adam
 
 mixed_precision.set_global_policy('mixed_float16')
 model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+
+opt = Adam(1e-3)
+opt = mixed_precision.LossScaleOptimizer(opt)
 ```
+
+If using TPUs, use `bfloat16` instead of `float16`, like so:
+```
+mixed_precision.set_global_policy('mixed_bfloat16')
+```
+
+There is also an example of how to use gradient accumulation with mixed precision [here](https://github.com/andreped/GradientAccumulator/blob/main/tests/test_mixed_precision.py#L58).
 
 #### Adaptive gradient clipping
 There has also been added support for adaptive gradient clipping, based on [this](https://github.com/sayakpaul/Adaptive-Gradient-Clipping) implementation:
@@ -54,6 +65,10 @@ model = GAModelWrapper(accum_steps=4, use_acg=True, clip_factor=0.01, eps=1e-3, 
 ```
 
 The hyperparameters values for `clip_factor` and `eps` presented here are the default values.
+
+#### Model format
+It is recommended to use the SavedModel format when using this implementation. That is because the model wrapper is only compatible with `TF <= 2.6`.
+However, if you are using older TF versions, both formats work out-of-the-box.
 
 
 ## Disclaimer
@@ -75,7 +90,7 @@ It was also observed a small difference when using adaptive optimizers, which I 
 - [ ] Add proper multi-GPU support
 
 ## Acknowledgements
-The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. 
+The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow.
 
 The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 
