@@ -106,14 +106,14 @@ For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repo
 ## How to cite
 If you use this package in your research, please, cite this reference:
 ```
-@software{andre_pedersen_2022_6671449,
-  author       = {André Pedersen},
-  title        = {andreped/GradientAccumulator: v0.1.5},
+@software{andre_pedersen_2022_6726634,
+  author       = {André Pedersen and David Bouget},
+  title        = {andreped/GradientAccumulator: v0.2.0},
   month        = jun,
   year         = 2022,
   publisher    = {Zenodo},
-  version      = {v0.1.5},
-  doi          = {10.5281/zenodo.6671449},
-  url          = {https://doi.org/10.5281/zenodo.6671449}
+  version      = {v0.2.0},
+  doi          = {10.5281/zenodo.6726634},
+  url          = {https://doi.org/10.5281/zenodo.6726634}
 }
 ```
