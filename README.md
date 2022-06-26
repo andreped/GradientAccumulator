@@ -67,8 +67,7 @@ model = GAModelWrapper(accum_steps=4, use_acg=True, clip_factor=0.01, eps=1e-3, 
 The hyperparameters values for `clip_factor` and `eps` presented here are the default values.
 
 #### Model format
-It is recommended to use the SavedModel format when using this implementation. That is because the model wrapper is only compatible with `TF <= 2.6`.
-However, if you are using older TF versions, both formats work out-of-the-box.
+It is recommended to use the SavedModel format when using this implementation. That is because the HDF5 format is only compatible with `TF <= 2.6` when using the model wrapper. However, if you are using older TF versions, both formats work out-of-the-box. The SavedModel format works fine for all versions of TF 2.x
 
 
 ## Disclaimer
