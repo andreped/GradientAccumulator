@@ -47,7 +47,7 @@ from tensorflow.keras.optimizers import Adam
 mixed_precision.set_global_policy('mixed_float16')
 model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
 
-opt = Adam(1e-3)
+opt = Adam(1e-3, epsilon=1e-4)
 opt = mixed_precision.LossScaleOptimizer(opt)
 ```
 
