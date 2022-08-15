@@ -76,17 +76,7 @@ In theory, one should be able to get identical results for batch training and us
 It was also observed a small difference when using adaptive optimizers, which I believe might be due to how frequently they are updated. Nonetheless, for the optimizers, the difference was quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
 
 ## TODOs:
-- [x] Add generic wrapper class for adding accumulated gradients to any optimizer
-- [x] Add CI to build wheel and test that it works across different python versions, TF versions, and operating systems.
-- [x] Add benchmarks to verfiy that accumulated gradients actually work as intended
-- [x] Add class_weight support
-- [x] GAModelWrapper gets expected identical results to batch training!
-- [x] Test method for memory leaks
-- [x] Add multi-input/-output architecture support
-- [x] Add mixed precision support
-- [x] Add adaptive gradient clipping support
-- [ ] Add wrapper class for BatchNormalization layer, similar as done for optimizers
-- [ ] Add proper multi-GPU support
+- [ ] Add multi-GPU support
 
 ## Acknowledgements
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow.
