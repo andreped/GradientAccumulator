@@ -8,7 +8,6 @@
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![GitHub Downloads](https://img.shields.io/github/downloads/andreped/GradientAccumulator/total?label=GitHub%20downloads&logo=github)](https://github.com/andreped/GradientAccumulator/releases)
 
-
 This repo contains TensorFlow 2-compatible implementations of gradient accumulation and adaptive gradient clipping.
 
 The proposed GA implementation simply overloads the train_step of a given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps. This enables gradient accumulation, which reduces memory consumption and enables usage of theoretically infinitely large batch size (among other things), at the cost of increased training runtime. Adaptive gradient clipping is added as a GA-compatible alternative to batch normalization.
