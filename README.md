@@ -60,7 +60,7 @@ There is also an example of how to use gradient accumulation with mixed precisio
 #### Adaptive gradient clipping
 There has also been added support for adaptive gradient clipping, based on [this](https://github.com/sayakpaul/Adaptive-Gradient-Clipping) implementation:
 ```
-model = GAModelWrapper(accum_steps=4, use_acg=True, clip_factor=0.01, eps=1e-3, inputs=model.input, outputs=model.output)
+model = GAModelWrapper(accum_steps=4, use_agc=True, clip_factor=0.01, eps=1e-3, inputs=model.input, outputs=model.output)
 ```
 
 The hyperparameters values for `clip_factor` and `eps` presented here are the default values.
