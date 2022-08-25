@@ -5,7 +5,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setuptools.setup(
     name="gradient-accumulator",
-    version="0.2.0",
+    version="0.2.1",
     author="André Pedersen and David Bouget",
     author_email="andrped94@gmail.com",
     description="Package for gradient accumulation in TensorFlow",
