@@ -6,14 +6,14 @@ from . import agc
 # https://keras.io/guides/customizing_what_happens_in_fit/
 @tf.keras.utils.register_keras_serializable()  # adding this avoids needing to use custom_objects when loading model
 class GAModelWrapper(tf.keras.Model):
-    def __init__(self, accum_steps=1, mixed_precision=False, use_acg=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
+    def __init__(self, accum_steps=1, mixed_precision=False, use_agc=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.accum_steps = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False, name="accum_counter")
         self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False, name="accum_" + str(i)) for i, v in
                                       enumerate(self.trainable_variables)]
         self.mixed_precision = mixed_precision
-        self.use_acg = use_acg
+        self.use_agc = use_agc
         self.clip_factor = clip_factor
         self.eps = eps
 
@@ -57,7 +57,7 @@ class GAModelWrapper(tf.keras.Model):
             gradients = self.optimizer.get_unscaled_gradients(gradients)
 
         # apply adaptive gradient clipping -> should be AFTER unscaling gradients
-        if self.use_acg:
+        if self.use_agc:
             gradients = agc.adaptive_clip_grad(self.trainable_variables, gradients, clip_factor=self.clip_factor, eps=self.eps)
 
         # Accumulate batch gradients
