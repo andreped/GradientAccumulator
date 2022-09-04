@@ -57,18 +57,14 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     ds_test = ds_test.take(1024)
 
     # build train pipeline
-    ds_train = ds_train.map(normalize_img, 
-        num_parallel_calls=tf.data.AUTOTUNE)
-    ds_train = ds_train.map(create_multi_input_output, 
-        num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(create_multi_input_output, num_parallel_calls=tf.data.AUTOTUNE)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # build test pipeline
-    ds_test = ds_test.map(normalize_img, 
-        num_parallel_calls=tf.data.AUTOTUNE)
-    ds_test = ds_test.map(create_multi_input_output, 
-        num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(create_multi_input_output, num_parallel_calls=tf.data.AUTOTUNE)
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
