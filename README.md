@@ -1,18 +1,18 @@
-# GradientAccumulator
+<div align="center">
+<h1 align="center">GradientAccumulator</h1>
+<h3 align="center">Seemless gradient accumulation for TensorFlow 2</h3>
 
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
-[![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7023582.svg)](https://doi.org/10.5281/zenodo.7023582)
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
-
-This repo contains TensorFlow 2-compatible implementations of gradient accumulation and adaptive gradient clipping.
-
-The proposed GA implementation simply overloads the train_step of a given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps.
-This enables gradient accumulation, which reduces memory consumption and enables usage of theoretically infinitely large batch size (among other things), at the cost of increased training runtime.
-Adaptive gradient clipping is added as a GA-compatible alternative to batch normalization.
+[![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7023582.svg)](https://doi.org/10.5281/zenodo.7023582)
+[![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
+ 
+**GradientAccumulator** enables gradient accumulation (GA) by overloading the train_step of any given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps. GA enables theoretically infinitely large batch size, with the same memory consumption as for a regular mini batch, at the cost of increased runtime. To improve runtime, mixed precision is supported. As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative.
 
 Package is compatible with and have been tested against TF >= 2.2 and Python >= 3.6 (tested with 3.6-3.10), and works cross-platform (Ubuntu, Windows, macOS).
+</div>
+
 
 ## Install
 
