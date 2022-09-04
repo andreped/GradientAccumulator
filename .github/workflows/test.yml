@@ -26,8 +26,6 @@ jobs:
       - name: Build wheel
         run: |
           python setup.py bdist_wheel
-          ls
-          ls dist/
 
       - name: Upload Python wheel
         uses: actions/upload-artifact@v2
