@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.md", "r", encoding='utf-8') as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -14,19 +14,20 @@ setuptools.setup(
     url="https://github.com/andreped/GradientAccumulator",
     packages=setuptools.find_packages(),
     install_requires=[
-        'tensorflow',
-        'tensorflow-addons'
+        "tensorflow",
+        "tensorflow-addons"
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent"
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )
