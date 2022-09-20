@@ -43,7 +43,7 @@ class GAModelWrapper(tf.keras.Model):
                 sample_weight=sample_weight,
                 regularization_losses=self.losses,
             )
-            # loss = loss / tf.cast(self.accum_steps, tf.float32) # MEAN reduction here IMPORTANT! Don't do SUM reduction!!
+            loss = loss / tf.cast(self.accum_steps, tf.float32) # MEAN reduction here IMPORTANT! Don't do SUM reduction!!
 
             # scale loss if mixed precision is enabled
             if self.mixed_precision:
