@@ -7,3 +7,4 @@ GradientAccumulator.egg-info/
 gradient_accumulator.egg-info/
 dist/
 *.h5
+benchmark.py
