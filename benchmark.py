@@ -92,8 +92,8 @@ def run_experiment(bs, accum_steps, epochs, opt_name, norm, updates, dataset):
         ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
     # build train/test pipelines
-    ds_train = ds_train.shuffle(buffer_size=4).batch(bs).prefetch(tf.data.AUTOTUNE).repeat(-1)
-    ds_test = ds_test.shuffle(buffer_size=4).batch(bs).prefetch(tf.data.AUTOTUNE)
+    ds_train = ds_train.batch(bs).prefetch(tf.data.AUTOTUNE).repeat(-1)
+    ds_test = ds_test.batch(bs).prefetch(tf.data.AUTOTUNE)
 
     # choose which normalization to use
     if norm == "batch":
@@ -178,27 +178,26 @@ def run_experiment(bs, accum_steps, epochs, opt_name, norm, updates, dataset):
 
 def test_expected_result():
     for bs, acs in tqdm(zip([1, 2, 4, 8, 16, 32] * 2, [1] * 6 + [32, 16, 8, 4, 2, 1]), total=12):
-        for opt_ in ["Adam"]:
+        for opt_ in ["Adam", "SGD"]:
             for norm in ["none", "batch", "group", "agc"]:
-                for dataset in ["smartwatch_gestures"]: #, "mnist", "cifar100"]:
+                for dataset in ["smartwatch_gestures", "mnist", "cifar100"]:
+                    try:
+                        # skip specific normalizers for RNN experiments, as they are not relevant
+                        if (dataset == "smartwatch_gestures") and (norm in ["batch", "group"]):
+                            continue
+                        # print("\nExperiment:", bs, acs)
+                        # set seed
+                        reset()
 
-                    #try:
-                    # skip specific normalizers for RNN experiments, as they are not relevant
-                    if (dataset == "smartwatch_gestures") and (norm in ["batch", "group"]):
-                        continue
-                    # print("\nExperiment:", bs, acs)
-                    # set seed
-                    reset()
+                        # run once
+                        run_experiment(bs=bs, accum_steps=acs, epochs=50, opt_name=opt_, norm=norm, updates=100,
+                                       dataset=dataset)
 
-                    # run once
-                    run_experiment(bs=bs, accum_steps=acs, epochs=50, opt_name=opt_, norm=norm, updates=100,
-                                   dataset=dataset)
-
-                    global iter
-                    iter += 1
-                    #except Exception as e:
-                    #    print("Something went wrong for setup:", bs, acs, opt_, norm, dataset)
-                    #    print(e)
+                        global iter
+                        iter += 1
+                    except Exception as e:
+                        print("Something went wrong for setup:", bs, acs, opt_, norm, dataset)
+                        print(e)
 
 
 if __name__ == "__main__":
