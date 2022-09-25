@@ -171,7 +171,7 @@ def run_experiment(bs, accum_steps, epochs, opt_name, norm, updates, dataset):
         steps_per_epoch=int(updates * accum_steps),  # k updates each epoch
         validation_data=ds_test,
         callbacks=[tensorboard_callback],
-        validation_steps=100,  # if dataset is not "smartwatch_gestures" else None,
+        validation_steps=None if dataset is "smartwatch_gestures" else 100,
         verbose=0,
     )
 
