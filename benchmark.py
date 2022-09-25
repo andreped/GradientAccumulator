@@ -177,15 +177,15 @@ def run_experiment(bs, accum_steps, epochs, opt_name, norm, updates, dataset):
 
 
 def test_expected_result():
-    for bs, acs in tqdm(zip([1, 2, 4, 8, 16, 32] * 2, [1] * 6 + [32, 16, 8, 4, 2, 1]), total=12):
-        for opt_ in ["Adam", "SGD"]:
+    for bs, acs in tqdm(zip([1, 2, 4, 8, 16, 32, 64, 128] * 2 + [1] * 8,
+                            [1] * 8 + [128, 64, 32, 16, 8, 4, 2, 1] * 2), total=24):
+        for opt_ in ["Adam"]:  # , "SGD"]:
             for norm in ["none", "batch", "group", "agc"]:
                 for dataset in ["smartwatch_gestures", "mnist", "cifar100"]:
                     try:
                         # skip specific normalizers for RNN experiments, as they are not relevant
                         if (dataset == "smartwatch_gestures") and (norm in ["batch", "group"]):
                             continue
-                        # print("\nExperiment:", bs, acs)
                         # set seed
                         reset()
 
