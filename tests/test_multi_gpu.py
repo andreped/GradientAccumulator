@@ -72,7 +72,7 @@ def test_train_mnist():
             optimizer=opt,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
-            run_eagerly=True,
+            run_eagerly=False,
         )
 
     # train model
