@@ -25,10 +25,10 @@ def unitwise_norm(x):
         axis = 0
         keepdims = True
     elif len(x.get_shape()) == 4:  # Conv kernels of shape HWIO
-        axis = [0, 1, 2,]
+        axis = [0, 1, 2]
         keepdims = True
     elif len(x.get_shape()) == 5:  # Conv kernels of shape HWDIO
-        axis = [0, 1, 2, 3,]
+        axis = [0, 1, 2, 3]
         keepdims = True
     else:
         raise ValueError(f"Got a parameter with shape not in [1, 2, 4, 5]! {x}")
