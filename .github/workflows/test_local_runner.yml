@@ -8,14 +8,14 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      #- uses: actions/checkout@v1
-      #- name: Set up Python 3.7
-      #  uses: actions/setup-python@v2
-      #  with:
-      #    python-version: 3.7
-      #    architecture: x64
-      #  env:
-      #    RUNNER_TOOL_CACHE: /opt/hostedtoolcache
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+          architecture: x64
+        env:
+          RUNNER_TOOL_CACHE: /Users/runner/hostedtoolcache
 
       - name: Install dependencies
         run: |
@@ -39,10 +39,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python 3.7
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.7
 
       - name: Install dependencies
         run: |
