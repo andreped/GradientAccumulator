@@ -14,11 +14,13 @@ jobs:
         with:
           python-version: 3.7
           architecture: x64
-        env:
-          RUNNER_TOOL_CACHE: /Users/runner/hostedtoolcache
+        #env:
+        #  RUNNER_TOOL_CACHE: /Users/runner/hostedtoolcache
 
       - name: Install dependencies
         run: |
+          python -V
+          pip -V
           pip install wheel setuptools
           pip install tensorflow==2.8.0 tensorflow-addons
 
