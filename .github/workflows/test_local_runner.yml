@@ -14,16 +14,16 @@ jobs:
           cd ${{github.workspace}}
           mkdir tmp
           cd tmp
-          virtualenv -p python3 venv --clear
+          python3 -m virtualenv -p python3 venv --clear
           source venv/bin/activate
-          python -V
-          pip -V
-          pip install wheel setuptools
-          pip install tensorflow==2.8.0 tensorflow-addons
+          python3 -V
+          pip3 -V
+          python3 -m pip install wheel setuptools
+          python3 -m pip install tensorflow==2.8.0 tensorflow-addons
 
       - name: Build wheel
         run: |
-          python setup.py bdist_wheel
+          python3 setup.py bdist_wheel
 
       - name: Upload Python wheel
         uses: actions/upload-artifact@v2
