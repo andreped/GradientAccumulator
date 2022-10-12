@@ -8,17 +8,14 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-          architecture: x64
-        #env:
-        #  RUNNER_TOOL_CACHE: /Users/runner/hostedtoolcache
-
-      - name: Install dependencies
+      - uses: actions/checkout@v2
+      - name: Create environment and install python packages
         run: |
+          cd ${{github.workspace}}
+          mkdir tmp
+          cd tmp
+          virtualenv -p python3 venv --clear
+          source venv/bin/activate
           python -V
           pip -V
           pip install wheel setuptools
@@ -35,36 +32,7 @@ jobs:
           path: ${{github.workspace}}/dist/gradient_accumulator-*.whl
           if-no-files-found: error
 
-  test:
-    needs: build
-    runs-on: self-hosted
-
-    steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install dependencies
+      - name: Cleanup
+        if: always()
         run: |
-          pip install wheel setuptools
-          pip install tensorflow==${{ matrix.tf-version }}
-          pip install tensorflow-addons
-          pip install tensorflow-datasets
-          pip install pytest
-
-      - name: Download artifact
-        uses: actions/download-artifact@master
-        with:
-          name: "Python wheel"
-
-      - name: Install wheel
-        run: pip install --find-links=${{github.workspace}} gradient_accumulator
-
-      - name: Test library accessibility
-        run: python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
-
-      - name: Run tests
-        run: |
-          pytest -v tests/test_train_mnist.py
+          rm -rf ${{github.workspace}}/tmp/
