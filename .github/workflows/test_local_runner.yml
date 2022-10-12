@@ -16,8 +16,6 @@ jobs:
           cd tmp
           python3 -m virtualenv -p python3 venv --clear
           source venv/bin/activate
-          python3 -V
-          pip3 -V
           python3 -m pip install wheel setuptools
           python3 -m pip install tensorflow==2.8.0 tensorflow-addons
 
