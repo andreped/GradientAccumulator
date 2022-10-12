@@ -8,11 +8,14 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
+      #- uses: actions/checkout@v1
+      #- name: Set up Python 3.7
+      #  uses: actions/setup-python@v2
+      #  with:
+      #    python-version: 3.7
+      #    architecture: x64
+      #  env:
+      #    RUNNER_TOOL_CACHE: /opt/hostedtoolcache
 
       - name: Install dependencies
         run: |
@@ -33,10 +36,6 @@ jobs:
   test:
     needs: build
     runs-on: self-hosted
-    strategy:
-      matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        tf-version: [2.8.0, 2.9.1]
 
     steps:
       - uses: actions/checkout@v1
