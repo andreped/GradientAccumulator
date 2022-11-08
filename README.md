@@ -5,7 +5,7 @@
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7023582.svg)](https://doi.org/10.5281/zenodo.7023582)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7306095.svg)](https://doi.org/10.5281/zenodo.7306095)
 [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
  
 **GradientAccumulator** enables gradient accumulation (GA) by overloading the train_step of any given tf.keras.Model, to update correctly according to a user-specified number of accumulation steps. GA enables theoretically infinitely large batch size, with the same memory consumption as for a regular mini batch, at the cost of increased runtime. To improve runtime, mixed precision is supported. As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative.
