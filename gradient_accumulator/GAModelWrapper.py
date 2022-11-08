@@ -55,7 +55,7 @@ class GAModelWrapper(tf.keras.Model):
                 loss = self.optimizer.get_scaled_loss(loss)
 
         # Calculate batch gradients -> these are scaled gradients if mixed precision is enabled
-        gradients = tape.gradient(loss, self.trainable_variables)
+        gradients = tape.gradient(loss, self.trainable_variables, unconnected_gradients=tf.UnconnectedGradients.ZERO)
 
         # scale gradients if mixed precision is enabled
         if self.mixed_precision:
