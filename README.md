@@ -37,7 +37,11 @@ model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
 
 Then simply use the `model` as you normally would!
 
-#### Mixed precision
+<details open>
+<summary>
+
+#### Mixed precision</summary>
+
 There has also been added experimental support for mixed precision:
 ```
 from tensorflow.keras import mixed_precision
@@ -56,26 +60,43 @@ mixed_precision.set_global_policy('mixed_bfloat16')
 ```
 
 There is also an example of how to use gradient accumulation with mixed precision [here](https://github.com/andreped/GradientAccumulator/blob/main/tests/test_mixed_precision.py#L58).
+</details>
 
-#### Adaptive gradient clipping
+
+<details>
+<summary>
+
+#### Adaptive gradient clipping</summary>
+
 There has also been added support for adaptive gradient clipping, based on [this](https://github.com/sayakpaul/Adaptive-Gradient-Clipping) implementation:
 ```
 model = GAModelWrapper(accum_steps=4, use_agc=True, clip_factor=0.01, eps=1e-3, inputs=model.input, outputs=model.output)
 ```
 
 The hyperparameters values for `clip_factor` and `eps` presented here are the default values.
+</details>
 
-#### Model format
+
+<details>
+<summary>
+
+#### Model format</summary>
+
 It is recommended to use the SavedModel format when using this implementation. That is because the HDF5 format is only compatible with `TF <= 2.6` when using the model wrapper. However, if you are using older TF versions, both formats work out-of-the-box. The SavedModel format works fine for all versions of TF 2.x
+</details>
 
-#### macOS compatibility
+
+<details>
+<summary>
+
+#### macOS compatibility</summary>
 Note that GradientAccumulator is perfectly compatible with macOS, both with and without GPUs. In order to have GPU support on macOS, you will need to install the tensorflow-compiled version that is compatible with metal:
 ```
 pip install tensorflow-metal
 ```
 
 GradientAccumulator can be used as usually. However, note that there only exists one tf-metal version, which should be equivalent to TF==2.5.
-
+</details>
 
 ## Disclaimer
 In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization. It is **not** recommended to use BN with GA, as BN would update too frequently. However, you could try to adjust the `momentum` of BN (see [here](https://keras.io/api/layers/normalization_layers/batch_normalization/)).
