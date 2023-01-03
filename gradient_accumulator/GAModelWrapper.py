@@ -14,7 +14,7 @@ class GAModelWrapper(tf.keras.Model):
                                               aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
                                               )
         self.gradient_accumulation = None
-        reinit_grad_accum()
+        self.reinit_grad_accum()
         self.mixed_precision = mixed_precision
         self.use_agc = use_agc
         self.clip_factor = clip_factor
