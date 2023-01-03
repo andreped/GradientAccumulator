@@ -13,11 +13,8 @@ class GAModelWrapper(tf.keras.Model):
                                               synchronization=tf.VariableSynchronization.ON_READ,
                                               aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
                                               )
-        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False,
-                                                  name="accum_" + str(i),
-                                                  synchronization=tf.VariableSynchronization.ON_READ,
-                                                  aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
-                                                  ) for i, v in enumerate(self.trainable_variables)]
+        self.gradient_accumulation = None
+        reinit_grad_accum()
         self.mixed_precision = mixed_precision
         self.use_agc = use_agc
         self.clip_factor = clip_factor
@@ -88,6 +85,13 @@ class GAModelWrapper(tf.keras.Model):
         for i in range(len(self.gradient_accumulation)):
             self.gradient_accumulation[i].assign(
                 tf.zeros_like(self.trainable_variables[i], dtype=tf.float32), read_value=False)
+    
+    def reinit_grad_accum(self):
+        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False,
+                                      name="accum_" + str(i),
+                                      synchronization=tf.VariableSynchronization.ON_READ,
+                                      aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
+                                      ) for i, v in enumerate(self.trainable_variables)]
 
     """
     def test_step(self, data):
