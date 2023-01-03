@@ -13,6 +13,7 @@ class GAModelWrapper(tf.keras.Model):
                                               synchronization=tf.VariableSynchronization.ON_READ,
                                               aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
                                               )
+        self.first_call = True
         self.gradient_accumulation = None
         self.reinit_grad_accum()
         self.mixed_precision = mixed_precision
@@ -21,6 +22,11 @@ class GAModelWrapper(tf.keras.Model):
         self.eps = eps
 
     def train_step(self, data):
+        # need to reinit accumulator for models subclassed from tf.keras.Model
+        if self.first_call:
+            self.reinit_grad_accum()
+            self.first_call = False
+
         self.accum_step_counter.assign_add(1)
 
         # Unpack the data. Its structure depends on your model and
