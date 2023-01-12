@@ -103,6 +103,13 @@ In theory, one should be able to get identical results for batch training and us
 
 It was also observed a small difference when using adaptive optimizers, which I believe might be due to how frequently they are updated. Nonetheless, for the optimizers, the difference was quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
 
+## Troubleshooting
+Overloading of `train_step` method of tf.keras.Model was introduced in TF 2.2, hence, this code is compatible with TF >= 2.2.
+
+Also, note that TF depends on different python versions. If you are having problems getting TF working, try a different TF version or python version.
+
+For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead, which wraps the optimizer instead of overloading the train_step of the Model itself (new feature in TF2).
+
 ## TODOs:
 - [ ] Add multi-GPU support
 
@@ -112,13 +119,6 @@ The gradient accumulator model wrapper is based on the implementation presented 
 The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 
 This repository serves as an open solution for everyone to use, until TF/Keras integrates a proper solution into their framework(s).
-
-## Troubleshooting
-Overloading of `train_step` method of tf.keras.Model was introduced in TF 2.2, hence, this code is compatible with TF >= 2.2.
-
-Also, note that TF depends on different python versions. If you are having problems getting TF working, try a different TF version or python version.
-
-For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead, which wraps the optimizer instead of overloading the train_step of the Model itself (new feature in TF2).
 
 ## How to cite
 If you use this package in your research, please, cite this reference:
