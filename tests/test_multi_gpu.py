@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator.GAModelWrapperV2 import GAModelWrapperV2
 from tensorflow.keras import mixed_precision
 import os
 
@@ -59,13 +60,13 @@ def test_train_mnist():
     with strategy.scope():
         model = tf.keras.models.Sequential([
             tf.keras.layers.Flatten(input_shape=(28, 28)),
-            tf.keras.layers.Dense(32, activation='relu'),  # 32 multiplum of 8
+            tf.keras.layers.Dense(64, activation='relu'),  # 32 multiplum of 8
             tf.keras.layers.Dense(10, dtype='float32')  # output not numerically stable with float16
         ])
 
         # wrap model to use gradient accumulation
-        model = GAModelWrapper(accum_steps=4, mixed_precision=True, use_agc=False,
-                               inputs=model.input, outputs=model.output)
+        model = GAModelWrapperV2(accum_steps=4, mixed_precision=True, use_agc=False,
+                                 inputs=model.input, outputs=model.output)
 
         # compile model
         model.compile(
