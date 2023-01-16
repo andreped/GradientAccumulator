@@ -66,3 +66,7 @@ def test_train_mnist():
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
+
+
+if __name__ == "__main__":
+    test_train_mnist()
