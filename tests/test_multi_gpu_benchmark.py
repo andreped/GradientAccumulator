@@ -15,7 +15,6 @@ def normalize_img(image, label):
 
 
 def run_experiment(bs=16, accum_steps=4, epochs=1, strategy=None):
-
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -47,6 +46,11 @@ def run_experiment(bs=16, accum_steps=4, epochs=1, strategy=None):
 
     # create model
     with strategy.scope():
+        # need to scale optimizer for mixed precision
+        opt = tf.keras.optimizers.Adam(1e-3)
+        opt = mixed_precision.LossScaleOptimizer(opt)
+
+        # create model
         model = tf.keras.models.Sequential([
             tf.keras.layers.Flatten(input_shape=(28, 28)),
             tf.keras.layers.Dense(128, activation='relu'),  # 32 multiplum of 8
@@ -55,11 +59,11 @@ def run_experiment(bs=16, accum_steps=4, epochs=1, strategy=None):
 
         # wrap model to use gradient accumulation
         model = GAModelWrapperV2(accum_steps=accum_steps, mixed_precision=True, use_agc=False,
-                                 inputs=model.input, outputs=model.output, model=model, strategy=strategy)
+                                 inputs=model.input, outputs=model.output, batch_size=bs, strategy=strategy)
 
         # compile model
         model.compile(
-            optimizer=tf.keras.optimizers.Adam(1e-3),
+            optimizer=opt,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
             run_eagerly=False,
@@ -135,6 +139,6 @@ if __name__ == "__main__":
     # use distribution strategy to train with multiple GPUs
     strategy = tf.distribute.MirroredStrategy()
 
-    result1 = run_experiment(bs=32, accum_steps=2, epochs=2, strategy=strategy)
+    result1 = run_experiment(bs=32, accum_steps=4, epochs=2, strategy=strategy)
 
     #test_expected_result()

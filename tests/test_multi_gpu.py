@@ -52,12 +52,12 @@ def test_train_mnist():
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
-    # need to scale optimizer for mixed precision
-    opt = tf.keras.optimizers.Adam(1e-3)
-    opt = mixed_precision.LossScaleOptimizer(opt)
-
-    # create model
     with strategy.scope():
+        # need to scale optimizer for mixed precision
+        opt = tf.keras.optimizers.Adam(1e-3)
+        opt = mixed_precision.LossScaleOptimizer(opt)
+
+        # create model
         model = tf.keras.models.Sequential([
             tf.keras.layers.Flatten(input_shape=(28, 28)),
             tf.keras.layers.Dense(64, activation='relu'),  # 32 multiplum of 8
