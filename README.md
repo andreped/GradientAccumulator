@@ -13,9 +13,12 @@
 The package is available on PyPI and is compatible with and have been tested against TF >= 2.2 and Python >= 3.6 (tested with 3.6-3.10), and works cross-platform (Ubuntu, Windows, macOS).
 </div>
 
-
 ## What?
 Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
+
+<p align="center">
+<img src="assets/grad_accum.png" width="30%">
+</p>
 
 
 ## Why?
