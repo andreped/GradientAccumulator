@@ -157,7 +157,8 @@ The adaptive gradient clipping method is based on [the implementation by @sayakp
 This repository serves as an open solution for everyone to use, until TF/Keras integrates a proper solution into their framework(s).
 
 ## How to cite
-If you use this package in your research, please, cite this reference:
+If you used this package or found the project relevant in your research, please, considering including the following citation:
+
 ```
 @software{andre_pedersen_2022_7306095,
   author       = {André Pedersen and
