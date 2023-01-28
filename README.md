@@ -113,12 +113,14 @@ pip install tensorflow-metal
 GradientAccumulator can be used as usually. However, note that there only exists one tf-metal version, which should be equivalent to TF==2.5.
 </details>
 
+
 <details>
 <summary>
 
 #### TF 1.x</summary>
 For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead, which wraps the optimizer instead of overloading the train_step of the Model itself (new feature in TF2).
 </details>
+
 
 <details>
 <summary>
@@ -147,7 +149,7 @@ In theory, one should be able to get identical results for batch training and us
 
 It was also observed a small difference when using adaptive optimizers, which I believe might be due to how frequently they are updated. Nonetheless, for the optimizers, the difference was quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
 </details>
-
+  
 
 ## Acknowledgements
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow.
@@ -156,18 +158,19 @@ The adaptive gradient clipping method is based on [the implementation by @sayakp
 
 This repository serves as an open solution for everyone to use, until TF/Keras integrates a proper solution into their framework(s).
 
-## How to cite
+  
+## How to cite?
 If you used this package or found the project relevant in your research, please, considering including the following citation:
 
 ```
 @software{andre_pedersen_2022_7306095,
-  author       = {André Pedersen and
-                  David Bouget},
+  author       = {André Pedersen and David Bouget},
   title        = {andreped/GradientAccumulator: v0.2.2},
   month        = nov,
   year         = 2022,
   publisher    = {Zenodo},
   version      = {v0.2.2},
   doi          = {10.5281/zenodo.7306095},
-  url          = {https://doi.org/10.5281/zenodo.7306095}}
+  url          = {https://doi.org/10.5281/zenodo.7306095}
+}
 ```
