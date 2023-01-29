@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/andreped/GradientAccumulator",
-    packages=setuptools.find_packages("gradient_accumulator", exclude=('tests')),
+    packages=setuptools.find_packages("gradient_accumulator", exclude=('*.tests')),
     package_dir={"": "gradient_accumulator"},
     install_requires=[
         "tensorflow",
