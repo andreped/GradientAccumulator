@@ -113,7 +113,7 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
     @typechecked
     def __init__(
         self,
-        optimizer: types.Optimizer,
+        optimizer,  # : types.Optimizer,  # having this results in TypeError -> expected OptimizerV2 or str, got dict instead
         accum_steps: types.TensorLike = 4,
         reduction: str = "MEAN",
         name: str = "GradientAccumulateOptimizer",
