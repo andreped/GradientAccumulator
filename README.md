@@ -26,12 +26,12 @@ In TensorFlow 2, there did not exist a plug-and-play method to use gradient accu
 
 | Method | Usage |
 | - | - |
-| `GAModelWrapper` | `model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)` |
-| `GAOptimizerWrapper` | `opt = GAOptimizerWrapper(accum_steps=4, optimizer=tf.keras.optimizers.Adam(1e-3))` |
+| `GradientAccumulateModel` | `model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)` |
+| `GradientAccumulateOptimizer` | `opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))` |
 
-1) A generic approach which overloads the `train_step` of any given `tf.keras.Model` and 2) simple optimizer wrapper which changed how frequently the gradients should update.
+Both approaches control how frequently the weigths are updated, but in their own way. Approach (1) is for single-GPU only, whereas (2) supports both single-GPU and distributed training (multi-GPU).
 
-For our single-GPU approach, our implementation enables theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. This comes at the cost of increased training runtime. Multiple GPUs could be used to increase runtime performance. However, our `train_step` approach is not currently compatible with TensorFlow's `tf.distribute` (thoroughly discussed [here](https://github.com/keras-team/keras/issues/17429#issuecomment-1405612981)).
+Our implementations enable theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. If a single GPU is used, this comes at the cost of increased training runtime. Multiple GPUs could be used to increase runtime performance.
 
 As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative. We have also added support for mixed precision and both GPU and TPU support.
 
@@ -50,11 +50,11 @@ pip install git+https://github.com/andreped/GradientAccumulator
 
 ## Usage
 ```
-from gradient_accumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator import GradientAccumulateModel
 from tensorflow.keras.models import Model
 
 model = Model(...)
-model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
+model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)
 ```
 
 Then simply use the `model` as you normally would!
@@ -70,7 +70,7 @@ from tensorflow.keras import mixed_precision
 from tensorflow.keras.optimizers import Adam
 
 mixed_precision.set_global_policy('mixed_float16')
-model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
 
 opt = Adam(1e-3, epsilon=1e-4)
 opt = mixed_precision.LossScaleOptimizer(opt)
@@ -85,6 +85,19 @@ There is also an example of how to use gradient accumulation with mixed precisio
 </details>
 
 
+<details open>
+<summary>
+
+#### Distributed training with multiple GPUs</summary>
+In order to use multiple GPUs, you will have to use the Optimizer wrapper:
+```
+opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))
+```
+
+Just remember to wrap the optimizer within the `tf.distribute.MirroredStrategy`. For an example, see [here](https://github.com/andreped/GradientAccumulator/blob/main/tests/test_optimizer_distribute.py).
+
+</details>
+
 <details>
 <summary>
 
@@ -92,7 +105,7 @@ There is also an example of how to use gradient accumulation with mixed precisio
 
 There has also been added support for adaptive gradient clipping, based on [this](https://github.com/sayakpaul/Adaptive-Gradient-Clipping) implementation:
 ```
-model = GAModelWrapper(accum_steps=4, use_agc=True, clip_factor=0.01, eps=1e-3, inputs=model.input, outputs=model.output)
+model = GradientAccumulateModel(accum_steps=4, use_agc=True, clip_factor=0.01, eps=1e-3, inputs=model.input, outputs=model.output)
 ```
 
 The hyperparameters values for `clip_factor` and `eps` presented here are the default values.
