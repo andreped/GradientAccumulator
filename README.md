@@ -167,14 +167,14 @@ The optimizer wrapper is derived from [the implementation by @fsx950223 and @ste
 If you used this package or found the project relevant in your research, please, considering including the following citation:
 
 ```
-@software{andre_pedersen_2022_7306095,
+@software{andre_pedersen_2023_7581815,
   author       = {André Pedersen and David Bouget},
-  title        = {andreped/GradientAccumulator: v0.2.2},
-  month        = nov,
-  year         = 2022,
+  title        = {andreped/GradientAccumulator: v0.3.0},
+  month        = jan,
+  year         = 2023,
   publisher    = {Zenodo},
-  version      = {v0.2.2},
-  doi          = {10.5281/zenodo.7306095},
-  url          = {https://doi.org/10.5281/zenodo.7306095}
+  version      = {v0.3.0},
+  doi          = {10.5281/zenodo.7581815},
+  url          = {https://doi.org/10.5281/zenodo.7581815}
 }
 ```
