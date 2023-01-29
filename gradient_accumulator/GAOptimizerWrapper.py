@@ -13,7 +13,7 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
         self,
         optimizer: types.Optimizer,
         accum_steps: types.TensorLike = 4,
-        reduction: str = "SUM",
+        reduction: str = "MEAN",
         name: str = "GAOptimizerWrapper",
         **kwargs,
     ):
