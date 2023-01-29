@@ -1,2 +1,2 @@
-from .GradientAccumulateOptimizer import GradientAccumulateOptimizer
-from .GradientAccumulateModel import GradientAccumulateModel
+from gradient_accumulator.GradientAccumulateOptimizer import GradientAccumulateOptimizer
+from gradient_accumulator.GradientAccumulateModel import GradientAccumulateModel
