@@ -22,7 +22,14 @@ Gradient accumulation (GA) enables reduced GPU memory consumption through dividi
 
 
 ## Why?
-In TensorFlow 2, there did not exist a plug-and-play method to use gradient accumulation with any custom pipeline. Hence, we implemented a generic TF2-compatible approach wich overloads the `train_step` of any given `tf.keras.Model`. To update correctly according to te user-specified number of accumulation steps.
+In TensorFlow 2, there did not exist a plug-and-play method to use gradient accumulation with any custom pipeline. Hence, we have implemented two generic TF2-compatible approaches:
+
+| Method | Usage |
+| - | - |
+| `GAModelWrapper` | `model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)` |
+| `GAOptimizerWrapper` | `opt = GAOptimizerWrapper(optimizer=tf.keras.optimizers.Adam(1e-3), accum_steps=4, reduction="MEAN")` |
+
+a generic TF2-compatible approach wich overloads the `train_step` of any given `tf.keras.Model`. To update correctly according to te user-specified number of accumulation steps.
 
 For our single-GPU approach, our implementation enables theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. This comes at the cost of increased training runtime. Multiple GPUs could be used to increase runtime performance. However, our `train_step` approach is not currently compatible with TensorFlow's `tf.distribute` (thoroughly discussed [here](https://github.com/keras-team/keras/issues/17429#issuecomment-1405612981)).
 
@@ -153,6 +160,7 @@ It was also observed a small difference when using adaptive optimizers, which I 
 
 ## Acknowledgements
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
+The optimizer wrapper is derived from [the implementation by @fsx950223 and @stefan-falk](https://github.com/tensorflow/addons/pull/2525).
 
   
 ## How to cite?
