@@ -27,7 +27,7 @@ In TensorFlow 2, there did not exist a plug-and-play method to use gradient accu
 | Method | Usage |
 | - | - |
 | `GAModelWrapper` | `model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)` |
-| `GAOptimizerWrapper` | `opt = GAOptimizerWrapper(optimizer=tf.keras.optimizers.Adam(1e-3), accum_steps=4, reduction="MEAN")` |
+| `GAOptimizerWrapper` | `opt = GAOptimizerWrapper(accum_steps=4, optimizer=tf.keras.optimizers.Adam(1e-3))` |
 
 a generic TF2-compatible approach wich overloads the `train_step` of any given `tf.keras.Model`. To update correctly according to te user-specified number of accumulation steps.
 
