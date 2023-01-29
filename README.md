@@ -5,7 +5,7 @@
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7581815.svg)](https://doi.org/10.5281/zenodo.7581815)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7582309.svg)](https://doi.org/10.5281/zenodo.7582309)
 [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
@@ -180,14 +180,14 @@ The optimizer wrapper is derived from [the implementation by @fsx950223 and @ste
 If you used this package or found the project relevant in your research, please, considering including the following citation:
 
 ```
-@software{andre_pedersen_2023_7581815,
+@software{andre_pedersen_2023_7582309,
   author       = {André Pedersen and David Bouget},
-  title        = {andreped/GradientAccumulator: v0.3.0},
+  title        = {andreped/GradientAccumulator: v0.3.1},
   month        = jan,
   year         = 2023,
   publisher    = {Zenodo},
-  version      = {v0.3.0},
-  doi          = {10.5281/zenodo.7581815},
-  url          = {https://doi.org/10.5281/zenodo.7581815}
+  version      = {v0.3.1},
+  doi          = {10.5281/zenodo.7582309},
+  url          = {https://doi.org/10.5281/zenodo.7582309}
 }
 ```
