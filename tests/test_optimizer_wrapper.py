@@ -81,6 +81,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
         ds_train,
         epochs=epochs,
         validation_data=ds_test,
+        verbose=0,
     )
 
     model.save("./trained_model")
