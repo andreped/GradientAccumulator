@@ -3,10 +3,6 @@ from tensorflow_addons.utils import types
 from typeguard import typechecked
 
 
-# to make custom optimizer compatible with tensorflow distributed training we need to subclass optimizer_experimental.Optimizer
-#@tf.keras.utils.register_keras_serializable()
-#class GAOptimizerWrapper(tf.keras.optimizers.experimental.Optimizer):
-
 # Implementation was derived from:
 # https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py
 @tf.keras.utils.register_keras_serializable()
@@ -67,6 +63,7 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
         self._optimizer._iterations = self.iterations
         return super().apply_gradients(grads_and_vars, name, **kwargs)
 
+    @tf.function
     def _resource_apply_dense(self, grad, var, apply_state=None):
         accum_gradient = self.get_slot(var, "ga")
 
@@ -99,6 +96,7 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
         )
         return apply_op
 
+    @tf.function
     def _resource_apply_sparse(self, grad: types.TensorLike, var, indices, apply_state):
         accum_gradient = self.get_slot(var, "ga")
         if accum_gradient is not None and grad is not None:
