@@ -17,17 +17,19 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
         self,
         optimizer: types.Optimizer,
         accum_steps: types.TensorLike = 4,
+        reduction: str = "SUM",
         name: str = "GAOptimizerWrapper",
         **kwargs,
     ):
-        r"""Construct a new GradientAccumulator optimizer.
+        r"""Construct a new GAOptimizerWrapper optimizer.
 
         Args:
             optimizer: str or `tf.keras.optimizers.Optimizer` that will be
                 used to compute and apply gradients.
             accum_steps: int > 0. Update gradient in every accumulation steps.
+            reduction: str. Which gradient reduction method to use. Defaults to 'SUM'.
             name: Optional name for the operations created when applying
-                gradients. Defaults to "GradientAccumulator".
+                gradients. Defaults to "GAOptimizerWrapper".
             **kwargs: keyword arguments. Allowed to be {`clipnorm`,
                 `clipvalue`, `lr`, `decay`}. `clipnorm` is clip gradients by
                 norm; `clipvalue` is clip gradients by value, `decay` is
@@ -37,6 +39,7 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
         """
         self.optimizer = optimizer
         self._optimizer = tf.keras.optimizers.get(optimizer)
+        self.reduction = reduction
         self._gradients = []
         self._accum_steps = accum_steps
         super().__init__(name, **kwargs)
@@ -66,7 +69,11 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
 
     def _resource_apply_dense(self, grad, var, apply_state=None):
         accum_gradient = self.get_slot(var, "ga")
+
         if accum_gradient is not None and grad is not None:
+            if self.reduction == "MEAN":
+                grad /= tf.cast(self._accum_steps, grad.dtype)
+
             accum_gradient.assign_add(
                 grad, use_locking=self._use_locking, read_value=False
             )
@@ -88,7 +95,7 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
-            (self.iterations+1) % self._accum_steps == 0, _apply, lambda: tf.no_op()
+            (self.iterations + 1) % self._accum_steps == 0, _apply, lambda: tf.no_op()
         )
         return apply_op
 
@@ -117,7 +124,7 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
-            (self.iterations+1) % self._accum_steps == 0, _apply, lambda: tf.no_op()
+            (self.iterations + 1) % self._accum_steps == 0, _apply, lambda: tf.no_op()  # tf.no_op: Does nothing - placeholder
         )
         return apply_op
 
@@ -157,5 +164,8 @@ class GAOptimizerWrapper(tf.keras.optimizers.Optimizer):
 
     def get_config(self):
         config = super(GAOptimizerWrapper, self).get_config()
-        config.update({"optimizer": self.optimizer, "accum_steps": self._accum_steps})
+        config.update({
+            "optimizer": self.optimizer,
+            "accum_steps": self._accum_steps,
+            "reduction": self.reduction})
         return config

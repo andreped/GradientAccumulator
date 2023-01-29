@@ -67,7 +67,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # wrap optimizer to add gradient accumulation support
     opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    opt = GAOptimizerWrapper(optimizer=opt, accum_steps=accum_steps)
+    opt = GAOptimizerWrapper(optimizer=opt, accum_steps=accum_steps, reduction="SUM")
 
     # compile model
     model.compile(
