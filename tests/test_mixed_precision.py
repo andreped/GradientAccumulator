@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GAModelWrapper
+from gradient_accumulator import GradientAccumulateModel
 from tensorflow.keras import mixed_precision
 import os
 
