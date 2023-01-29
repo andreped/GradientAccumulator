@@ -66,8 +66,9 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     ])
 
     # wrap optimizer to add gradient accumulation support
-    opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    opt = GAOptimizerWrapper(optimizer=opt, accum_steps=accum_steps, reduction="SUM")
+    # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
+    opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
+    opt = GAOptimizerWrapper(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
 
     # compile model
     model.compile(
@@ -88,7 +89,8 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"Adam": tf.keras.optimizers.Adam})
+    trained_model = load_model("./trained_model", compile=True,\
+        custom_objects={"Adam": tf.keras.optimizers.Adam, "SGD": tf.keras.optimizers.SGD})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
@@ -101,22 +103,22 @@ def test_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=32, accum_steps=1, epochs=2)
+    result1 = run_experiment(bs=500, accum_steps=1, epochs=4)  # NOTE: AS TO BE DIVISIBLE BY TRAIN SET SIZE = 50000 (!)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = run_experiment(bs=16, accum_steps=2, epochs=2)
+    result2 = run_experiment(bs=250, accum_steps=2, epochs=4)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result3 = run_experiment(bs=8, accum_steps=4, epochs=2)
+    result3 = run_experiment(bs=125, accum_steps=4, epochs=4)
 
     # reset before second run to get identical results
-    reset()
+    # reset()
 
     # run again with different batch size and number of accumulations
     # result4 = run_experiment(bs=1, accum_steps=32, epochs=2)
