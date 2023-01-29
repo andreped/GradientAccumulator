@@ -68,7 +68,7 @@ jobs:
         run: pip install --find-links=${{github.workspace}} gradient_accumulator
 
       - name: Test library accessibility
-        run: python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
+        run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
 
       - name: Run tests
         run: |
@@ -78,6 +78,7 @@ jobs:
           pytest -v tests/test_optimizer_invariance.py
           pytest -v tests/test_multitask.py
           pytest -v tests/test_adaptive_gradient_clipping.py
+          pytest -v tests/test_optimizer_distribute.py
 
   tf-compatibility:
     needs: build
@@ -129,7 +130,7 @@ jobs:
         run: pip install --find-links=${{github.workspace}} gradient_accumulator
 
       - name: Test library accessibility
-        run: python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
+        run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
 
       - name: Run test
         run: python tests/test_train_mnist.py
@@ -168,10 +169,10 @@ jobs:
         run: pip install --find-links=${{github.workspace}} gradient_accumulator
 
       - name: Test library accessibility
-        run: |
-          python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
-          python -c "from gradient_accumulator.GAOptimizerWrapper import GAOptimizerWrapper"
+        run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
+
 
       - name: Run tests
         run: |
           pytest -v tests/test_optimizer_wrapper.py
+          pytest -v tests/test_optimizer_distribute.py
