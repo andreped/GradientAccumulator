@@ -1,6 +1,5 @@
 import tensorflow as tf
 from . import agc
-import tensorflow as tf
 from tensorflow_addons.utils import types
 from typeguard import typechecked
 
