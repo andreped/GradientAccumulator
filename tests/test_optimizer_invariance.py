@@ -4,7 +4,7 @@ import random as python_random
 import os
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator import GradientAccumulateModel
 
 
 def normalize_img(image, label):
@@ -80,7 +80,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1, opt=None):
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GAModelWrapper(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(

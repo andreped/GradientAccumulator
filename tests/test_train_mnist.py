@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator import GradientAccumulateModel
 
 
 def normalize_img(image, label):
@@ -40,7 +40,7 @@ def test_train_mnist():
     ])
 
     # wrap model to use gradient accumulation
-    model = GAModelWrapper(accum_steps=4, inputs=model.input, outputs=model.output)
+    model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(

@@ -4,7 +4,7 @@ import random as python_random
 import os
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import Model, load_model
-from gradient_accumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator import GradientAccumulateModel
 from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D, UpSampling2D,\
     MaxPooling2D, Activation
 
@@ -89,7 +89,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GAModelWrapper(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(

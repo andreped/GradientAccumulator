@@ -4,7 +4,7 @@ import random as python_random
 import os
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator.GAOptimizerWrapper import GAOptimizerWrapper
+from gradient_accumulator import GradientAccumulateOptimizer
 
 
 def normalize_img(image, label):
@@ -68,7 +68,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     # wrap optimizer to add gradient accumulation support
     # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
     opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
-    opt = GAOptimizerWrapper(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
+    opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
 
     # compile model
     model.compile(

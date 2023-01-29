@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator.GAModelWrapper import GAModelWrapper
+from gradient_accumulator import GAModelWrapper
 from tensorflow.keras import mixed_precision
 import os
 
@@ -56,7 +56,7 @@ def test_train_mnist():
     ])
 
     # wrap model to use gradient accumulation
-    model = GAModelWrapper(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+    model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
 
     # need to scale optimizer for mixed precision
     opt = tf.keras.optimizers.Adam(1e-3)
