@@ -93,27 +93,11 @@ class GAModelWrapper(tf.keras.Model):
                 tf.zeros_like(self.trainable_variables[i], dtype=tf.float32), read_value=False)
     
     def reinit_grad_accum(self):
-        self.gradient_accumulation = [tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False,
-                                      name="accum_" + str(i),
-                                      synchronization=tf.VariableSynchronization.ON_READ,
-                                      aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
-                                      ) for i, v in enumerate(self.trainable_variables)]
-
-    """
-    def test_step(self, data):
-        # Unpack the data
-        x, y = data
-
-        # Compute predictions
-        y_pred = self(x, training=False)
-
-        # Updates the metrics tracking the loss
-        self.compiled_loss(y, y_pred, regularization_losses=self.losses)
-
-        # Update the metrics.
-        self.compiled_metrics.update_state(y, y_pred)
-
-        # Return a dict mapping metric names to current value.
-        # Note that it will include the loss (tracked in self.metrics).
-        return {m.name: m.result() for m in self.metrics}
-    """
+        # reinitialize gradient accumulator
+        self.gradient_accumulation = [
+            tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False,
+            name="accum_" + str(i),
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
+            ) for i, v in enumerate(self.trainable_variables)
+        ]

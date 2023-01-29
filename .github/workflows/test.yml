@@ -134,6 +134,44 @@ jobs:
       - name: Run test
         run: python tests/test_train_mnist.py
 
-  #Deploy:
-    #needs: [test, tf-compatibility]
-    #runs-on: ubuntu-18.04
+  test-optimizer:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # max-parallel: 10
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-10.15]
+        python-version: ["3.7", "3.8"]
+        tf-version: [2.9.0]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install wheel setuptools
+          pip install tensorflow==${{ matrix.tf-version }}
+          pip install tensorflow-addons
+          pip install tensorflow-datasets
+          pip install pytest
+
+      - name: Download artifact
+        uses: actions/download-artifact@master
+        with:
+          name: "Python wheel"
+
+      - name: Install wheel
+        run: pip install --find-links=${{github.workspace}} gradient_accumulator
+
+      - name: Test library accessibility
+        run: |
+          python -c "from gradient_accumulator.GAModelWrapper import GAModelWrapper"
+          python -c "from gradient_accumulator.GAOptimizerWrapper import GAOptimizerWrapper"
+
+      - name: Run tests
+        run: |
+          pytest -v tests/test_optimizer_wrapper.py

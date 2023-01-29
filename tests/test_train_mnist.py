@@ -20,19 +20,17 @@ def test_train_mnist():
     )
 
     # build train pipeline
-    ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(128)
-    ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
+    ds_train = ds_train.prefetch(1)
 
     # build test pipeline
-    ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(128)
     ds_test = ds_test.cache()
-    ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+    ds_test = ds_test.prefetch(1)
 
     # create model
     model = tf.keras.models.Sequential([
@@ -66,3 +64,7 @@ def test_train_mnist():
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
+
+
+if __name__ == "__main__":
+    test_train_mnist()
