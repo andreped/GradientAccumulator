@@ -6,15 +6,6 @@ from tensorflow.keras import mixed_precision
 import os
 
 
-# disable GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-# set mixed global precision policy
-# Equivalent to the two lines above
-# https://www.tensorflow.org/guide/mixed_precision
-mixed_precision.set_global_policy('mixed_float16')
-
-
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     return tf.cast(image, tf.float32) / 255., label
@@ -34,19 +25,17 @@ def test_train_mnist():
     # of 8 to maximize performance
 
     # build train pipeline
-    ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(256)  # multiplum of 8
-    ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
+    ds_train = ds_train.batch(100)  # multiplum of 8
+    ds_train = ds_train.prefetch(1))
 
     # build test pipeline
-    ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-    ds_test = ds_test.batch(256)
+    ds_test = ds_test.map(normalize_img)
+    ds_test = ds_test.batch(100)
     ds_test = ds_test.cache()
-    ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+    ds_test = ds_test.prefetch(1)
 
     # create model
     model = tf.keras.models.Sequential([
@@ -56,11 +45,10 @@ def test_train_mnist():
     ])
 
     # wrap model to use gradient accumulation
-    model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, use_agc=True, inputs=model.input, outputs=model.output)
+    model = GradientAccumulateModel(accum_steps=4, mixed_precision=False, use_agc=True, inputs=model.input, outputs=model.output)
 
     # need to scale optimizer for mixed precision
-    opt = tf.keras.optimizers.Adam(1e-3)
-    opt = mixed_precision.LossScaleOptimizer(opt)
+    opt = tf.keras.optimizers.SGD(1e-2)
 
     # compile model
     model.compile(
