@@ -29,7 +29,7 @@ def test_train_mnist():
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(100)  # multiplum of 8
-    ds_train = ds_train.prefetch(1))
+    ds_train = ds_train.prefetch(1)
 
     # build test pipeline
     ds_test = ds_test.map(normalize_img)
