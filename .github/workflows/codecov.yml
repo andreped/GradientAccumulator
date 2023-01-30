@@ -1,0 +1,81 @@
+name: codecov
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Install dependencies
+        run: |
+          pip install wheel setuptools
+          pip install tensorflow==2.8.0 tensorflow-addons
+
+      - name: Build wheel
+        run: |
+          python setup.py bdist_wheel
+
+      - name: Upload Python wheel
+        uses: actions/upload-artifact@v2
+        with:
+          name: Python wheel
+          path: ${{github.workspace}}/dist/gradient_accumulator-*.whl
+          if-no-files-found: error
+
+  test:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # max-parallel: 10
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: ["3.8"]
+        tf-version: [2.8.0]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install wheel setuptools
+          pip install tensorflow==${{ matrix.tf-version }}
+          pip install tensorflow-addons
+          pip install tensorflow-datasets
+          pip install flake8 pytest-cov
+
+      - name: Download artifact
+        uses: actions/download-artifact@master
+        with:
+          name: "Python wheel"
+      
+      - name: Install wheel
+        run: pip install --find-links=${{github.workspace}} gradient_accumulator
+
+      - name: Test library accessibility
+        run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
+      
+      - name: Run tests and collect coverage
+        run: |
+          pytest --cov tests/
+
+      - name: Lint with flake8
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1

@@ -153,13 +153,7 @@ jobs:
           pip install tensorflow==${{ matrix.tf-version }}
           pip install tensorflow-addons
           pip install tensorflow-datasets
-          pip install flake8 pytest-cov
-
-      - name: Lint with flake8
-        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+          pip install pytest
 
       - name: Download artifact
         uses: actions/download-artifact@master
@@ -174,6 +168,5 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --cov tests/test_train_mnist.py
-          pytest --cov tests/test_optimizer_wrapper.py
-          pytest --cov tests/test_optimizer_distribute.py
+          pytest -v tests/test_optimizer_wrapper.py
+          pytest -v tests/test_optimizer_distribute.py
