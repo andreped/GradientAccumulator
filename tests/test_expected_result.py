@@ -36,7 +36,7 @@ def reset():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def run_experiment(bs=16, accum_steps=4, epochs=1):
+def run_experiment(bs=50, accum_steps=2, epochs=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -47,16 +47,14 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     )
 
     # build train pipeline
-    ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.batch(bs)
-    ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
+    ds_train = ds_train.prefetch(1)
 
     # build test pipeline
-    ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(bs)
-    ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+    ds_test = ds_test.prefetch(1)
 
     # create model
     model = tf.keras.models.Sequential([
@@ -101,13 +99,13 @@ def test_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=32, accum_steps=1, epochs=2)
+    result1 = run_experiment(bs=100, accum_steps=1, epochs=2)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = run_experiment(bs=16, accum_steps=2, epochs=2)
+    result2 = run_experiment(bs=50, accum_steps=2, epochs=2)
 
     # results should be identical (theoretically, even in practice on CPU)
     assert result1 == result2
