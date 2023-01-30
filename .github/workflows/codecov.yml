@@ -34,27 +34,20 @@ jobs:
           path: ${{github.workspace}}/dist/gradient_accumulator-*.whl
           if-no-files-found: error
 
-  test:
+  codecov:
     needs: build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      # max-parallel: 10
-      matrix:
-        os: [ubuntu-20.04]
-        python-version: ["3.8"]
-        tf-version: [2.8.0]
-
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python "3.8"
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.8"
 
       - name: Install dependencies
         run: |
           pip install wheel setuptools
-          pip install tensorflow==${{ matrix.tf-version }}
+          pip install tensorflow==2.8.0
           pip install tensorflow-addons
           pip install tensorflow-datasets
           pip install flake8 pytest-cov
