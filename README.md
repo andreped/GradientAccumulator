@@ -14,6 +14,7 @@
 The package is available on PyPI and is compatible with and have been tested against TF >= 2.3 and Python >= 3.6 (tested with 3.6-3.10), and works cross-platform (Ubuntu, Windows, macOS).
 </div>
 
+
 ## What?
 Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
 
@@ -100,6 +101,40 @@ Just remember to wrap the optimizer within the `tf.distribute.MirroredStrategy`.
 **DISCLAIMER: The GradientAccumulateOptimizer is a VERY experimental feature. It is not reaching the same results as GradientAccumulateModel with a single GPU, and does not work (yet) with multiple GPUs. Hence, I would recommend using GradientAccumulateModel with a single GPU in its current state.**
 
 </details>
+
+https://github.com/andreped/GradientAccumulator/blob/main/notebooks/GA_for_HuggingFace_TF_models.ipynb
+
+<details>
+<summary>
+
+#### HuggingFace :hugs:</summary>
+Note that HuggingFace provides a variety of different pretrained models. However, it was observed that when loading these models into TensorFlow, the computational graph may not be set up correctly, such that the `model.input` and `model.output` exist.
+
+To fix this, we basically wrap the model into a new `tf.keras.Model`, but define the inputs and outputs ourselves:
+```
+from gradient_accumulator import GradientAccumulateModel
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
+from transformers import TFx
+
+#load your model checkpoint
+HF_model = TFx.from_pretrained(checkpoint)
+
+# define model inputs and outputs -> for different models, different inputs/outputs need to be defined
+input_ids = tf.keras.Input(shape=(None,), dtype='int32', name="input_ids")
+attention_mask = tf.keras.Input(shape=(None,), dtype='int32', name="attention_mask")
+model_input={'input_ids': input_ids, 'attention_mask': attention_mask}
+
+#create a new Model which has model.input and model.output properties
+new_model = Model(inputs=model_input, outputs=HF_model(model_input))
+
+#create the GA model
+model = GradientAccumulateModel(accum_steps=4, inputs=new_model.input, outputs=new_model.output)
+```
+
+</details>
+
+
 
 <details>
 <summary>
