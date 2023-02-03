@@ -87,7 +87,7 @@ There is also an example of how to use gradient accumulation with mixed precisio
 </details>
 
 
-<details open>
+<details>
 <summary>
 
 #### Distributed training with multiple GPUs</summary>
@@ -102,7 +102,6 @@ Just remember to wrap the optimizer within the `tf.distribute.MirroredStrategy`.
 
 </details>
 
-https://github.com/andreped/GradientAccumulator/blob/main/notebooks/GA_for_HuggingFace_TF_models.ipynb
 
 <details>
 <summary>
@@ -131,6 +130,8 @@ new_model = Model(inputs=model_input, outputs=HF_model(model_input))
 #create the GA model
 model = GradientAccumulateModel(accum_steps=4, inputs=new_model.input, outputs=new_model.output)
 ```
+  
+For more details, see [this](https://github.com/andreped/GradientAccumulator/blob/main/notebooks/GA_for_HuggingFace_TF_models.ipynb) jupyter notebook.
 
 </details>
 
