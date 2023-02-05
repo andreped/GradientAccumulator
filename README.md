@@ -61,7 +61,7 @@ model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model
 
 Then simply use the `model` as you normally would!
 
-<details open>
+<details>
 <summary>
 
 #### Mixed precision</summary>
