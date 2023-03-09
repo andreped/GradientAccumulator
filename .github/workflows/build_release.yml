@@ -4,16 +4,24 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  MACOSX_DEPLOYMENT_TARGET: 10.13
+
 jobs:
   build_wheels:
     name: Build release
     runs-on: ubuntu-18.04
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - name: Setup pyenv
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+          MACOSX_DEPLOYMENT_TARGET: 10.13
+          PYTHON_CONFIGURE_OPTS: "--enable-framework"
+          CFLAGS: "-Wno-implicit-function-declaration"
+        uses: "gabrielfalcao/pyenv-action@v5"
         with:
-          python-version: '3.7'
+            default: '3.7.9'
 
       - name: Install dependencies
         run: |
