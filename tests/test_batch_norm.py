@@ -70,4 +70,4 @@ def test_batch_norm():
 
 
 if __name__ == "__main__":
-    test_train_mnist()
+    test_batch_norm()
