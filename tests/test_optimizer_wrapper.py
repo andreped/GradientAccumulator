@@ -62,12 +62,17 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(10)
+        tf.keras.layers.Dense(10),
     ])
 
     # wrap optimizer to add gradient accumulation support
     # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
+    # need to dynamically handle which Optimizer class to use dependent on tf version
+    if int(tf.version.VERSION.split(".")[1]) > 10:
+        opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+    else:
+        opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
+
     opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
 
     # compile model
@@ -89,8 +94,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True,\
-        custom_objects={"Adam": tf.keras.optimizers.Adam, "SGD": tf.keras.optimizers.SGD})
+    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": tf.keras.optimizers.legacy.SGD})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)

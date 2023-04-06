@@ -4,6 +4,12 @@ from . import agc
 #from typeguard import typechecked
 
 
+# need to dynamically handle which Optimizer class to use dependent on tf version
+opt = tf.keras.optimizers.Optimizer
+if int(tf.version.VERSION.split(".")[1]) > 10:
+    opt = tf.keras.optimizers.legacy.Optimizer
+
+
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
 @tf.keras.utils.register_keras_serializable()  # adding this avoids needing to use custom_objects when loading model
@@ -108,7 +114,7 @@ class GradientAccumulateModel(tf.keras.Model):
 # Implementation was derived from:
 # https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py
 @tf.keras.utils.register_keras_serializable()
-class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
+class GradientAccumulateOptimizer(opt):
     """Optimizer wrapper for gradient accumulation."""
     #@typechecked
     def __init__(
@@ -135,15 +141,13 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
                 decay of learning rate. `lr` is included for backward
                 compatibility, recommended to use `learning_rate` instead.
         """
-        self.optimizer = optimizer
-        self._optimizer = tf.keras.optimizers.get(optimizer)
+        self.optimizer = tf.keras.optimizers.get(optimizer)
         self.reduction = reduction
-        self._gradients = []
-        self._accum_steps = accum_steps
+        self.accum_steps = accum_steps
         super().__init__(name, **kwargs)
 
     def _create_slots(self, var_list):
-        self._optimizer._create_slots(var_list=var_list)
+        self.optimizer._create_slots(var_list=var_list)
         for var in var_list:
             self.add_slot(var, "ga")
 
@@ -162,7 +166,7 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
         )
 
     def apply_gradients(self, grads_and_vars, name=None, **kwargs):
-        self._optimizer._iterations = self.iterations
+        self.optimizer._iterations = self.iterations
         return super().apply_gradients(grads_and_vars, name, **kwargs)
 
     @tf.function
@@ -171,19 +175,19 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
 
         if accum_gradient is not None and grad is not None:
             if self.reduction == "MEAN":
-                grad /= tf.cast(self._accum_steps, grad.dtype)
+                grad /= tf.cast(self.accum_steps, grad.dtype)
 
             accum_gradient.assign_add(
                 grad, use_locking=self._use_locking, read_value=False
             )
 
         def _apply():
-            if "apply_state" in self._optimizer._dense_apply_args:
-                train_op = self._optimizer._resource_apply_dense(
+            if "apply_state" in self.optimizer._dense_apply_args:
+                train_op = self.optimizer._resource_apply_dense(
                     accum_gradient.read_value(), var, apply_state=apply_state
                 )
             else:
-                train_op = self._optimizer._resource_apply_dense(
+                train_op = self.optimizer._resource_apply_dense(
                     accum_gradient.read_value(), var
                 )
             reset_op = accum_gradient.assign(
@@ -194,7 +198,7 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
-            (self.iterations + 1) % self._accum_steps == 0, _apply, lambda: tf.no_op()
+            (self.iterations + 1) % self.accum_steps == 0, _apply, lambda: tf.no_op()
         )
         return apply_op
 
@@ -205,15 +209,15 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
             self._resource_scatter_add(accum_gradient, indices, grad)
 
         def _apply():
-            if "apply_state" in self._optimizer._sparse_apply_args:
-                train_op = self._optimizer._resource_apply_sparse(
+            if "apply_state" in self.optimizer._sparse_apply_args:
+                train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices),
                     var,
                     indices,
                     apply_state=apply_state,
                 )
             else:
-                train_op = self._optimizer._resource_apply_sparse(
+                train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices), var, indices
                 )
             reset_op = accum_gradient.assign(
@@ -224,7 +228,7 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
-            (self.iterations + 1) % self._accum_steps == 0, _apply, lambda: tf.no_op()  # tf.no_op: Does nothing - placeholder
+            (self.iterations + 1) % self.accum_steps == 0, _apply, lambda: tf.no_op()  # tf.no_op: Does nothing - placeholder
         )
         return apply_op
 
@@ -248,24 +252,25 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
 
     @property
     def lr(self):
-        return self._optimizer._get_hyper("learning_rate")
+        return self.optimizer._get_hyper("learning_rate")
 
     @lr.setter
     def lr(self, lr):
-        self._optimizer._set_hyper("learning_rate", lr)
+        self.optimizer._set_hyper("learning_rate", lr)
 
     @property
     def learning_rate(self):
-        return self._optimizer._get_hyper("learning_rate")
+        return self.optimizer._get_hyper("learning_rate")
 
     @learning_rate.setter
     def learning_rate(self, learning_rate):
-        self._optimizer._set_hyper("learning_rate", learning_rate)
+        self.optimizer._set_hyper("learning_rate", learning_rate)
 
     def get_config(self):
-        config = super(GradientAccumulateOptimizer, self).get_config()
-        config.update({
-            "optimizer": self.optimizer,
-            "accum_steps": self._accum_steps,
-            "reduction": self.reduction})
-        return config
+        config = {
+            "optimizer": tf.keras.optimizers.get(self.optimizer),
+            "accum_steps": self.accum_steps,
+            "reduction": self.reduction,
+        }
+        base_config = super().get_config()
+        return dict(list(base_config.items()) + list(config.items()))

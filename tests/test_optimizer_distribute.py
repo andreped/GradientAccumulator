@@ -44,7 +44,10 @@ def test_optimizer_distribute():
         ])
 
         # define optimizer - currently only SGD compatible with GAOptimizerWrapper
-        opt = tf.keras.optimizers.SGD(learning_rate=1e-2)
+        if int(tf.version.VERSION.split(".")[1]) > 10:
+            opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+        else:
+            opt = tf.keras.optimizers.SGD(learning_rate=1e-2)
 
         # wrap optimizer to add gradient accumulation support
         opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=10)
