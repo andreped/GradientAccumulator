@@ -4,12 +4,13 @@ from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator.layers import AccumBatchNormalization
 
+
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     return tf.cast(image, tf.float32) / 255., label
 
 
-def test_train_mnist():
+def test_batch_norm():
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
