@@ -15,23 +15,29 @@ class AccumBatchNormalization(Layer):
             shape=(input_shape[-1]),
             initializer="zeros",
             trainable=True,
+            name="beta",
         )
 
         self.gamma = self.add_weight(
             shape=(input_shape[-1]),
             initializer="ones",
             trainable=True,
+            name="gamma",
         )
 
         self.moving_mean = self.add_weight(
             shape=(input_shape[-1]),
             initializer=tf.initializers.zeros,
-            trainable=False)
+            trainable=False,
+            name="mean",
+        )
 
         self.moving_variance = self.add_weight(
             shape=(input_shape[-1]),
             initializer=tf.initializers.ones,
-            trainable=False)
+            trainable=False,
+            name="variance",
+        )
 
     def get_moving_average(self, statistic, new_value):
         new_value = statistic * self.momentum + new_value * (1 - self.momentum)
@@ -40,7 +46,7 @@ class AccumBatchNormalization(Layer):
     def normalize(self, x, x_mean, x_var):
         return (x - x_mean) / tf.sqrt(x_var + self.epsilon)
 
-    def call(self, inputs, training):
+    def call(self, inputs, training=None, mask=None):
         if training:
             assert len(inputs.shape) in (2, 4)
             if len(inputs.shape) > 2:
