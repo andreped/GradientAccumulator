@@ -11,7 +11,7 @@
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
 
-The package is available on PyPI and is compatible with and have been tested against TF >= 2.3 and Python >= 3.6 (tested with 3.6-3.12), and works cross-platform (Ubuntu, Windows, macOS).
+The package is available on PyPI and is compatible with and have been tested against `TF >= 2.2` and `Python >= 3.6` (tested with `3.6-3.12`), and works cross-platform (Ubuntu, Windows, macOS).
 </div>
 
 
