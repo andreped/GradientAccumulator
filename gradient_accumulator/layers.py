@@ -32,22 +32,23 @@ class AccumBatchNormalization(Layer):
             shape=(input_shape[-1]),
             initializer="zeros",
             trainable=False,
-            name="mean",
+            name="moving_mean",
         )
 
         self.moving_variance = self.add_weight(
             shape=(input_shape[-1]),
             initializer="ones",
             trainable=False,
-            name="variance",
+            name="moving_variance",
         )
 
     def get_moving_average(self, statistic, new_value):
-        new_value = statistic * self.momentum + new_value * (1 - self.momentum)
+        #new_value = statistic * self.momentum + new_value * (1.0 - self.momentum)
+        decay = tf.convert_to_tensor(1.0 - self.momentum, name="decay")
+        if decay.dtype != statistic.dtype.base_dtype:
+            decay = tf.cast(decay, statistic.dtype.base_dtype)
+        new_value = statistic - (statistic - tf.cast(new_value, statistic.dtype)) * decay
         return statistic.assign(new_value)
-
-    def normalize(self, x, x_mean, x_var):
-        return (x - x_mean) / tf.sqrt(x_var + self.epsilon)
 
     def call(self, inputs, training=None, mask=None):
         if training:
@@ -56,13 +57,23 @@ class AccumBatchNormalization(Layer):
                 axes = [0, 1, 2]
             else:
                 axes = [0]
+                
             mean, var = tf.nn.moments(inputs, axes=axes, keepdims=False)
             self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
             self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
         else:
             mean, var = self.moving_mean, self.moving_variance
-        x = self.normalize(inputs, mean, var)
-        return self.gamma * x + self.beta
+        
+        scale = self.gamma
+        offset = self.beta
+
+        inv = tf.math.rsqrt(var + self.epsilon)
+        if scale is not None:
+            inv *= scale
+        outputs =  inputs * tf.cast(inv, inputs.dtype) + \
+            tf.cast(offset - mean * inv if offset is not None else -mean * inv, inputs.dtype)
+        
+        return outputs
     
     def get_config(self):
         config = {
