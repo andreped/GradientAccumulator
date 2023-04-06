@@ -7,6 +7,9 @@ from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateOptimizer
 
 
+tf_version = int(tf.version.VERSION.split(".")[1])
+
+
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     return tf.cast(image, tf.float32) / 255., label
@@ -30,7 +33,8 @@ def reset():
     tf.random.set_seed(1234)
 
     # https://stackoverflow.com/a/71311207
-    tf.config.experimental.enable_op_determinism()
+    if tf_version > 6:
+        tf.config.experimental.enable_op_determinism()  # Exist only for Python >=3.7
 
     # disable GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -68,7 +72,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     # wrap optimizer to add gradient accumulation support
     # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
     # need to dynamically handle which Optimizer class to use dependent on tf version
-    if int(tf.version.VERSION.split(".")[1]) > 10:
+    if tf_version > 10:
         opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
     else:
         opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
