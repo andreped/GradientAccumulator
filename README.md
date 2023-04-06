@@ -5,7 +5,7 @@
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7582309.svg)](https://doi.org/10.5281/zenodo.7582309)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7806911.svg)](https://doi.org/10.5281/zenodo.7806911)
 [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
 [![codecov](https://codecov.io/gh/andreped/GradientAccumulator/branch/main/graph/badge.svg?token=MWLK71V750)](https://codecov.io/gh/andreped/GradientAccumulator)
 
@@ -267,14 +267,14 @@ The optimizer wrapper is derived from [the implementation by @fsx950223 and @ste
 If you used this package or found the project relevant in your research, please, considering including the following citation:
 
 ```
-@software{andre_pedersen_2023_7582309,
+@software{andre_pedersen_2023_7806911,
   author       = {André Pedersen and David Bouget},
-  title        = {andreped/GradientAccumulator: v0.3.1},
-  month        = jan,
+  title        = {andreped/GradientAccumulator: v0.3.2},
+  month        = apr,
   year         = 2023,
   publisher    = {Zenodo},
-  version      = {v0.3.1},
-  doi          = {10.5281/zenodo.7582309},
-  url          = {https://doi.org/10.5281/zenodo.7582309}
+  version      = {v0.3.2},
+  doi          = {10.5281/zenodo.7806911},
+  url          = {https://doi.org/10.5281/zenodo.7806911}
 }
 ```
