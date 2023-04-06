@@ -55,7 +55,7 @@ jobs:
         run: |
           pip install wheel setuptools
           pip install tensorflow==${{ matrix.tf-version }}
-          pip install "tensorflow-datasets~=4.8.2
+          pip install "tensorflow-datasets<=4.8.2"
           pip install flake8 pytest-cov
 
       - name: Download artifact
@@ -125,7 +125,7 @@ jobs:
         run: |
           pip install wheel setuptools
           pip install tensorflow==${{ matrix.tf-version }}
-          pip install tensorflow-datasets~=4.8.2
+          pip install "tensorflow-datasets<=4.8.2"
           pip install pytest
 
       - name: Download artifact
@@ -163,7 +163,7 @@ jobs:
         run: |
           pip install wheel setuptools
           pip install tensorflow==${{ matrix.tf-version }}
-          pip install tensorflow-datasets~=4.8.2
+          pip install "tensorflow-datasets<=4.8.2"
           pip install pytest
 
       - name: Download artifact
