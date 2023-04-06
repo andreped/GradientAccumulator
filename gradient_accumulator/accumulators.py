@@ -116,15 +116,7 @@ class GradientAccumulateModel(tf.keras.Model):
 @tf.keras.utils.register_keras_serializable()
 class GradientAccumulateOptimizer(opt):
     """Optimizer wrapper for gradient accumulation."""
-    #@typechecked
-    def __init__(
-        self,
-        optimizer,  # : types.Optimizer,  # having this results in TypeError -> expected OptimizerV2 or str, got dict instead
-        accum_steps, #: types.TensorLike = 4,
-        reduction: str = "MEAN",
-        name: str = "GradientAccumulateOptimizer",
-        **kwargs,
-    ):
+    def __init__(self, optimizer="SGD", accum_steps=1, reduction: str = "MEAN", name: str = "GradientAccumulateOptimizer", **kwargs):
         r"""Construct a new GradientAccumulateOptimizer optimizer.
 
         Args:
@@ -142,8 +134,8 @@ class GradientAccumulateOptimizer(opt):
                 compatibility, recommended to use `learning_rate` instead.
         """
         self.optimizer = tf.keras.optimizers.get(optimizer)
-        self.reduction = reduction
         self.accum_steps = accum_steps
+        self.reduction = reduction
         super().__init__(name, **kwargs)
 
     def _create_slots(self, var_list):
@@ -249,14 +241,6 @@ class GradientAccumulateOptimizer(opt):
                 )
 
         return tf.group(assign_ops)
-
-    @property
-    def lr(self):
-        return self.optimizer._get_hyper("learning_rate")
-
-    @lr.setter
-    def lr(self, lr):
-        self.optimizer._set_hyper("learning_rate", lr)
 
     @property
     def learning_rate(self):
