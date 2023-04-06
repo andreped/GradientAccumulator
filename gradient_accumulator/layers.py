@@ -7,7 +7,7 @@ import tensorflow as tf
 # https://github.com/dksakkos/BatchNorm/blob/main/BatchNorm.py
 @tf.keras.utils.register_keras_serializable()
 class AccumBatchNormalization(Layer):
-    def __init__(self, momentum=0.9, epsilon=1e-6, **kwargs):
+    def __init__(self, momentum=0.9, epsilon=1e-3, **kwargs):
         self.momentum = momentum
         self.epsilon = epsilon
 
