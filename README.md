@@ -184,6 +184,23 @@ For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repo
 <details>
 <summary>
 
+#### TF >= 2.11 legacy option</summary>
+Note that for TensorFlow >= 2.11, there has been some major changes to the Optimizer class. Our current implementation is not compatible with the new one. Based on which TensorFlow version you have, our `GradientAccumulateOptimizer` dynamically chooses which Optimizer to use.
+
+However, you will need to choose a legacy optimizer to use with the Optimizer wrapper, like so:
+```
+import tensorflow as tf
+from gradient_accumulator import GradientAccumulateOptimizer
+
+opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=4)
+```
+</details>
+
+
+<details>
+<summary>
+
 #### PyTorch</summary>
 For PyTorch, I would recommend using [accelerate](https://pypi.org/project/accelerate/). HuggingFace :hugs: has a great tutorial on how to use it [here](https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation).
 
