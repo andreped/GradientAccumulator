@@ -1,14 +1,17 @@
 from tensorflow.keras.layers import Layer
+from tensorflow.keras import initializers
 import tensorflow as tf
 
 
 # https://stackoverflow.com/questions/65195956/keras-custom-batch-normalization-layer-with-an-extra-variable-that-can-be-change
 # https://github.com/dksakkos/BatchNorm/blob/main/BatchNorm.py
+@tf.keras.utils.register_keras_serializable()
 class AccumBatchNormalization(Layer):
-    def __init__(self):
-        self.momentum = 0.9
-        self.epsilon = 1e-6
-        super(AccumBatchNormalization, self).__init__()
+    def __init__(self, momentum=0.9, epsilon=1e-6, **kwargs):
+        self.momentum = momentum
+        self.epsilon = epsilon
+
+        super().__init__(**kwargs)
 
     def build(self, input_shape):
         self.beta = self.add_weight(
@@ -27,14 +30,14 @@ class AccumBatchNormalization(Layer):
 
         self.moving_mean = self.add_weight(
             shape=(input_shape[-1]),
-            initializer=tf.initializers.zeros,
+            initializer="zeros",
             trainable=False,
             name="mean",
         )
 
         self.moving_variance = self.add_weight(
             shape=(input_shape[-1]),
-            initializer=tf.initializers.ones,
+            initializer="ones",
             trainable=False,
             name="variance",
         )
@@ -60,3 +63,11 @@ class AccumBatchNormalization(Layer):
             mean, var = self.moving_mean, self.moving_variance
         x = self.normalize(inputs, mean, var)
         return self.gamma * x + self.beta
+    
+    def get_config(self):
+        config = {
+            'momentum': self.momentum,
+            'epsilon': self.epsilon,
+        }
+        base_config = super().get_config()
+        return dict(list(base_config.items()) + list(config.items()))
