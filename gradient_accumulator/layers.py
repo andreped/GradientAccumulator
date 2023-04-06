@@ -5,10 +5,10 @@ import tensorflow as tf
 # https://stackoverflow.com/questions/65195956/keras-custom-batch-normalization-layer-with-an-extra-variable-that-can-be-change
 # https://github.com/dksakkos/BatchNorm/blob/main/BatchNorm.py
 class AccumBatchNormalization(Layer):
-    def __init__(self, **kwargs):
+    def __init__(self):
         self.momentum = 0.9
         self.epsilon = 1e-6
-        super(AccumBatchNormalization, self).__init__(**kwargs)
+        super(AccumBatchNormalization, self).__init__()
 
     def build(self, input_shape):
         self.beta = self.add_weight(
