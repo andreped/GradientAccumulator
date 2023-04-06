@@ -1,11 +1,13 @@
-from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import Layer
 import tensorflow as tf
 
 
 # https://stackoverflow.com/questions/65195956/keras-custom-batch-normalization-layer-with-an-extra-variable-that-can-be-change
 # https://github.com/dksakkos/BatchNorm/blob/main/BatchNorm.py
-class AccumBatchNormalization(BatchNormalization):
+class AccumBatchNormalization(Layer):
     def __init__(self, **kwargs):
+        self.momentum = 0.9
+        self.epsilon = 1e-6
         super(AccumBatchNormalization, self).__init__(**kwargs)
 
     def build(self, input_shape):
@@ -32,12 +34,11 @@ class AccumBatchNormalization(BatchNormalization):
             trainable=False)
 
     def get_moving_average(self, statistic, new_value):
-        momentum = 0.9
-        new_value = statistic * momentum + new_value * (1 - momentum)
+        new_value = statistic * self.momentum + new_value * (1 - self.momentum)
         return statistic.assign(new_value)
 
-    def normalise(self, x, x_mean, x_var):
-        return (x - x_mean) / tf.sqrt(x_var + 1e-6)
+    def normalize(self, x, x_mean, x_var):
+        return (x - x_mean) / tf.sqrt(x_var + self.epsilon)
 
     def call(self, inputs, training):
         if training:
@@ -51,5 +52,5 @@ class AccumBatchNormalization(BatchNormalization):
             self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
         else:
             mean, var = self.moving_mean, self.moving_variance
-        x = self.normalise(inputs, mean, var)
+        x = self.normalize(inputs, mean, var)
         return self.gamma * x + self.beta
