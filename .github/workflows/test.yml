@@ -88,6 +88,10 @@ jobs:
         include:
           - os: ubuntu-20
             python-version: 3.6
+            tf-version: 2.2.0
+            
+          - os: ubuntu-20
+            python-version: 3.6
             tf-version: 2.3.0
 
           - os: ubuntu-20
