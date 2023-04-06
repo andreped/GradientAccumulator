@@ -140,7 +140,9 @@ jobs:
         run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
 
       - name: Run test
-        run: python tests/test_train_mnist.py
+        run: |
+          pytest -v tests/test_train_mnist.py
+          pytest -v tests/test_optimizer_wrapper.py
   
   test-optimizer:
     needs: build
