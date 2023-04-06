@@ -3,6 +3,9 @@ import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator.layers import AccumBatchNormalization
+import random as python_random
+import numpy as np
+import os
 
 
 def normalize_img(image, label):
