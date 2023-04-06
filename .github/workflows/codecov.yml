@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel setuptools
-          pip install tensorflow==2.8.0 tensorflow-addons
+          pip install tensorflow==2.8.0
 
       - name: Build wheel
         run: |
@@ -48,7 +48,6 @@ jobs:
         run: |
           pip install wheel setuptools
           pip install tensorflow==2.8.0
-          pip install tensorflow-addons
           pip install tensorflow-datasets
           pip install flake8 pytest-cov
 
