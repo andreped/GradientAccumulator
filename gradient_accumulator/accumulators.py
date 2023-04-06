@@ -1,7 +1,7 @@
 import tensorflow as tf
 from . import agc
 #from tensorflow_addons.utils import types
-from typeguard import typechecked
+#from typeguard import typechecked
 
 
 # https://stackoverflow.com/a/66524901
@@ -110,7 +110,7 @@ class GradientAccumulateModel(tf.keras.Model):
 @tf.keras.utils.register_keras_serializable()
 class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
     """Optimizer wrapper for gradient accumulation."""
-    @typechecked
+    #@typechecked
     def __init__(
         self,
         optimizer,  # : types.Optimizer,  # having this results in TypeError -> expected OptimizerV2 or str, got dict instead
