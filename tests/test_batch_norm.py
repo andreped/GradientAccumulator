@@ -95,8 +95,14 @@ def run_experiment(custom_bn=True, accum=True):
 
 
 def test_compare_bn_layers():
+    # set seed
+    reset()
+    
     # custom BN without accum
     result1 = run_experiment(custom_bn=True, accum=False)
+    
+    # reset before second run to get "identical" results
+    reset()
 
     # keras BN without accum
     result2 = run_experiment(custom_bn=False, accum=False)
