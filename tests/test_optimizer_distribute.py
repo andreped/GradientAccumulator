@@ -75,7 +75,7 @@ def test_optimizer_distribute():
     # load trained model and test
     del model
     trained_model = load_model(
-        "./trained_model", compile=True, custom_objects={"SGD": tf.keras.optimizers.SGD}
+        "./trained_model", compile=True, custom_objects={"SGD": opt}
     )
 
     result = trained_model.evaluate(ds_test, verbose=1)

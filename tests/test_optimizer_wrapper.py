@@ -94,7 +94,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": tf.keras.optimizers.legacy.SGD})
+    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": opt})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
