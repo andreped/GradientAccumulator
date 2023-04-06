@@ -52,15 +52,15 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # build train pipeline
     ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+        normalize_img, num_parallel_calls=1)
     ds_train = ds_train.batch(bs)
-    ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
+    ds_train = ds_train.prefetch(1)
 
     # build test pipeline
     ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+        normalize_img, num_parallel_calls=1)
     ds_test = ds_test.batch(bs)
-    ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+    ds_test = ds_test.prefetch(1)
 
     # create model
     model = tf.keras.models.Sequential([
@@ -73,11 +73,11 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
     # need to dynamically handle which Optimizer class to use dependent on tf version
     if tf_version > 10:
-        opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+        curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
     else:
-        opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
+        curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
 
-    opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
+    opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
 
     # compile model
     model.compile(
@@ -98,7 +98,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": opt})
+    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": curr_opt})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)

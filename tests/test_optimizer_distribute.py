@@ -45,12 +45,12 @@ def test_optimizer_distribute():
 
         # define optimizer - currently only SGD compatible with GAOptimizerWrapper
         if int(tf.version.VERSION.split(".")[1]) > 10:
-            opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+            curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
         else:
-            opt = tf.keras.optimizers.SGD(learning_rate=1e-2)
+            curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)
 
         # wrap optimizer to add gradient accumulation support
-        opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=10)
+        opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=10)
 
         # add loss scaling relevant for mixed precision
         # opt = tf.keras.mixed_precision.LossScaleOptimizer(opt)  # @TODO: Should this be after GAOptimizerWrapper?
@@ -74,9 +74,7 @@ def test_optimizer_distribute():
 
     # load trained model and test
     del model
-    trained_model = load_model(
-        "./trained_model", compile=True, custom_objects={"SGD": opt}
-    )
+    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": curr_opt})
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
