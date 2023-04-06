@@ -1,6 +1,6 @@
 import tensorflow as tf
 from . import agc
-from tensorflow_addons.utils import types
+#from tensorflow_addons.utils import types
 from typeguard import typechecked
 
 
@@ -114,7 +114,7 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
     def __init__(
         self,
         optimizer,  # : types.Optimizer,  # having this results in TypeError -> expected OptimizerV2 or str, got dict instead
-        accum_steps: types.TensorLike = 4,
+        accum_steps, #: types.TensorLike = 4,
         reduction: str = "MEAN",
         name: str = "GradientAccumulateOptimizer",
         **kwargs,
@@ -199,7 +199,7 @@ class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
         return apply_op
 
     @tf.function
-    def _resource_apply_sparse(self, grad: types.TensorLike, var, indices, apply_state):
+    def _resource_apply_sparse(self, grad, var, indices, apply_state):
         accum_gradient = self.get_slot(var, "ga")
         if accum_gradient is not None and grad is not None:
             self._resource_scatter_add(accum_gradient, indices, grad)

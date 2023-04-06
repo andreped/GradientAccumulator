@@ -1,12 +1,8 @@
-"""Gradient Accummlate for training TF2 custom training loop.
-Copy from https://github.com/OpenNMT/OpenNMT-tf/blob/master/opennmt/optimizers/utils.py.
-"""
-
-
 import re
 import tensorflow as tf
 
 
+# Copy from https://github.com/OpenNMT/OpenNMT-tf/blob/master/opennmt/optimizers/utils.py.
 class GradientAccumulator(object):
     """Gradient accumulation utility.
     When used with a distribution strategy, the accumulator should be called in a
