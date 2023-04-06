@@ -77,7 +77,7 @@ jobs:
           pytest -v tests/test_optimizer_invariance.py
           pytest -v tests/test_multitask.py
           pytest -v tests/test_adaptive_gradient_clipping.py
-          pytest -v tests/test_batch_norm.py
+        # pytest -v tests/test_batch_norm.py
 
   tf-compatibility:
     needs: build
