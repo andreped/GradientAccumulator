@@ -87,6 +87,7 @@ There is also an example of how to use gradient accumulation with mixed precisio
 
 <details>
   <summary> Distributed training with multiple GPUs</summary>
+
 In order to use multiple GPUs, you will have to use the Optimizer wrapper:
 ```
 opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))
