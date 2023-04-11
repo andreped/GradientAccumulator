@@ -62,9 +62,7 @@ model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model
 Then simply use the `model` as you normally would!
 
 <details>
-<summary>
-
-#### Mixed precision</summary>
+  <summary>Mixed precision</summary>
 
 There has also been added experimental support for mixed precision:
 ```
@@ -88,9 +86,7 @@ There is also an example of how to use gradient accumulation with mixed precisio
 
 
 <details>
-<summary>
-
-#### Distributed training with multiple GPUs</summary>
+  <summary> Distributed training with multiple GPUs</summary>
 In order to use multiple GPUs, you will have to use the Optimizer wrapper:
 ```
 opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))
@@ -104,9 +100,8 @@ Just remember to wrap the optimizer within the `tf.distribute.MirroredStrategy`.
 
 
 <details>
-<summary>
+  <summary> HuggingFace :hugs:</summary>
 
-#### HuggingFace :hugs:</summary>
 Note that HuggingFace provides a variety of different pretrained models. However, it was observed that when loading these models into TensorFlow, the computational graph may not be set up correctly, such that the `model.input` and `model.output` exist.
 
 To fix this, we basically wrap the model into a new `tf.keras.Model`, but define the inputs and outputs ourselves:
@@ -138,9 +133,7 @@ For more details, see [this](https://github.com/andreped/GradientAccumulator/blo
 
 
 <details>
-<summary>
-
-#### Adaptive gradient clipping</summary>
+  <summary> Adaptive gradient clipping</summary>
 
 There has also been added support for adaptive gradient clipping, based on [this](https://github.com/sayakpaul/Adaptive-Gradient-Clipping) implementation:
 ```
@@ -152,18 +145,15 @@ The hyperparameters values for `clip_factor` and `eps` presented here are the de
 
 
 <details>
-<summary>
-
-#### Model format</summary>
+  <summary> Model format</summary>
 
 It is recommended to use the SavedModel format when using this implementation. That is because the HDF5 format is only compatible with `TF <= 2.6` when using the model wrapper. However, if you are using older TF versions, both formats work out-of-the-box. The SavedModel format works fine for all versions of TF 2.x.
 </details>
 
 
 <details>
-<summary>
-
-#### macOS compatibility</summary>
+  <summary> macOS compatibility</summary>
+  
 Note that GradientAccumulator is perfectly compatible with macOS, both with and without GPUs. In order to have GPU support on macOS, you will need to install the tensorflow-compiled version that is compatible with metal:
 ```
 pip install tensorflow-metal
@@ -174,17 +164,15 @@ GradientAccumulator can be used as usually. However, note that there only exists
 
 
 <details>
-<summary>
-
-#### TF 1.x</summary>
+  <summary> TF 1.x</summary>
+  
 For TF 1, I suggest using the AccumOptimizer implementation in the [H2G-Net repository](https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139) instead, which wraps the optimizer instead of overloading the train_step of the Model itself (new feature in TF2).
 </details>
 
 
 <details>
-<summary>
-
-#### TF >= 2.11 legacy option</summary>
+  <summary> TF >= 2.11 legacy option</summary>
+  
 Note that for TensorFlow >= 2.11, there has been some major changes to the Optimizer class. Our current implementation is not compatible with the new one. Based on which TensorFlow version you have, our `GradientAccumulateOptimizer` dynamically chooses which Optimizer to use.
 
 However, you will need to choose a legacy optimizer to use with the Optimizer wrapper, like so:
@@ -199,9 +187,8 @@ opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=4)
 
 
 <details>
-<summary>
+  <summary> PyTorch</summary>
 
-#### PyTorch</summary>
 For PyTorch, I would recommend using [accelerate](https://pypi.org/project/accelerate/). HuggingFace :hugs: has a great tutorial on how to use it [here](https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation).
 
 However, if you wish to use native PyTorch and you are implementing your own training loop, you could do something like this:
@@ -238,9 +225,7 @@ for batch_idx, (inputs, labels) in enumerate(data_loader):
 
 
 <details>
-<summary>
-
-#### Troubleshooting</summary>
+  <summary> Troubleshooting</summary>
 
 Overloading of `train_step` method of tf.keras.Model was introduced in TF 2.2, hence, this code is compatible with TF >= 2.2.
 
@@ -249,9 +234,8 @@ Also, note that TF depends on different python versions. If you are having probl
 
 
 <details>
-<summary>
-
-#### Disclaimer</summary>
+  <summary> Disclaimer</summary>
+  
 In theory, one should be able to get identical results for batch training and using gradient accumulation. However, in practice, one may observe a slight difference. One of the cause may be when operations are used (or layers/optimizer/etc) that update for each step, such as Batch Normalization. It is **not** recommended to use BN with GA, as BN would update too frequently. However, you could try to adjust the `momentum` of BN (see [here](https://keras.io/api/layers/normalization_layers/batch_normalization/)).
 
 It was also observed a small difference when using adaptive optimizers, which I believe might be due to how frequently they are updated. Nonetheless, for the optimizers, the difference was quite small, and one may approximate batch training quite well using our GA implementation, as rigorously tested [here](https://github.com/andreped/GradientAccumulator/tree/main/tests)).
