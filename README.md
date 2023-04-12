@@ -6,14 +6,19 @@
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7806911.svg)](https://doi.org/10.5281/zenodo.7806911)
-[![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions)
-[![Documentation Status](https://readthedocs.org/projects/gradientaccumulator/badge/?version=latest)](https://gradientaccumulator.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/andreped/GradientAccumulator/branch/main/graph/badge.svg?token=MWLK71V750)](https://codecov.io/gh/andreped/GradientAccumulator)
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
 
 The package is available on PyPI and is compatible with and have been tested against `TF 2.2-2.12` and `Python 3.6-3.12`, and works cross-platform (Ubuntu, Windows, macOS).
 </div>
+
+## Continuous integration
+
+| Build Type | Status |
+| - | - |
+| **Unit tests** | [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions) |
+| **Documentations** | [![Documentation Status](https://readthedocs.org/projects/gradientaccumulator/badge/?version=latest)](https://gradientaccumulator.readthedocs.io/en/latest/?badge=latest) |
+| **Code coverage** | [![codecov](https://codecov.io/gh/andreped/GradientAccumulator/branch/main/graph/badge.svg?token=MWLK71V750)](https://codecov.io/gh/andreped/GradientAccumulator) |
 
 
 ## What?
