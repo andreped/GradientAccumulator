@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=('tests', 'notebooks')),
     install_requires=[
         "tensorflow",
-        "protobuf<=3.20.1",
+        "protobuf<=3.19.0",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
