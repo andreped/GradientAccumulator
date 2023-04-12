@@ -25,7 +25,7 @@ The package is available on PyPI and is compatible with and have been tested aga
 Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
 
 <p align="center">
-<img src="assets/grad_accum.png" width="50%">
+<img src="assets/grad_accum.png" width="70%">
 </p>
 
 
