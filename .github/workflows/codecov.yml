@@ -57,7 +57,9 @@ jobs:
           name: "Python wheel"
       
       - name: Install wheel
-        run: pip install --find-links=${{github.workspace}} --no-index gradient_accumulator
+        run: |
+          ls -la
+          pip install --find-links=${{github.workspace}} gradient_accumulator
 
       - name: Test library accessibility
         run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
