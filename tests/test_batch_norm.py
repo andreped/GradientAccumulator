@@ -37,7 +37,7 @@ def reset():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
-def run_experiment(custom_bn=True, accum=True):
+def run_experiment(custom_bn=True, bs=100, accum_steps=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -51,27 +51,35 @@ def run_experiment(custom_bn=True, accum=True):
     ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(100)
+    ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
 
     # build test pipeline
     ds_test = ds_test.map(normalize_img)
-    ds_test = ds_test.batch(100)
+    ds_test = ds_test.batch(bs)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(1)
+
+    # define which normalization layer to use in network
+    if custom_bn:
+        normalization_layer = AccumBatchNormalization()
+    elif not custom_bn:
+        normalization_layer = tf.keras.layers.BatchNormalization()
+    else:
+        normalization_layer = tf.keras.layers.Activation("linear")
 
     # create model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(128),
-        AccumBatchNormalization() if custom_bn else tf.keras.layers.BatchNormalization(),  # tf.keras.layers.Activation("linear"),
+        normalization_layer,  # tf.keras.layers.Activation("linear"),
         #tf.keras.layers.Activation("relu"),  # @TODO: BN has specific behaviour for ReLU which our custom layer does not support (yet)
         tf.keras.layers.Dense(10)
     ])
 
     # wrap model to use gradient accumulation
-    if accum:
-        model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)
+    if accum_steps > 1:
+        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(
@@ -103,26 +111,46 @@ def test_compare_bn_layers():
     reset()
     
     # custom BN without accum
-    result1 = run_experiment(custom_bn=True, accum=False)[1]
+    result1 = run_experiment(custom_bn=True, accum_steps=1)[1]
     
     # reset before second run to get "identical" results
     reset()
 
     # keras BN without accum
-    result2 = run_experiment(custom_bn=False, accum=False)[1]
+    result2 = run_experiment(custom_bn=False, accum_steps=1)[1]
 
     print(result1, result2)
 
     # @TODO: currently, we do not get identical results. Disabled for now
-    #assert result1 == result2
+    # assert result1 == result2
 
     np.testing.assert_almost_equal(result1, result2, decimal=2)
 
 
 def test_custom_bn_accum_compatibility():
-    run_experiment(custom_bn=True, accum=True)
+    run_experiment(custom_bn=True, accum_steps=4)
+
+
+def test_compare_accum_bn_expected_result():
+    # set seed
+    reset()
+    
+    # custom BN without accum
+    result1 = run_experiment(custom_bn=True, accum_steps=4, bs=25)[1]
+    
+    # reset before second run to get "identical" results
+    reset()
+
+    # keras BN without accum
+    result2 = run_experiment(custom_bn=True, accum_steps=1, bs=100)[1]
+
+    print(result1, result2)
+
+    np.testing.assert_almost_equal(result1, result2, decimal=2)
+
 
 
 if __name__ == "__main__":
-    test_compare_bn_layers()
-    test_custom_bn_accum_compatibility()
+    #test_compare_bn_layers()
+    #test_custom_bn_accum_compatibility()
+    test_compare_accum_bn_expected_result()
