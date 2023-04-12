@@ -12,7 +12,7 @@
 The package is available on PyPI and is compatible with and have been tested against `TF 2.2-2.12` and `Python 3.6-3.12`, and works cross-platform (Ubuntu, Windows, macOS).
 </div>
 
-## Continuous integration
+## [Continuous integration](https://github.com/andreped/GradientAccumulator#continuous-integration)
 
 | Build Type | Status |
 | - | - |
@@ -21,7 +21,7 @@ The package is available on PyPI and is compatible with and have been tested aga
 | **Code coverage** | [![codecov](https://codecov.io/gh/andreped/GradientAccumulator/branch/main/graph/badge.svg?token=MWLK71V750)](https://codecov.io/gh/andreped/GradientAccumulator) |
 
 
-## What?
+## [What?](https://github.com/andreped/GradientAccumulator#what)
 Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
 
 <p align="center">
@@ -29,7 +29,7 @@ Gradient accumulation (GA) enables reduced GPU memory consumption through dividi
 </p>
 
 
-## Why?
+## [Why?](https://github.com/andreped/GradientAccumulator#why)
 In TensorFlow 2, there did not exist a plug-and-play method to use gradient accumulation with any custom pipeline. Hence, we have implemented two generic TF2-compatible approaches:
 
 | Method | Usage |
@@ -44,7 +44,7 @@ Our implementations enable theoretically **infinitely large batch size**, with *
 As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative. We have also added support for mixed precision and both GPU and TPU support.
 
 
-## Install
+## [Install](https://github.com/andreped/GradientAccumulator#install)
 
 Stable release from PyPI:
 ```
@@ -56,7 +56,7 @@ Or from source:
 pip install git+https://github.com/andreped/GradientAccumulator
 ```
 
-## Usage
+## [Usage](https://github.com/andreped/GradientAccumulator#usage)
 ```
 from gradient_accumulator import GradientAccumulateModel
 from tensorflow.keras.models import Model
@@ -249,12 +249,12 @@ It was also observed a small difference when using adaptive optimizers, which I 
 </details>
   
 
-## Acknowledgements
+## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 The optimizer wrapper is derived from [the implementation by @fsx950223 and @stefan-falk](https://github.com/tensorflow/addons/pull/2525).
 
   
-## How to cite?
+## [How to cite?](https://github.com/andreped/GradientAccumulator#how-to-cite)
 If you used this package or found the project relevant in your research, please, considering including the following citation:
 
 ```
