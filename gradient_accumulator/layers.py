@@ -7,13 +7,21 @@ import tensorflow as tf
 # https://github.com/dksakkos/BatchNorm/blob/main/BatchNorm.py
 @tf.keras.utils.register_keras_serializable()
 class AccumBatchNormalization(Layer):
-    def __init__(self, momentum=0.9, epsilon=1e-3, **kwargs):
+    def __init__(self, accum_steps=1, momentum=0.9, epsilon=1e-3, **kwargs):
+        self.accum_steps = accum_steps
+        self.accum_steps_tf = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.momentum = momentum
         self.epsilon = epsilon
-
+        self.accum_step_counter = tf.Variable(
+            0, dtype=tf.int32, trainable=False, name="accum_counter",
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
+        )
         super().__init__(**kwargs)
 
     def build(self, input_shape):
+        self.num_features = input_shape[-1]
+
         self.beta = self.add_weight(
             shape=(input_shape[-1]),
             initializer="zeros",
@@ -42,13 +50,36 @@ class AccumBatchNormalization(Layer):
             name="moving_variance",
         )
 
+        self.accum_mean = tf.Variable(
+            tf.zeros(input_shape[-1], dtype=tf.float32),
+            trainable=False,
+            name="accum_mean",
+        )
+
+        self.accum_variance = tf.Variable(
+            tf.zeros(input_shape[-1], dtype=tf.float32),
+            trainable=False,
+            name="accum_variance",
+        )
+
     def get_moving_average(self, statistic, new_value):
-        #new_value = statistic * self.momentum + new_value * (1.0 - self.momentum)
         decay = tf.convert_to_tensor(1.0 - self.momentum, name="decay")
         if decay.dtype != statistic.dtype.base_dtype:
             decay = tf.cast(decay, statistic.dtype.base_dtype)
         new_value = statistic - (statistic - tf.cast(new_value, statistic.dtype)) * decay
         return statistic.assign(new_value)
+    
+    def update_variables(self, mean, var):
+        self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
+        self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
+
+        self.reset_accum()
+    
+    def reset_accum(self):
+        self.accum_mean.assign(tf.zeros(self.num_features))
+        self.accum_variance.assign(tf.zeros(self.num_features))
+
+        self.accum_step_counter.assign(0)
 
     def call(self, inputs, training=None, mask=None):
         if training:
@@ -57,26 +88,45 @@ class AccumBatchNormalization(Layer):
                 axes = [0, 1, 2]
             else:
                 axes = [0]
-                
+            
+            # step accum count
+            self.accum_step_counter.assign_add(1)
+            
+            # get batch norm statistics
             mean, var = tf.nn.moments(inputs, axes=axes, keepdims=False)
-            self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
-            self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
+
+            # scale mean and variance to produce mean later
+            mean /= tf.cast(self.accum_steps_tf, tf.float32)
+            var /= tf.cast(self.accum_steps_tf, tf.float32)
+            
+            # accumulate statistics
+            self.accum_mean.assign_add(mean)
+            self.accum_variance.assign_add(var)
+
+            # only update variables after n accumulation steps
+            tf.cond(tf.equal(self.accum_step_counter, self.accum_steps_tf), true_fn=lambda: self.update_variables(mean, var), false_fn=lambda: None)
         else:
             mean, var = self.moving_mean, self.moving_variance
         
+        # @ TODO: Why are we not doing this for training?
+        # mean, var = self.moving_mean, self.moving_variance
+
         scale = self.gamma
         offset = self.beta
-
+        
         inv = tf.math.rsqrt(var + self.epsilon)
         if scale is not None:
             inv *= scale
+        
+        # @TODO: Why are we using mean and var here and not self.moving_mean and self.moving_variance?
         outputs =  inputs * tf.cast(inv, inputs.dtype) + \
             tf.cast(offset - mean * inv if offset is not None else -mean * inv, inputs.dtype)
-        
+
         return outputs
     
     def get_config(self):
         config = {
+            'accum_steps': self.accum_steps,
             'momentum': self.momentum,
             'epsilon': self.epsilon,
         }
