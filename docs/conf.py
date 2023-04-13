@@ -36,8 +36,8 @@ templates_path = ['templates']
 exclude_patterns = ['build']
 
 # Options for HTML output
-# html_theme = 'sphinxdoc'
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinxdoc'
+# html_theme = 'sphinx_rtd_theme'
 html_theme_options = {
     'sticky_navigation': True,
 }
