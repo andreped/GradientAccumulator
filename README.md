@@ -56,7 +56,7 @@ Or from source:
 pip install git+https://github.com/andreped/GradientAccumulator
 ```
 
-## [Usage](https://github.com/andreped/GradientAccumulator#usage)
+## [Quickstart](https://github.com/andreped/GradientAccumulator#quickstart)
 
 A simple example to add gradient accumulation to an existing model is by:
 ```
@@ -69,10 +69,9 @@ model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model
 
 Then simply use the `model` as you normally would!
 
-## [Documentations](https://github.com/andreped/GradientAccumulator#documentations)
+However, using gradient accumulation in some scenarios might require some extra overhead or tricks.
 
-For more information regarding usage and to add gradient accumulation to various different situations,
-please visit the [documentations hosted at readthedocs](https://gradientaccumulator.readthedocs.io/en/latest/index.html).
+For more information, see documentations which are hosted at [gradientaccumulator.readthedocs.io](https://gradientaccumulator.readthedocs.io/en/latest/).
 
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
