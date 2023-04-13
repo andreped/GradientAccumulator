@@ -27,6 +27,12 @@ Note that GradientAccumulator is built on top of `TensorFlow <https://www.tensor
 installation if no existing version is found.
 
 .. toctree::
+   :caption: Examples
+   :maxdepth: 1
+
+   examples/mixed_precision
+
+.. toctree::
    :caption: API Documentation
    :maxdepth: 2
 
