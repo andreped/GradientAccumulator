@@ -1,7 +1,7 @@
 Gradient Accumulation Wrappers
 ===================
 
-.. currentmodule:: optax
+.. currentmodule:: GradientAccumulator
 
 .. autosummary::
 
@@ -12,12 +12,14 @@ Gradient Accumulation Wrappers
 GradientAccumulateModel
 ~~~~~~~
 
-.. autofunction:: GradientAccumulateModel
+.. autoclass:: GradientAccumulateModel
+    :members:
 
 GradientAccumulateOptimizer
 ~~~~~~~~~
 
-.. autofunction:: GradientAccumulateOptimizer
+.. autoclass:: GradientAccumulateOptimizer
+    :members:
 
 
 Custom Layers
@@ -26,13 +28,12 @@ Custom Layers
 AccumBatchNormalization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. autofunction:: AccumBatchNormalization
+.. autoclass:: AccumBatchNormalization
+    :members:
 
 
 General Utilities
 =====================
-
-General Utilities
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: compute_norm
