@@ -1,7 +1,7 @@
 .idea/
 .vs/
 .vscode/
-.DS_Store
+*.DS_Store
 venv/
 __pycache__/
 trained_model/
