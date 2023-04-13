@@ -1,7 +1,7 @@
 Gradient Accumulation Wrappers
 ===================
 
-.. currentmodule:: gradient-accumulator
+.. currentmodule:: gradient_accumulator
 
 .. autosummary::
 
@@ -25,6 +25,8 @@ GradientAccumulateOptimizer
 Custom Layers
 =====================
 
+.. currentmodule:: gradient_accumulator
+
 AccumBatchNormalization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -34,6 +36,8 @@ AccumBatchNormalization
 
 General Utilities
 =====================
+
+.. currentmodule:: gradient_accumulator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: compute_norm
