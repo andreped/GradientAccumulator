@@ -33,6 +33,13 @@ installation if no existing version is found.
 
    examples/*
 
+.. toctree::
+   :glob:
+   :caption: Frequently Asked Questions
+   :maxdepth: 2
+
+   FAQ/*
+
 
 .. toctree::
    :caption: API Documentation
