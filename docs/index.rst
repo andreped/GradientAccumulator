@@ -45,7 +45,7 @@ making a discussion in the dedicated `Discussions tab <https://github.com/andrep
 License
 -------
 
-Optax is licensed under the `MIT License <https://github.com/andreped/GradientAccumulator/blob/main/LICENSE>`_.
+GradientAccumulator is licensed under the `MIT License <https://github.com/andreped/GradientAccumulator/blob/main/LICENSE>`_.
 
 
 Indices and Tables
