@@ -26,6 +26,12 @@ can be used to obtain the most recent version of Optax.
 Note that GradientAccumulator is built on top of `TensorFlow <https://www.tensorflow.org/>`_, which is installed during
 installation if no existing version is found.
 
+.. toctree::
+   :caption: API Documentation
+   :maxdepth: 2
+
+   api
+
 The Team
 --------
 
