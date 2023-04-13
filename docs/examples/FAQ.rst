@@ -78,6 +78,7 @@ However, if you wish to use native PyTorch and you are implementing
 your own training loop, you could do something like this:
 
 .. code-block:: python
+
     # batch accumulation parameter
     accum_iter = 4
 
@@ -105,4 +106,3 @@ your own training loop, you could do something like this:
             if ((batch_idx + 1) % accum_iter == 0) or (batch_idx + 1 == len(data_loader)):
                 optimizer.step()
                 optimizer.zero_grad()
-
