@@ -25,7 +25,7 @@ def unitwise_norm(x):
     Args:
         x: input tensor.
 
-    Return:
+    Returns:
         Euclidean norm.
     """
     if len(x.get_shape()) <= 1:  # Scalars and vectors
