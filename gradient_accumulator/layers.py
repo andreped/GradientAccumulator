@@ -7,7 +7,16 @@ import tensorflow as tf
 # https://github.com/dksakkos/BatchNorm/blob/main/BatchNorm.py
 @tf.keras.utils.register_keras_serializable()
 class AccumBatchNormalization(Layer):
-    def __init__(self, accum_steps=1, momentum=0.9, epsilon=1e-3, **kwargs):
+    """Custom Batch Normaliztion layer with gradient accumulation support."""
+    def __init__(self, accum_steps: int = 1, momentum: float = 0.9, epsilon:float = 1e-3, **kwargs):
+        """Construct the AccumBatchNormalization layer.
+
+        Args:
+            accum_steps: int > 0. Update gradient in every accumulation steps.
+            momentum: float [0, 1]. Momentum used in variable update.
+            epsilon: float > 0: Small value to aid numerical stability.
+            **kwargs: keyword arguments. Supports various arguments from the Keras' Layer class.
+        """
         self.accum_steps = accum_steps
         self.accum_steps_tf = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.momentum = momentum
@@ -20,6 +29,7 @@ class AccumBatchNormalization(Layer):
         super().__init__(**kwargs)
 
     def build(self, input_shape):
+        """Builds layer and variables."""
         self.num_features = input_shape[-1]
 
         self.beta = self.add_weight(
@@ -63,6 +73,7 @@ class AccumBatchNormalization(Layer):
         )
 
     def get_moving_average(self, statistic, new_value):
+        """Returns the moving average given a statistic and current estimate."""
         decay = tf.convert_to_tensor(1.0 - self.momentum, name="decay")
         if decay.dtype != statistic.dtype.base_dtype:
             decay = tf.cast(decay, statistic.dtype.base_dtype)
@@ -70,18 +81,21 @@ class AccumBatchNormalization(Layer):
         return statistic.assign(new_value)
     
     def update_variables(self, mean, var):
+        """Updates the batch normalization variables."""
         self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
         self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
 
         self.reset_accum()
     
     def reset_accum(self):
+        """Resets accumulator slots."""
         self.accum_mean.assign(tf.zeros(self.num_features))
         self.accum_variance.assign(tf.zeros(self.num_features))
 
         self.accum_step_counter.assign(0)
 
     def call(self, inputs, training=None, mask=None):
+        """Performs the batch normalization step."""
         if training:
             assert len(inputs.shape) in (2, 4)
             if len(inputs.shape) > 2:
@@ -125,6 +139,7 @@ class AccumBatchNormalization(Layer):
         return outputs
     
     def get_config(self):
+        """Returns configurations as dict."""
         config = {
             'accum_steps': self.accum_steps,
             'momentum': self.momentum,

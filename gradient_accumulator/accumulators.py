@@ -12,7 +12,19 @@ if int(tf.version.VERSION.split(".")[1]) > 10:
 # https://keras.io/guides/customizing_what_happens_in_fit/
 @tf.keras.utils.register_keras_serializable()  # adding this avoids needing to use custom_objects when loading model
 class GradientAccumulateModel(tf.keras.Model):
-    def __init__(self, accum_steps=1, mixed_precision=False, use_agc=False, clip_factor=0.01, eps=1e-3, *args, **kwargs):
+    """Model wrapper for gradient accumulation."""
+    def __init__(self, accum_steps:int = 1, mixed_precision:bool = False, use_agc:bool = False,
+                 clip_factor:float = 0.01, eps:float = 1e-3, *args, **kwargs):
+        """Adds gradient accumulation support to existing Keras' Model.
+
+        Args:
+            accum_steps: int > 0. Update gradient in every accumulation steps.
+            mixed_precision: bool. Whether to enable mixed precision.
+            use_agc: bool. Whether to enable adaptive gradient clipping.
+            clip_factor: float > 0. Upper limit to gradient clipping.
+            eps: float > 0. Small value to aid numerical stability.
+            **kwargs: keyword arguments.
+        """
         super().__init__(*args, **kwargs)
         self.accum_steps = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False, name="accum_counter",
@@ -28,6 +40,7 @@ class GradientAccumulateModel(tf.keras.Model):
         self.eps = eps
 
     def train_step(self, data):
+        """Performs single train step."""
         # need to reinit accumulator for models subclassed from tf.keras.Model
         if self.first_call:
             self.reinit_grad_accum()
@@ -89,6 +102,7 @@ class GradientAccumulateModel(tf.keras.Model):
         return {m.name: m.result() for m in self.metrics}
 
     def apply_accu_gradients(self):
+        """Performs gradient update and resets slots afterwards."""
         # apply accumulated gradients
         self.optimizer.apply_gradients(zip(self.gradient_accumulation, self.trainable_variables))
 
@@ -99,6 +113,7 @@ class GradientAccumulateModel(tf.keras.Model):
                 tf.zeros_like(self.trainable_variables[i], dtype=tf.float32), read_value=False)
     
     def reinit_grad_accum(self):
+        """Reinitialized gradient accumulator slots."""
         # reinitialize gradient accumulator
         self.gradient_accumulation = [
             tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False,
@@ -115,7 +130,7 @@ class GradientAccumulateModel(tf.keras.Model):
 class GradientAccumulateOptimizer(opt):
     """Optimizer wrapper for gradient accumulation."""
     def __init__(self, optimizer="SGD", accum_steps=1, reduction: str = "MEAN", name: str = "GradientAccumulateOptimizer", **kwargs):
-        r"""Construct a new GradientAccumulateOptimizer optimizer.
+        """Construct a new GradientAccumulateOptimizer optimizer.
 
         Args:
             optimizer: str or `tf.keras.optimizers.Optimizer` that will be
@@ -137,6 +152,7 @@ class GradientAccumulateOptimizer(opt):
         super().__init__(name, **kwargs)
 
     def _create_slots(self, var_list):
+        """Creates slots for optimizer gradients."""
         self.optimizer._create_slots(var_list=var_list)
         for var in var_list:
             self.add_slot(var, "ga")
@@ -156,11 +172,13 @@ class GradientAccumulateOptimizer(opt):
         )
 
     def apply_gradients(self, grads_and_vars, name=None, **kwargs):
+        """Updated gradients in optimizer."""
         self.optimizer._iterations = self.iterations
         return super().apply_gradients(grads_and_vars, name, **kwargs)
 
     @tf.function
     def _resource_apply_dense(self, grad, var, apply_state=None):
+        """Performs gradient update on dense."""
         accum_gradient = self.get_slot(var, "ga")
 
         if accum_gradient is not None and grad is not None:
@@ -194,6 +212,7 @@ class GradientAccumulateOptimizer(opt):
 
     @tf.function
     def _resource_apply_sparse(self, grad, var, indices, apply_state):
+        """Performs gradient update on sparse."""
         accum_gradient = self.get_slot(var, "ga")
         if accum_gradient is not None and grad is not None:
             self._resource_scatter_add(accum_gradient, indices, grad)
@@ -242,13 +261,16 @@ class GradientAccumulateOptimizer(opt):
 
     @property
     def learning_rate(self):
+        """Returns the learning rate of the optimizer."""
         return self.optimizer._get_hyper("learning_rate")
 
     @learning_rate.setter
     def learning_rate(self, learning_rate):
+        """Sets the learning rate of the optimizer."""
         self.optimizer._set_hyper("learning_rate", learning_rate)
 
     def get_config(self):
+        """Returns the configuration as dict."""
         config = {
             "optimizer": tf.keras.optimizers.get(self.optimizer),
             "accum_steps": self.accum_steps,
