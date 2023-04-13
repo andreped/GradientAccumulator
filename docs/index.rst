@@ -1,7 +1,7 @@
 :github_url: https://github.com/andreped/GradientAccumulator/tree/main/docs
 
 GradientAccumulator
------
+-------------------
 
 GradientAccumulator is a lightweight and low-code library for enabling gradient accumulation
 techniques in TensorFlow. It is designed to be integrated seemlessly and be compatible to

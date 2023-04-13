@@ -11,3 +11,4 @@ gradient_accumulator.egg-info/
 dist/
 *.h5
 benchmark.py
+docs/_build/

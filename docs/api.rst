@@ -1,5 +1,5 @@
 Gradient Accumulation Wrappers
-=================================================
+==============================
 
 .. currentmodule:: gradient_accumulator
 
@@ -24,7 +24,7 @@ GradientAccumulateOptimizer
 
 
 Custom Layers
-=================================================
+=============
 
 .. currentmodule:: gradient_accumulator
 
@@ -36,7 +36,7 @@ AccumBatchNormalization
 
 
 General Utilities
-=================================================
+=================
 
 .. currentmodule:: gradient_accumulator
 
