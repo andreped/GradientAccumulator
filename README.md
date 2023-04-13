@@ -21,29 +21,6 @@ The package is available on PyPI and is compatible with and have been tested aga
 | **Code coverage** | [![codecov](https://codecov.io/gh/andreped/GradientAccumulator/branch/main/graph/badge.svg?token=MWLK71V750)](https://codecov.io/gh/andreped/GradientAccumulator) |
 
 
-## [What?](https://github.com/andreped/GradientAccumulator#what)
-Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
-
-<p align="center">
-<img src="assets/grad_accum.png" width="70%">
-</p>
-
-
-## [Why?](https://github.com/andreped/GradientAccumulator#why)
-In TensorFlow 2, there did not exist a plug-and-play method to use gradient accumulation with any custom pipeline. Hence, we have implemented two generic TF2-compatible approaches:
-
-| Method | Usage |
-| - | - |
-| `GradientAccumulateModel` | `model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)` |
-| `GradientAccumulateOptimizer` | `opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))` |
-
-Both approaches control how frequently the weigths are updated, but in their own way. Approach (1) is for single-GPU only, whereas (2) supports both single-GPU and distributed training (multi-GPU). However, note that (2) is not yet working as intended. Hence, use (1) for most applications.
-
-Our implementations enable theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. If a single GPU is used, this comes at the cost of increased training runtime. Multiple GPUs could be used to increase runtime performance.
-
-As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative. We have also added support for mixed precision and both GPU and TPU support.
-
-
 ## [Install](https://github.com/andreped/GradientAccumulator#install)
 
 Stable release from PyPI:
@@ -72,6 +49,29 @@ Then simply use the `model` as you normally would!
 However, using gradient accumulation in some scenarios might require some extra overhead or tricks.
 
 For more information, see documentations which are hosted at [gradientaccumulator.readthedocs.io](https://gradientaccumulator.readthedocs.io/en/latest/).
+
+
+## [What?](https://github.com/andreped/GradientAccumulator#what)
+Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
+
+<p align="center">
+<img src="assets/grad_accum.png" width="70%">
+</p>
+
+
+## [Why?](https://github.com/andreped/GradientAccumulator#why)
+In TensorFlow 2, there did not exist a plug-and-play method to use gradient accumulation with any custom pipeline. Hence, we have implemented two generic TF2-compatible approaches:
+
+| Method | Usage |
+| - | - |
+| `GradientAccumulateModel` | `model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)` |
+| `GradientAccumulateOptimizer` | `opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))` |
+
+Both approaches control how frequently the weigths are updated, but in their own way. Approach (1) is for single-GPU only, whereas (2) supports both single-GPU and distributed training (multi-GPU). However, note that (2) is not yet working as intended. Hence, use (1) for most applications.
+
+Our implementations enable theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. If a single GPU is used, this comes at the cost of increased training runtime. Multiple GPUs could be used to increase runtime performance.
+
+As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative. We have also added support for mixed precision and both GPU and TPU support.
 
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
