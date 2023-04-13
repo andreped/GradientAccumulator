@@ -71,7 +71,14 @@ Both approaches control how frequently the weigths are updated, but in their own
 
 Our implementations enable theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. If a single GPU is used, this comes at the cost of increased training runtime. Multiple GPUs could be used to increase runtime performance.
 
-As batch normalization is not natively compatible with GA, support for adaptive gradient clipping has been added as an alternative. We have also added support for mixed precision and both GPU and TPU support.
+| Technique | Usage |
+| - | - |
+| `Adaptive Gradient Clipping` | `model = GradientAccumulateModel(accum_steps=4, agc=True, inputs=model.input, outputs=model.output)` |
+| `GradientAccumulateOptimizer` | `layer = AccumBatchNormalization(accum_steps=4)` |
+
+As batch normalization (BN) is not natively compatible with GA, we have implemented a custom BN layer which can be used as a drop-in replacement.
+
+Support for adaptive gradient clipping has been added as an alternative to BN. Mixed precision can also be utilized on both GPUs and TPUs.
 
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
