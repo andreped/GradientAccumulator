@@ -83,6 +83,8 @@ Support for adaptive gradient clipping has been added as an alternative to BN.
 
 Mixed precision can also be utilized on both GPUs and TPUs.
 
+For more information on usage, supported techniques, and examples, refer to [the documentations](https://gradientaccumulator.readthedocs.io/en/latest/).
+
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
