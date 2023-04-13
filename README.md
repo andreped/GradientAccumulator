@@ -72,7 +72,7 @@ Then simply use the `model` as you normally would!
 ## [Documentations](https://github.com/andreped/GradientAccumulator#documentations)
 
 For more information regarding usage and to add gradient accumulation to various different situations,
-please, visit the [documentations hosted at readthedocs](https://gradientaccumulator.readthedocs.io/en/latest/index.html).
+please visit the [documentations hosted at readthedocs](https://gradientaccumulator.readthedocs.io/en/latest/index.html).
 
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
