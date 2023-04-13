@@ -10,14 +10,14 @@ Gradient Accumulation Wrappers
 
 
 GradientAccumulateModel
-~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: GradientAccumulateModel
     :members:
 
 
 GradientAccumulateOptimizer
-~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: GradientAccumulateOptimizer
     :members:
@@ -29,7 +29,7 @@ Custom Layers
 .. currentmodule:: gradient_accumulator
 
 AccumBatchNormalization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: AccumBatchNormalization
     :members:
@@ -39,7 +39,9 @@ General Utilities
 =================================================
 
 .. currentmodule:: gradient_accumulator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Adaptive Gradient Clipping
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autofunction:: compute_norm
 .. autofunction:: unitwise_norm
