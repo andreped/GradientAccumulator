@@ -1,23 +1,33 @@
-""" An implementation of Adaptive Gradient Clipping
-@article{brock2021high,
-  author={Andrew Brock and Soham De and Samuel L. Smith and Karen Simonyan},
-  title={High-Performance Large-Scale Image Recognition Without Normalization},
-  journal={arXiv preprint arXiv:},
-  year={2021}
-}
-Code references:
-  * Official JAX implementation (paper authors): https://github.com/deepmind/deepmind-research/tree/master/nfnets
-  * Ross Wightman's implementation https://github.com/rwightman/pytorch-image-models/blob/master/timm/utils/agc.py
-"""
 import tensorflow as tf
 
 
 # implementation from: https://github.com/sayakpaul/Adaptive-Gradient-Clipping/blob/main/agc.py
 def compute_norm(x, axis, keepdims):
+    """
+    Computes the euclidean norm of a tensor :math:`x`.
+
+    Args:
+        x: input tensor.
+        axis: which axis to compute norm across.
+        keepdims: whether to keep dimension after applying along axis.
+    
+    Returns:
+        Euclidean norm.
+    """
     return tf.math.reduce_sum(x ** 2, axis=axis, keepdims=keepdims) ** 0.5
 
 
 def unitwise_norm(x):
+    """
+    Wrapper class which dynamically sets `axis` and `keepdims` given an
+    input `x` for calculating euclidean norm.
+
+    Args:
+        x: input tensor.
+
+    Return:
+        Euclidean norm.
+    """
     if len(x.get_shape()) <= 1:  # Scalars and vectors
         axis = None
         keepdims = False
@@ -35,7 +45,22 @@ def unitwise_norm(x):
     return compute_norm(x, axis, keepdims)
 
 
-def adaptive_clip_grad(parameters, gradients, clip_factor=0.01, eps=1e-3):
+def adaptive_clip_grad(parameters, gradients, clip_factor: float = 0.01, eps: float = 1e-3):
+    """
+    Performs adaptive gradient clipping on a given set of parameters and gradients.
+
+    * Official JAX implementation (paper authors): https://github.com/deepmind/deepmind-research/tree/master/nfnets
+    * Ross Wightman's implementation https://github.com/rwightman/pytorch-image-models/blob/master/timm/utils/agc.py
+
+    Args:
+        parameters: Which parameters to apply method on.
+        gradients: Which gradients to apply clipping on.
+        clip_factor: Sets upper limit for gradient clipping.
+        eps: Epsilon - small number in :math:`max()` to avoid zero norm and preserve numerical stability.
+    
+    Returns:
+        Updated gradients after gradient clipping.
+    """
     new_grads = []
     for (params, grads) in zip(parameters, gradients):
         p_norm = unitwise_norm(params)
