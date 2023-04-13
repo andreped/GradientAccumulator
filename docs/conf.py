@@ -7,11 +7,11 @@ import sys
 
 import gradient_accumulator
 
+
 # Project information
 url = "https://github.com/andreped/GradientAccumulator"
 
 # General configuration
-
 master_doc = 'index'
 
 # Sphinx extension modules
@@ -31,14 +31,6 @@ templates_path = ['templates']
 # directories to ignore when looking for source files
 exclude_patterns = ['build']
 
-# Options for HTML output
-#html_theme = 'sphinxdoc'
-# html_theme = 'sphinx_rtd_theme'
-#html_theme_options = {
-#    'sticky_navigation': True,
-#}
-#html_static_path = []
-
 # Options for the intersphinx extension
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
@@ -49,7 +41,6 @@ graphviz_output_format = 'svg'
 
 # Generate autosummary
 autosummary_generate = True
-
 
 # sphinx.ext.linkcode: Try to link to source code on GitHub
 REVISION_CMD = ['git', 'rev-parse', '--short', 'HEAD']
