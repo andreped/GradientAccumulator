@@ -28,9 +28,10 @@ installation if no existing version is found.
 
 .. toctree::
    :caption: Examples
-   :maxdepth: 1
+   :maxdepth: 2
+   :glob:
 
-   examples/mixed_precision
+   examples/*
 
 .. toctree::
    :caption: API Documentation
