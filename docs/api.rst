@@ -1,7 +1,7 @@
 Gradient Accumulation Wrappers
 ===================
 
-.. currentmodule:: GradientAccumulator
+.. currentmodule:: gradient-accumulator
 
 .. autosummary::
 
