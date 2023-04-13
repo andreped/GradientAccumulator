@@ -23,14 +23,14 @@ can be used to obtain the most recent version of Optax.
 
 ``pip install git+git://github.com/andreped/GradientAccumulator.git``
 
-Note that GradientAccumulator is built on top of `TensorFlow <https://www.tensorflow.org/>`, which is installed during
+Note that GradientAccumulator is built on top of `TensorFlow <https://www.tensorflow.org/>`_, which is installed during
 installation if no existing version is found.
 
 The Team
 --------
 
 The development of GradientAccumulator is led by André Pedersen with
-coworkers at the `SINTEF Medical Image Analysis <https://www.sintef.no/en/digital/departments-new/department-of-health-research/>`
+coworkers at the `SINTEF Medical Image Analysis <https://www.sintef.no/en/digital/departments-new/department-of-health-research/>`_
 research group. We are also very grateful to the open source community for
 contributing ideas, bug fixes, and issues.
 
@@ -39,13 +39,13 @@ Support
 
 If you are having issues, please let us know by filing an issue on our
 `issue tracker <https://github.com/andreped/GradientAccumulator/issues>`_ or 
-making a discussion in the dedicated `Discussions tab <https://github.com/andreped/GradientAccumulator/discussions>`.
+making a discussion in the dedicated `Discussions tab <https://github.com/andreped/GradientAccumulator/discussions>`_.
 
 
 License
 -------
 
-Optax is licensed under the [MIT](https://github.com/andreped/GradientAccumulator/blob/main/LICENSE) License.
+Optax is licensed under the `MIT License <https://github.com/andreped/GradientAccumulator/blob/main/LICENSE>`_.
 
 
 Indices and Tables
