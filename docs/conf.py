@@ -8,11 +8,7 @@ import sys
 import gradient_accumulator
 
 # Project information
-project = gradient_accumulator.__package__
-author = gradient_accumulator.__author__
-version = gradient_accumulator.__version__
-release = version
-url = gradient_accumulator.__url__
+url = "https://github.com/andreped/GradientAccumulator"
 
 # General configuration
 
@@ -36,12 +32,12 @@ templates_path = ['templates']
 exclude_patterns = ['build']
 
 # Options for HTML output
-html_theme = 'sphinxdoc'
+#html_theme = 'sphinxdoc'
 # html_theme = 'sphinx_rtd_theme'
-html_theme_options = {
-    'sticky_navigation': True,
-}
-html_static_path = []
+#html_theme_options = {
+#    'sticky_navigation': True,
+#}
+#html_static_path = []
 
 # Options for the intersphinx extension
 intersphinx_mapping = {
