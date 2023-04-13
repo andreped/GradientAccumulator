@@ -9,7 +9,6 @@ import gradient_accumulator
 
 # Project information
 project = gradient_accumulator.__package__
-copyright = gradient_accumulator.__copyright__.replace('Copyright', '').strip()
 author = gradient_accumulator.__author__
 version = gradient_accumulator.__version__
 release = version
