@@ -1,7 +1,5 @@
 import tensorflow as tf
 from . import agc
-#from tensorflow_addons.utils import types
-#from typeguard import typechecked
 
 
 # need to dynamically handle which Optimizer class to use dependent on tf version
