@@ -16,10 +16,10 @@ master_doc = 'index'
 
 # Sphinx extension modules
 extensions = [
+    'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.napoleon',
     'sphinx.ext.linkcode',
 ]
 
