@@ -1,5 +1,5 @@
 Gradient Accumulation Wrappers
-===================
+=====================================
 
 .. currentmodule:: gradient_accumulator
 
@@ -15,6 +15,7 @@ GradientAccumulateModel
 .. autoclass:: GradientAccumulateModel
     :members:
 
+
 GradientAccumulateOptimizer
 ~~~~~~~~~
 
@@ -23,7 +24,7 @@ GradientAccumulateOptimizer
 
 
 Custom Layers
-=====================
+=====================================
 
 .. currentmodule:: gradient_accumulator
 
@@ -35,7 +36,7 @@ AccumBatchNormalization
 
 
 General Utilities
-=====================
+=====================================
 
 .. currentmodule:: gradient_accumulator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
