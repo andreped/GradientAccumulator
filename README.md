@@ -75,10 +75,13 @@ Our implementations enable theoretically **infinitely large batch size**, with *
 | - | - |
 | `Adaptive Gradient Clipping` | `model = GradientAccumulateModel(accum_steps=4, agc=True, inputs=model.input, outputs=model.output)` |
 | `GradientAccumulateOptimizer` | `layer = AccumBatchNormalization(accum_steps=4)` |
+| `Mixed precision` | `model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)` |
 
 As batch normalization (BN) is not natively compatible with GA, we have implemented a custom BN layer which can be used as a drop-in replacement.
 
-Support for adaptive gradient clipping has been added as an alternative to BN. Mixed precision can also be utilized on both GPUs and TPUs.
+Support for adaptive gradient clipping has been added as an alternative to BN.
+
+Mixed precision can also be utilized on both GPUs and TPUs.
 
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
