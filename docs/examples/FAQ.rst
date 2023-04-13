@@ -29,7 +29,7 @@ exists one tf-metal version, which should be equivalent to TF==2.5.
 
 
 TensorFlow 1.x compatibility
---------------------------
+----------------------------
 
 For TF 1, I suggest using the AccumOptimizer implementation in the
 `H2G-Net repository <https://github.com/andreped/H2G-Net/blob/main/src/utils/accum_optimizers.py#L139>`_.
