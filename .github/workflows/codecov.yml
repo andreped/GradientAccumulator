@@ -22,6 +22,7 @@ jobs:
         run: |
           pip install wheel setuptools
           pip install tensorflow==2.8.0
+          pip install protobuf==3.20
 
       - name: Build wheel
         run: |
@@ -48,7 +49,7 @@ jobs:
         run: |
           pip install wheel setuptools flake8 pytest-cov
           pip install tensorflow==2.8.0 "tensorflow-datasets<=4.8.2"
-          pip install --upgrade protobuf
+          pip install protobuf==3.20
 
       - name: Download artifact
         uses: actions/download-artifact@master
