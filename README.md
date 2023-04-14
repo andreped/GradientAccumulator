@@ -46,7 +46,7 @@ model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model
 
 Then simply use the `model` as you normally would!
 
-However, using gradient accumulation in some scenarios might require some extra overhead or tricks.
+In practice, using gradient accumulation with a custom pipeline might require some extra overhead and tricks to get working.
 
 For more information, see documentations which are hosted at [gradientaccumulator.readthedocs.io](https://gradientaccumulator.readthedocs.io/en/latest/).
 
