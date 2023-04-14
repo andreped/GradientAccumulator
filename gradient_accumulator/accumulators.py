@@ -164,7 +164,11 @@ class GradientAccumulateOptimizer(opt):
         super().__init__(name, **kwargs)
 
     def _create_slots(self, var_list):
-        """Creates slots for optimizer gradients."""
+        """Creates slots for optimizer gradients.
+        
+        Args:
+            List of trainable variables.
+        """
         self.optimizer._create_slots(var_list=var_list)
         for var in var_list:
             self.add_slot(var, "ga")
@@ -173,7 +177,11 @@ class GradientAccumulateOptimizer(opt):
 
     @property
     def gradients(self):  # pragma: no cover
-        """The accumulated gradients on the current replica."""
+        """The accumulated gradients on the current replica.
+        
+        Returns:
+            Current gradients in optimizer.
+        """
         if not self._gradients:
             raise ValueError(
                 "The accumulator should be called first to initialize the gradients"
@@ -184,13 +192,29 @@ class GradientAccumulateOptimizer(opt):
         )
 
     def apply_gradients(self, grads_and_vars, name=None, **kwargs):
-        """Updated gradients in optimizer."""
+        """Updates weights using gradients.
+        
+        Args:
+            grads_and_vars: dict containing variables and corresponding gradients.
+            name: name to set when applying gradients.
+            **kwargs: keyword arguments.
+        Return:
+            Updated weights.
+        """
         self.optimizer._iterations = self.iterations
         return super().apply_gradients(grads_and_vars, name, **kwargs)
 
     @tf.function
     def _resource_apply_dense(self, grad, var, apply_state=None):  # pragma: no cover
-        """Performs gradient update on dense tensor."""
+        """Performs gradient update on dense tensor.
+        
+        Args:
+            grad: current gradient.
+            var: current variable.
+            apply_state: whether to apply X.
+        Returns:
+            apply_op.
+        """
         accum_gradient = self.get_slot(var, "ga")
 
         if accum_gradient is not None and grad is not None:
@@ -226,7 +250,15 @@ class GradientAccumulateOptimizer(opt):
 
     @tf.function
     def _resource_apply_sparse(self, grad, var, indices, apply_state=None):  # pragma: no cover
-        """Performs gradient update on sparse tensor."""
+        """Performs gradient update on sparse tensor.
+        
+        Args:
+            grad: current gradient.
+            var: current variable.
+            indices: relevant indices to be used for masking the sparse tensor during update.
+        Returns:
+            apply_op.
+        """
         
         accum_gradient = self.get_slot(var, "ga")
         
@@ -264,7 +296,15 @@ class GradientAccumulateOptimizer(opt):
 
     @tf.function
     def _resource_apply_sparse_duplicate_indices(self, grad, var, indices, apply_state=None):  # pragma: no cover
-        """Performs gradient update on sparse tensor."""
+        """Performs gradient update on sparse tensor.
+        
+        Args:
+            grad: current gradient.
+            var: current variable.
+            indices: relevant indices to be used for masking the sparse tensor during update.
+        Returns:
+            apply_op.
+        """
         
         accum_gradient = self.get_slot(var, "ga")
         
@@ -304,12 +344,20 @@ class GradientAccumulateOptimizer(opt):
 
     @property
     def learning_rate(self):  # pragma: no cover
-        """Returns the learning rate of the optimizer."""
+        """Returns the learning rate of the optimizer.
+        
+        Returns:
+            learning rate of optimizer.
+        """
         return self.optimizer._get_hyper("learning_rate")
 
     @learning_rate.setter
     def learning_rate(self, learning_rate):  # pragma: no cover
-        """Sets the learning rate of the optimizer."""
+        """Sets the learning rate of the optimizer.
+        
+        Args:
+            learning_rate: which learning rate to set in the optimizer.
+        """
         self.optimizer._set_hyper("learning_rate", learning_rate)
 
     def get_config(self):
