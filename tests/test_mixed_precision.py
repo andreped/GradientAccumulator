@@ -92,8 +92,11 @@ def test_mixed_precision():
     else:
         cleanup_on_sigterm()
     
-    mp.set_start_method('spawn')  # set start method to 'spawn' BEFORE instantiating the queue and the event
-    
+    try:
+        mp.set_start_method('spawn', force=True)  # set start method to 'spawn' BEFORE instantiating the queue and the event
+    except RuntimeError:
+        pass
+
     p = mp.Process(target=run_experiment)
     try:
         p.start()
