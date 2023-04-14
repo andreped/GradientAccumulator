@@ -10,3 +10,8 @@ gradients are the _accumulated_ to produce the full batch gradient.
 <p align="center">
 <img src="../assets/grad_accum.png" width="70%">
 </p>
+
+
+.. image:: ../assets/grad_accum.png
+  :width: 70%
+  :alt: Gradient accumulation update
