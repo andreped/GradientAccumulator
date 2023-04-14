@@ -47,7 +47,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel setuptools flake8 pytest-cov
-          pip install tensorflow==2.8.0 "tensorflow-datasets<=4.8.2" protobuf==3.20
+          pip install tensorflow==2.8.0 "tensorflow-datasets<=4.8.2"
+          pip install --upgrade protobuf
 
       - name: Download artifact
         uses: actions/download-artifact@master
