@@ -13,3 +13,5 @@ dist/
 benchmark.py
 docs/_build/
 .coverage
+logs*
+~/
