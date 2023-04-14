@@ -69,7 +69,7 @@ jobs:
           pytest --cov=gradient_accumulator tests/test_train_mnist.py \
                  --cov=gradient_accumulator tests/test_optimizer_wrapper.py \
                  --cov=gradient_accumulator tests/test_adaptive_gradient_clipping.py \
-                 --cov=gradient_accumulator tests/test_batch_norm.py
+                 --cov=gradient_accumulator tests/test_batch_norm.py \
                  --cov=gradient_accumulator tests/test_cnn_mnist.py
 
       - name: Lint with flake8
