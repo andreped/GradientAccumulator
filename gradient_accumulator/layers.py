@@ -29,7 +29,11 @@ class AccumBatchNormalization(Layer):
         super().__init__(**kwargs)
 
     def build(self, input_shape):
-        """Builds layer and variables."""
+        """Builds layer and variables.
+        
+        Args:
+            input_shape: input feature map size.
+        """
         self.num_features = input_shape[-1]
 
         self.beta = self.add_weight(
@@ -73,7 +77,14 @@ class AccumBatchNormalization(Layer):
         )
 
     def get_moving_average(self, statistic, new_value):
-        """Returns the moving average given a statistic and current estimate."""
+        """Returns the moving average given a statistic and current estimate.
+        
+        Args:
+            statistic: summary statistic e.g. average across for single feature over multiple samples
+            new_value: statistic of single feature for single forward step.
+        Returns:
+            Updated statistic.
+        """
         decay = tf.convert_to_tensor(1.0 - self.momentum, name="decay")
         #if decay.dtype != statistic.dtype.base_dtype:
         decay = tf.cast(decay, statistic.dtype.base_dtype)
@@ -81,7 +92,12 @@ class AccumBatchNormalization(Layer):
         return statistic.assign(new_value)
     
     def update_variables(self, mean, var):
-        """Updates the batch normalization variables."""
+        """Updates the batch normalization variables.
+        
+        Args:
+            mean: average for single feature
+            var: variance for single feature
+        """
         self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
         self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
 
@@ -95,7 +111,15 @@ class AccumBatchNormalization(Layer):
         self.accum_step_counter.assign(0)
 
     def call(self, inputs, training=None, mask=None):
-        """Performs the batch normalization step."""
+        """Performs the batch normalization step.
+        
+        Args:
+            inputs: input feature map to apply batch normalization across.
+            training: whether layer should be in training mode or not.
+            mask: whether to calculate statistics within masked region of feature map.
+        Returns:
+            Normalized feature map.
+        """
         if training:
             assert len(inputs.shape) in (2, 4)
             #if len(inputs.shape) > 2:

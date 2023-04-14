@@ -15,7 +15,7 @@ class GradientAccumulateModel(tf.keras.Model):
     """Model wrapper for gradient accumulation."""
     def __init__(self, accum_steps:int = 1, mixed_precision:bool = False, use_agc:bool = False,
                  clip_factor:float = 0.01, eps:float = 1e-3, *args, **kwargs):
-        """Adds gradient accumulation support to existing Keras' Model.
+        """Adds gradient accumulation support to existing Keras Model.
 
         Args:
             accum_steps: int > 0. Update gradient in every accumulation steps.
@@ -137,6 +137,13 @@ class GradientAccumulateOptimizer(opt):
     def __init__(self, optimizer="SGD", accum_steps=1, reduction: str = "MEAN", name: str = "GradientAccumulateOptimizer", **kwargs):
         """Construct a new GradientAccumulateOptimizer optimizer.
 
+        Adding support for sparse tensors was tricky, but this resource was helpful.
+        Note that you need to implement both _resource_apply_sparse() and
+        _resource_apply_sparse_duplicate_indices() for it to work as intended.
+
+        See here for more information regarding implementation:
+        * https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
+
         Args:
             optimizer: str or `tf.keras.optimizers.Optimizer` that will be
                 used to compute and apply gradients.
@@ -217,8 +224,6 @@ class GradientAccumulateOptimizer(opt):
         )
         return apply_op
 
-    # Example implementation about this method can be seen here:
-    # https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
     @tf.function
     def _resource_apply_sparse(self, grad, var, indices, apply_state=None):  # pragma: no cover
         """Performs gradient update on sparse tensor."""
@@ -233,7 +238,6 @@ class GradientAccumulateOptimizer(opt):
 
         def _apply():
             if "apply_state" in self.optimizer._sparse_apply_args:
-                # @TODO: Results in KeyError for Embedding layer
                 train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices),
                     var,
