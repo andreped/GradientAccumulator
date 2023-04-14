@@ -13,13 +13,13 @@ custom implementations.
 Installation
 ------------
 
-The latest release of Optax can be installed from
+The latest release of GradientAccumulator can be installed from
 `PyPI <https://pypi.org/project/gradient-accumulator/>`_ using
 
 ``pip install gradient-accumulator``
 
 You may also install directly from GitHub, using the following command. This
-can be used to obtain the most recent version of Optax.
+can be used to obtain the most recent version of GradientAccumulator.
 
 ``pip install git+git://github.com/andreped/GradientAccumulator.git``
 
