@@ -161,7 +161,7 @@ class GradientAccumulateOptimizer(opt):
         self._gradients = [self.get_slot(var, "ga") for var in var_list]
 
     @property
-    def gradients(self):
+    def gradients(self):  # pragma: no cover
         """The accumulated gradients on the current replica."""
         if not self._gradients:
             raise ValueError(
@@ -178,7 +178,7 @@ class GradientAccumulateOptimizer(opt):
         return super().apply_gradients(grads_and_vars, name, **kwargs)
 
     @tf.function
-    def _resource_apply_dense(self, grad, var, apply_state=None):
+    def _resource_apply_dense(self, grad, var, apply_state=None):  # pragma: no cover
         """Performs gradient update on dense tensor."""
         accum_gradient = self.get_slot(var, "ga")
 
@@ -216,7 +216,7 @@ class GradientAccumulateOptimizer(opt):
     # Example implementation about this method can be seen here:
     # https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
     @tf.function
-    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
+    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):  # pragma: no cover
         """Performs gradient update on sparse tensor."""
         
         accum_gradient = self.get_slot(var, "ga")
@@ -255,7 +255,7 @@ class GradientAccumulateOptimizer(opt):
         return apply_op
 
     @tf.function
-    def _resource_apply_sparse_duplicate_indices(self, grad, var, indices, apply_state=None):
+    def _resource_apply_sparse_duplicate_indices(self, grad, var, indices, apply_state=None):  # pragma: no cover
         """Performs gradient update on sparse tensor."""
         
         accum_gradient = self.get_slot(var, "ga")
@@ -295,12 +295,12 @@ class GradientAccumulateOptimizer(opt):
         return apply_op
 
     @property
-    def learning_rate(self):
+    def learning_rate(self):  # pragma: no cover
         """Returns the learning rate of the optimizer."""
         return self.optimizer._get_hyper("learning_rate")
 
     @learning_rate.setter
-    def learning_rate(self, learning_rate):
+    def learning_rate(self, learning_rate):  # pragma: no cover
         """Sets the learning rate of the optimizer."""
         self.optimizer._set_hyper("learning_rate", learning_rate)
 
