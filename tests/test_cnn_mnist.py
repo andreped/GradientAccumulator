@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
@@ -13,6 +14,11 @@ def normalize_img(image, label):
     return tf.cast(image, tf.float32) / 255., label
 
 
+def add_sample_weight(image, label):
+    """Adds toy sample weight to data sample."""
+    return (image, label, 1)  # sample_weight=1 is used to set equal weight to all inputs -> just used for unit testing
+
+
 def test_train_mnist():
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
@@ -25,6 +31,7 @@ def test_train_mnist():
 
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
+    ds_train = ds_train.map(add_sample_weight)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(128)
@@ -32,6 +39,7 @@ def test_train_mnist():
 
     # build test pipeline
     ds_test = ds_test.map(normalize_img)
+    ds_test = ds_test.map(add_sample_weight)
     ds_test = ds_test.batch(128)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(1)
