@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
+from gradient_accumulator import unitwise_norm
 from tensorflow.keras import mixed_precision
 import os
 
@@ -9,6 +10,12 @@ import os
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     return tf.cast(image, tf.float32) / 255., label
+
+
+def test_unitwise_norm():
+    for i in range(6):
+        x = tf.zeros([1,] * i)
+        unitwise_norm(x)
 
 
 def test_train_mnist():
