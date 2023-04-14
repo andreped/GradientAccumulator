@@ -215,7 +215,7 @@ class GradientAccumulateOptimizer(opt):
 
     # Example implementation about this method can be seen here:
     # https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
-    #@tf.function
+    @tf.function
     def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
         """Performs gradient update on sparse tensor."""
         
@@ -254,6 +254,7 @@ class GradientAccumulateOptimizer(opt):
         )
         return apply_op
 
+    @tf.function
     def _resource_apply_sparse_duplicate_indices(self, grad, var, indices, apply_state=None):
         """Performs gradient update on sparse tensor."""
         
