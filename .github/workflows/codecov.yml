@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel setuptools
-          pip install tensorflow==2.11
+          pip install tensorflow==2.8
           pip install "protobuf<=3.20" --force-reinstall
 
       - name: Build wheel
@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel setuptools flake8 pytest-cov
-          pip install tensorflow==2.11.0 "tensorflow-datasets<=4.8.2"
+          pip install tensorflow==2.8 "tensorflow-datasets<=4.8.2"
           pip install "protobuf<=3.20" --force-reinstall
 
       - name: Download artifact
