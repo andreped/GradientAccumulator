@@ -3,16 +3,8 @@ import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
 from tensorflow.keras import mixed_precision
+import multiprocessing as mp
 import os
-
-
-# disable GPU
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-# set mixed global precision policy
-# Equivalent to the two lines above
-# https://www.tensorflow.org/guide/mixed_precision
-mixed_precision.set_global_policy('mixed_float16')
 
 
 def normalize_img(image, label):
@@ -20,7 +12,15 @@ def normalize_img(image, label):
     return tf.cast(image, tf.float32) / 255., label
 
 
-def test_train_mnist():
+def run_experiment():
+    # disable GPU
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+    # set mixed global precision policy
+    # Equivalent to the two lines above
+    # https://www.tensorflow.org/guide/mixed_precision
+    mixed_precision.set_global_policy('mixed_float16')
+
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -38,13 +38,13 @@ def test_train_mnist():
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(256)  # multiplum of 8
+    ds_train = ds_train.batch(32)  # multiplum of 8
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # build test pipeline
     ds_test = ds_test.map(
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-    ds_test = ds_test.batch(256)
+    ds_test = ds_test.batch(32)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
@@ -86,6 +86,7 @@ def test_train_mnist():
     print(result)
 
 
-# for running locally, outside pytest
-if __name__ == "__main__":
-    test_train_mnist()
+def test_mixed_precision():
+    # launch experiment in separate process, as we are enabling mixed precision
+    # which will impact other unit tests, unless we do this
+    p = mp.Process(target=run_experiment)
