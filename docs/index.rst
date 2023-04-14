@@ -58,7 +58,7 @@ The Team
 --------
 
 .. image:: https://www.indianbureaucracy.com/wp-content/uploads/2015/12/SINTEF_logo_indianbureaucracy.jpg
-   :width: 100%
+   :width: 20%
    :align: center
 
 The development of GradientAccumulator is led by André Pedersen with
