@@ -9,4 +9,5 @@ gradients are the _accumulated_ to produce the full batch gradient.
 
 .. image:: ../../assets/grad_accum.png
   :width: 70%
+  :align: center
   :alt: Gradient accumulation update
