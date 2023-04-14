@@ -40,7 +40,7 @@ def test_train_mnist():
         tf.keras.layers.Dense(16, activation='relu'),
         tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(10, activation="softmax")
-    )]
+    ])
 
     # wrap model to use gradient accumulation
     model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)
