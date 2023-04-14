@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel setuptools
-          pip install tensorflow==2.8.0 tensorflow-addons
+          pip install tensorflow==2.8.0 tensorflow-addons protobuf==3.20
 
       - name: Build wheel
         run: |
@@ -53,10 +53,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install wheel setuptools
-          pip install tensorflow==${{ matrix.tf-version }}
-          pip install "tensorflow-datasets<=4.8.2"
-          pip install flake8 pytest-cov
+          pip install wheel setuptools flake8 pytest-cov
+          pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2" "protobuf==3.20"
 
       - name: Download artifact
         uses: actions/download-artifact@master
@@ -131,10 +129,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install wheel setuptools
-          pip install tensorflow==${{ matrix.tf-version }}
-          pip install "tensorflow-datasets<=4.8.2"
-          pip install pytest
+          pip install wheel setuptools pytest
+          pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2" "protobuf==3.20"
 
       - name: Download artifact
         uses: actions/download-artifact@master
@@ -171,10 +167,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install wheel setuptools
-          pip install tensorflow==${{ matrix.tf-version }}
-          pip install "tensorflow-datasets<=4.8.2"
-          pip install pytest
+          pip install wheel setuptools pytest
+          pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2" "protobuf==3.20"
 
       - name: Download artifact
         uses: actions/download-artifact@master
