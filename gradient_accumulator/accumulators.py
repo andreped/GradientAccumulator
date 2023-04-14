@@ -32,12 +32,17 @@ class GradientAccumulateModel(tf.keras.Model):
                                               aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
                                               )
         self.first_call = True
-        self.gradient_accumulation = None
-        self.reinit_grad_accum()
         self.mixed_precision = mixed_precision
         self.use_agc = use_agc
         self.clip_factor = clip_factor
         self.eps = eps
+        
+        self.dtype_value = tf.float32  # @TODO: This is probably not suited when tf.bloat32
+        #if mixed_precision:
+        #    self.dtype_value = tf.float16
+        
+        self.gradient_accumulation = None
+        self.reinit_grad_accum()
 
     def train_step(self, data):
         """Performs single train step."""
@@ -70,7 +75,7 @@ class GradientAccumulateModel(tf.keras.Model):
                 sample_weight=sample_weight,
                 regularization_losses=self.losses,
             )
-            loss = loss / tf.cast(self.accum_steps, tf.float32)  # MEAN reduction here IMPORTANT! Don't use SUM!
+            loss = loss / tf.cast(self.accum_steps, loss.dtype)  # MEAN reduction here IMPORTANT! Don't use SUM!
 
             # scale loss if mixed precision is enabled
             if self.mixed_precision:
@@ -110,13 +115,13 @@ class GradientAccumulateModel(tf.keras.Model):
         self.accum_step_counter.assign(0)
         for i in range(len(self.gradient_accumulation)):
             self.gradient_accumulation[i].assign(
-                tf.zeros_like(self.trainable_variables[i], dtype=tf.float32), read_value=False)
+                tf.zeros_like(self.trainable_variables[i], dtype=self.dtype_value), read_value=False)
     
     def reinit_grad_accum(self):
         """Reinitialized gradient accumulator slots."""
         # reinitialize gradient accumulator
         self.gradient_accumulation = [
-            tf.Variable(tf.zeros_like(v, dtype=tf.float32), trainable=False,
+            tf.Variable(tf.zeros_like(v, dtype=self.dtype_value), trainable=False,
             name="accum_" + str(i),
             synchronization=tf.VariableSynchronization.ON_READ,
             aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
