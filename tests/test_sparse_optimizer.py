@@ -38,23 +38,19 @@ def test_sparse_optimizer():
     padded_reviews = pad_sequences(encoded_reviews, maxlen=max_length, padding='post')
 
     # define model
-    embedding_layer = Embedding(input_dim=vocab_size, output_dim=8, input_length=max_length, name="embedding")
     model = Sequential()
-    model.add(embedding_layer)
+    model.add(Embedding(input_dim=vocab_size, output_dim=8, input_length=max_length))
     model.add(Flatten())
     model.add(Dense(1, activation='sigmoid'))
 
     # wrap optimizer to add gradient accumulation support
     # need to dynamically handle which Optimizer class to use dependent on tf version
-    #if tf_version > 10:
-    #    curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
-    #else:
-    #    curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
-    #
-    #opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=4, reduction="MEAN")
+    if tf_version > 10:
+        curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+    else:
+        curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
     
-    opt = "adam"
-    curr_opt = "adam"
+    opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=4, reduction="MEAN")
 
     model.compile(
         optimizer=opt,
