@@ -152,7 +152,6 @@ class GradientAccumulateOptimizer(opt):
                 compatibility, recommended to use `learning_rate` instead.
         """
         self.optimizer = tf.keras.optimizers.get(optimizer)
-        # self._optimizer = self.optimizer
         self.accum_steps = accum_steps
         self.reduction = reduction
         super().__init__(name, **kwargs)

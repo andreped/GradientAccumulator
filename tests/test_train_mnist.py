@@ -23,19 +23,19 @@ def test_train_mnist():
     ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(128)
+    ds_train = ds_train.batch(32)
     ds_train = ds_train.prefetch(1)
 
     # build test pipeline
     ds_test = ds_test.map(normalize_img)
-    ds_test = ds_test.batch(128)
+    ds_test = ds_test.batch(32)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(1)
 
     # create model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(32, activation='relu'),
         tf.keras.layers.Dense(10)
     ])
 

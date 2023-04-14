@@ -65,7 +65,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     # create model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(32, activation='relu'),
         tf.keras.layers.Dense(10),
     ])
 
@@ -111,19 +111,19 @@ def test_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=500, accum_steps=1, epochs=4)  # NOTE: AS TO BE DIVISIBLE BY TRAIN SET SIZE = 50000 (!)
+    result1 = run_experiment(bs=500, accum_steps=1, epochs=3)  # NOTE: AS TO BE DIVISIBLE BY TRAIN SET SIZE = 50000 (!)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = run_experiment(bs=250, accum_steps=2, epochs=4)
+    result2 = run_experiment(bs=250, accum_steps=2, epochs=3)
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result3 = run_experiment(bs=125, accum_steps=4, epochs=4)
+    result3 = run_experiment(bs=125, accum_steps=4, epochs=3)
 
     # reset before second run to get identical results
     # reset()

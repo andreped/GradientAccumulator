@@ -16,6 +16,9 @@ def normalize_img(image, label):
 def reset():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+    # disable GPU
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
     np.random.seed(123)
@@ -32,9 +35,6 @@ def reset():
 
     # https://stackoverflow.com/a/71311207
     tf.config.experimental.enable_op_determinism()
-
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def run_experiment(custom_bn=True, bs=100, accum_steps=1):
@@ -71,7 +71,7 @@ def run_experiment(custom_bn=True, bs=100, accum_steps=1):
     # create model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(128),
+        tf.keras.layers.Dense(32),
         normalization_layer,  # tf.keras.layers.Activation("linear"),
         #tf.keras.layers.Activation("relu"),  # @TODO: BN has specific behaviour for ReLU which our custom layer does not support (yet)
         tf.keras.layers.Dense(10)
