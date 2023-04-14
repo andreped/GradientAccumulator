@@ -28,6 +28,13 @@ installation if no existing version is found.
 
 .. toctree::
    :glob:
+   :caption: Background
+   :maxdepth: 2
+
+   background/*
+
+.. toctree::
+   :glob:
    :caption: Examples
    :maxdepth: 2
 
