@@ -16,9 +16,9 @@ The package is available on PyPI and is compatible with and have been tested aga
 
 | Build Type | Status |
 | - | - |
-| **Unit tests** | [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions) |
-| **Documentations** | [![Documentation Status](https://readthedocs.org/projects/gradientaccumulator/badge/?version=latest)](https://gradientaccumulator.readthedocs.io/en/latest/?badge=latest) |
 | **Code coverage** | [![codecov](https://codecov.io/gh/andreped/GradientAccumulator/branch/main/graph/badge.svg?token=MWLK71V750)](https://codecov.io/gh/andreped/GradientAccumulator) |
+| **Documentations** | [![Documentation Status](https://readthedocs.org/projects/gradientaccumulator/badge/?version=latest)](https://gradientaccumulator.readthedocs.io/en/latest/?badge=latest) |
+| **Unit tests** | [![CI](https://github.com/andreped/GradientAccumulator/workflows/CI/badge.svg)](https://github.com/andreped/GradientAccumulator/actions) |
 
 
 ## [Install](https://github.com/andreped/GradientAccumulator#install)
