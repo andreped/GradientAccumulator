@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateOptimizer
+from gradient_accumulator import GradientAccumulateModel
 
 
 # get current tf minor version
@@ -44,6 +44,7 @@ def test_train_mnist():
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(1)
 
+    # define model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Conv2D(4, kernel_size=(3, 3), activation="relu", input_shape=(28, 28, 1)),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
@@ -53,18 +54,12 @@ def test_train_mnist():
         tf.keras.layers.Dense(10),
     ])
 
-    # wrap optimizer to add gradient accumulation support
-    # need to dynamically handle which Optimizer class to use dependent on tf version
-    if tf_version > 10:
-        curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
-    else:
-        curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
-
-    opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=4, reduction="MEAN")
+    # wrap model to use gradient accumulation
+    model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)
 
     # compile model
     model.compile(
-        optimizer=opt,
+        optimizer="adam",
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
@@ -80,7 +75,7 @@ def test_train_mnist():
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": curr_opt})
+    trained_model = load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
