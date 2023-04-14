@@ -147,6 +147,7 @@ class GradientAccumulateOptimizer(opt):
                 compatibility, recommended to use `learning_rate` instead.
         """
         self.optimizer = tf.keras.optimizers.get(optimizer)
+        # self._optimizer = self.optimizer
         self.accum_steps = accum_steps
         self.reduction = reduction
         super().__init__(name, **kwargs)
@@ -178,7 +179,7 @@ class GradientAccumulateOptimizer(opt):
 
     @tf.function
     def _resource_apply_dense(self, grad, var, apply_state=None):
-        """Performs gradient update on dense."""
+        """Performs gradient update on dense tensor."""
         accum_gradient = self.get_slot(var, "ga")
 
         if accum_gradient is not None and grad is not None:
@@ -198,11 +199,13 @@ class GradientAccumulateOptimizer(opt):
                 train_op = self.optimizer._resource_apply_dense(
                     accum_gradient.read_value(), var
                 )
+
             reset_op = accum_gradient.assign(
-                        tf.zeros_like(accum_gradient),
-                        use_locking=self._use_locking,
-                        read_value=False,
-                    )
+                tf.zeros_like(accum_gradient),
+                use_locking=self._use_locking,
+                read_value=False,
+            )
+
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
@@ -210,15 +213,23 @@ class GradientAccumulateOptimizer(opt):
         )
         return apply_op
 
-    @tf.function
-    def _resource_apply_sparse(self, grad, var, indices, apply_state):
-        """Performs gradient update on sparse."""
+    # Example implementation about this method can be seen here:
+    # https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
+    #@tf.function
+    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):
+        """Performs gradient update on sparse tensor."""
+        
         accum_gradient = self.get_slot(var, "ga")
+        
         if accum_gradient is not None and grad is not None:
+            if self.reduction == "MEAN":
+                grad /= tf.cast(self.accum_steps, grad.dtype)
+
             self._resource_scatter_add(accum_gradient, indices, grad)
 
         def _apply():
             if "apply_state" in self.optimizer._sparse_apply_args:
+                # @TODO: Results in KeyError for Embedding layer
                 train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices),
                     var,
@@ -229,11 +240,52 @@ class GradientAccumulateOptimizer(opt):
                 train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices), var, indices
                 )
+
             reset_op = accum_gradient.assign(
-                        tf.zeros_like(accum_gradient),
-                        use_locking=self._use_locking,
-                        read_value=False,
-                    )
+                tf.zeros_like(accum_gradient),
+                use_locking=self._use_locking,
+                read_value=False,
+            )
+
+            return tf.group(train_op, reset_op)
+
+        apply_op = tf.cond(
+            (self.iterations + 1) % self.accum_steps == 0, _apply, lambda: tf.no_op()  # tf.no_op: Does nothing - placeholder
+        )
+        return apply_op
+
+    def _resource_apply_sparse_duplicate_indices(self, grad, var, indices, apply_state=None):
+        """Performs gradient update on sparse tensor."""
+        
+        accum_gradient = self.get_slot(var, "ga")
+        
+        if accum_gradient is not None and grad is not None:
+            if self.reduction == "MEAN":
+                grad /= tf.cast(self.accum_steps, grad.dtype)
+
+            self._resource_scatter_add(accum_gradient, indices, grad)
+
+        def _apply():
+            if "apply_state" in self.optimizer._sparse_apply_args:
+                train_op = self.optimizer._resource_apply_sparse_duplicate_indices(
+                    accum_gradient.sparse_read(indices),
+                    var,
+                    indices,
+                    apply_state=apply_state,
+                )
+            else:
+                train_op = self.optimizer._resource_apply_sparse_duplicate_indices(
+                    accum_gradient.sparse_read(indices),
+                    var,
+                    indices,
+                )
+
+            reset_op = accum_gradient.assign(
+                tf.zeros_like(accum_gradient),
+                use_locking=self._use_locking,
+                read_value=False,
+            )
+
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
