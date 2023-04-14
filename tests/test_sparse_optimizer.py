@@ -39,9 +39,6 @@ def test_sparse_optimizer():
 
     # define model
     model = Sequential()
-    #model.add(tf.keras.layers.Activation("linear"))
-    #model.add(tf.keras.layers.Input(shape=(max_length,)))
-    model.add(Flatten())
     model.add(Embedding(input_dim=vocab_size, output_dim=8, input_length=max_length))
     model.add(Flatten())
     model.add(Dense(1, activation='sigmoid'))
