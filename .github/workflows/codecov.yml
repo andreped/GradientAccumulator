@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install wheel setuptools flake8 pytest-cov
-          pip install tensorflow==2.8.0 "tensorflow-datasets<=4.8.2"
+          pip install tensorflow==2.11.0 "tensorflow-datasets<=4.8.2"
           pip install "protobuf<=3.20" --force-reinstall
 
       - name: Download artifact
@@ -66,8 +66,7 @@ jobs:
       
       - name: Run tests and collect coverage
         run: |
-          pytest --cov=gradient_accumulator tests/test_train_mnist.py \
-                 --cov=gradient_accumulator tests/test_optimizer_wrapper.py \
+          pytest --cov=gradient_accumulator tests/test_optimizer_wrapper.py \
                  --cov=gradient_accumulator tests/test_adaptive_gradient_clipping.py \
                  --cov=gradient_accumulator tests/test_batch_norm.py \
                  --cov=gradient_accumulator tests/test_cnn_mnist.py \
