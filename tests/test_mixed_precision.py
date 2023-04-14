@@ -17,8 +17,6 @@ def run_experiment():
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     # set mixed global precision policy
-    # Equivalent to the two lines above
-    # https://www.tensorflow.org/guide/mixed_precision
     mixed_precision.set_global_policy('mixed_float16')
 
     # load dataset
@@ -30,15 +28,12 @@ def run_experiment():
         with_info=True,
     )
 
-    # NOTE: On GPUs, ensure most tensor dimensions are a multiple
-    # of 8 to maximize performance
-
     # build train pipeline
     ds_train = ds_train.map(
         normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(32)  # multiplum of 8
+    ds_train = ds_train.batch(32)  # multiplum of 8 on GPU to maximize performance
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # build test pipeline
@@ -75,7 +70,8 @@ def run_experiment():
         epochs=1,
         validation_data=ds_test,
     )
-
+    
+    # save model on disk
     model.save("./trained_model")
 
     # load trained model and test
