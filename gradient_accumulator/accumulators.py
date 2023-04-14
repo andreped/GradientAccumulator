@@ -206,8 +206,6 @@ class GradientAccumulateOptimizer(opt):
                 read_value=False,
             )
 
-            self.reset()
-
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
@@ -249,8 +247,6 @@ class GradientAccumulateOptimizer(opt):
                 read_value=False,
             )
 
-            self.reset()
-
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
@@ -291,32 +287,12 @@ class GradientAccumulateOptimizer(opt):
                 read_value=False,
             )
 
-            self.reset()
-
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
             (self.iterations + 1) % self.accum_steps == 0, _apply, lambda: tf.no_op()  # tf.no_op: Does nothing - placeholder
         )
         return apply_op
-
-    def reset(self):
-        """Resets the accumulated gradients on the current replica."""
-        assign_ops = []
-        if not self._gradients:
-            return assign_ops
-
-        for gradient in self._gradients:
-            if gradient is not None:
-                assign_ops.append(
-                    gradient.assign(
-                        tf.zeros_like(gradient),
-                        use_locking=self._use_locking,
-                        read_value=False,
-                    )
-                )
-
-        return tf.group(assign_ops)
 
     @property
     def learning_rate(self):
