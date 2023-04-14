@@ -13,9 +13,14 @@ def normalize_img(image, label):
 
 
 def test_unitwise_norm():
-    for i in range(6):
+    for i in range(7):
         x = tf.zeros([1,] * i)
-        unitwise_norm(x)
+        try:
+            unitwise_norm(x)
+        except ValueError as e:
+            # i=6 should yield ValueError. If it happens otherwise, raise error
+            if i != 6:
+                raise e
 
 
 def test_train_mnist():
