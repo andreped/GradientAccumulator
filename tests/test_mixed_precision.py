@@ -84,7 +84,6 @@ def run_experiment():
 def test_mixed_precision():
     # launch experiment in separate process, as we are enabling mixed precision
     # which will impact other unit tests, unless we do this
-    #run_experiment()
 
     try:
         from pytest_cov.embed import cleanup_on_sigterm
@@ -98,5 +97,3 @@ def test_mixed_precision():
         p.start()
     finally:
         p.join()  # necessary so that the Process exists before the test suite exits (thus coverage is collected)
-
-    print("Finished!")
