@@ -21,7 +21,7 @@ The latest release of GradientAccumulator can be installed from
 You may also install directly from GitHub, using the following command. This
 can be used to obtain the most recent version of GradientAccumulator.
 
-``pip install git+git://github.com/andreped/GradientAccumulator.git``
+``pip install git://github.com/andreped/GradientAccumulator.git``
 
 Note that GradientAccumulator is built on top of `TensorFlow <https://www.tensorflow.org/>`_, which is installed during
 installation if no existing version is found.
@@ -45,7 +45,7 @@ installation if no existing version is found.
    :caption: Frequently Asked Questions
    :maxdepth: 2
 
-   FAQ/*
+   faq/*
 
 
 .. toctree::
