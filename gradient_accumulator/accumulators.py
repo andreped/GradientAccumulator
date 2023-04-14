@@ -206,6 +206,8 @@ class GradientAccumulateOptimizer(opt):
                 read_value=False,
             )
 
+            self.reset()
+
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
@@ -247,6 +249,8 @@ class GradientAccumulateOptimizer(opt):
                 read_value=False,
             )
 
+            self.reset()
+
             return tf.group(train_op, reset_op)
 
         apply_op = tf.cond(
@@ -286,6 +290,8 @@ class GradientAccumulateOptimizer(opt):
                 use_locking=self._use_locking,
                 read_value=False,
             )
+
+            self.reset()
 
             return tf.group(train_op, reset_op)
 
