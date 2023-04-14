@@ -18,6 +18,9 @@ def normalize_img(image, label):
 def reset():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+    # disable GPU
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
     np.random.seed(123)
@@ -36,9 +39,6 @@ def reset():
     if tf_version > 6:
         tf.config.experimental.enable_op_determinism()  # Exist only for Python >=3.7
 
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
 
 def run_experiment(bs=16, accum_steps=4, epochs=1):
     # load dataset
@@ -51,14 +51,12 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     )
 
     # build train pipeline
-    ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=1)
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
 
     # build test pipeline
-    ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=1)
+    ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(1)
 

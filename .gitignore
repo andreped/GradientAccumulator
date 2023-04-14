@@ -12,6 +12,6 @@ dist/
 *.h5
 benchmark.py
 docs/_build/
-.coverage
+.coverage*
 logs*
 ~/
