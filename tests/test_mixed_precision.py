@@ -1,18 +1,19 @@
-import tensorflow as tf
-import tensorflow_datasets as tfds
-from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateModel
-from tensorflow.keras import mixed_precision
 import multiprocessing as mp
-import os
-
-
-def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
 
 
 def run_experiment():
+    import tensorflow as tf
+    import tensorflow_datasets as tfds
+    from tensorflow.keras import mixed_precision
+    from gradient_accumulator import GradientAccumulateModel
+    import os
+
+
+    def normalize_img(image, label):
+        """Normalizes images: `uint8` -> `float32`."""
+        return tf.cast(image, tf.float32) / 255., label
+
+
     # disable GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
@@ -29,19 +30,17 @@ def run_experiment():
     )
 
     # build train pipeline
-    ds_train = ds_train.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(32)  # multiplum of 8 on GPU to maximize performance
-    ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
+    ds_train = ds_train.prefetch(1)
 
     # build test pipeline
-    ds_test = ds_test.map(
-        normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(32)
     ds_test = ds_test.cache()
-    ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+    ds_test = ds_test.prefetch(1)
 
     # create model
     model = tf.keras.models.Sequential([
@@ -76,7 +75,7 @@ def run_experiment():
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True)
+    trained_model = tf.keras.models.load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
@@ -85,4 +84,10 @@ def run_experiment():
 def test_mixed_precision():
     # launch experiment in separate process, as we are enabling mixed precision
     # which will impact other unit tests, unless we do this
+    #run_experiment()
+    
     p = mp.Process(target=run_experiment)
+    p.start()
+    p.join()
+
+    print("Finished!")
