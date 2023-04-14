@@ -75,8 +75,8 @@ class AccumBatchNormalization(Layer):
     def get_moving_average(self, statistic, new_value):
         """Returns the moving average given a statistic and current estimate."""
         decay = tf.convert_to_tensor(1.0 - self.momentum, name="decay")
-        if decay.dtype != statistic.dtype.base_dtype:
-            decay = tf.cast(decay, statistic.dtype.base_dtype)
+        #if decay.dtype != statistic.dtype.base_dtype:
+        decay = tf.cast(decay, statistic.dtype.base_dtype)
         new_value = statistic - (statistic - tf.cast(new_value, statistic.dtype)) * decay
         return statistic.assign(new_value)
     
@@ -98,10 +98,10 @@ class AccumBatchNormalization(Layer):
         """Performs the batch normalization step."""
         if training:
             assert len(inputs.shape) in (2, 4)
-            if len(inputs.shape) > 2:
-                axes = [0, 1, 2]
-            else:
-                axes = [0]
+            #if len(inputs.shape) > 2:
+            #    axes = [0, 1, 2]
+            #else:
+            axes = [0]
             
             # step accum count
             self.accum_step_counter.assign_add(1)
