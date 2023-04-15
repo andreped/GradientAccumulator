@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/andreped/GradientAccumulator",
-    packages=setuptools.find_packages(exclude=('tests', 'notebooks')),
+    packages=setuptools.find_packages(exclude=('tests', 'notebooks', 'assets', 'docs')),
     install_requires=[
         "tensorflow",
     ],
