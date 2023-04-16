@@ -1,5 +1,5 @@
 <div align="center">
-<img src="assets/accum_grad_v5_reduced.png" width="50%" alt='gradient-accumulator'>
+<img src="assets/accum_grad_v5_reduced.png" width="35%" alt='gradient-accumulator'>
 <h1 align="center">GradientAccumulator</h1>
 <h3 align="center">Seemless gradient accumulation for TensorFlow 2</h3>
 
