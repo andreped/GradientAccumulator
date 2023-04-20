@@ -106,7 +106,7 @@ class AccumBatchNormalization(Layer):
         if decay.dtype != statistic.dtype.base_dtype:
             decay = tf.cast(decay, statistic.dtype.base_dtype)
         delta = (statistic - tf.cast(new_value, statistic.dtype)) * decay
-        return statistic.assign_sub(delta)
+        return statistic.assign_sub(delta)  # statistic - delta
     
     def update_variables(self, mean, var):
         """Updates the batch normalization variables.
@@ -115,18 +115,15 @@ class AccumBatchNormalization(Layer):
             mean: average for single feature
             var: variance for single feature
         """
-        #self.add_update(self.get_moving_average(self.moving_mean, mean))
-        #self.add_update(self.get_moving_average(self.moving_variance, var))
-
-        self.add_update(self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean)))
-        self.add_update(self.moving_variance.assign(self.get_moving_average(self.moving_variance, var)))
+        self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
+        self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
 
         self.reset_accum()
     
     def reset_accum(self):
         """Resets accumulator slots."""
-        self.add_update(self.accum_mean.assign(tf.zeros_like(self.accum_mean)))
-        self.add_update(self.accum_variance.assign(tf.zeros_like(self.accum_variance)))
+        self.accum_mean.assign(tf.zeros_like(self.accum_mean))
+        self.accum_variance.assign(tf.zeros_like(self.accum_variance))
 
         self.accum_step_counter.assign(0)
 
@@ -154,12 +151,12 @@ class AccumBatchNormalization(Layer):
             mean, var = tf.nn.moments(inputs, axes=axes, keepdims=False)
 
             # scale mean and variance to produce mean later
-            mean /= tf.cast(self.accum_steps_tf, self._param_dtype)
-            var /= tf.cast(self.accum_steps_tf, self._param_dtype)
+            mean_scaled = mean / tf.cast(self.accum_steps_tf, self._param_dtype)
+            var_scaled = var / tf.cast(self.accum_steps_tf, self._param_dtype)
             
             # accumulate statistics
-            self.add_update(self.accum_mean.assign_add(mean))
-            self.add_update(self.accum_variance.assign_add(var))
+            self.accum_mean.assign_add(mean_scaled)
+            self.accum_variance.assign_add(var_scaled)
 
             # only update variables after n accumulation steps
             tf.cond(
