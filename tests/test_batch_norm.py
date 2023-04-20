@@ -49,7 +49,6 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
 
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
-    ds_train = ds_train.cache()
     ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
@@ -57,7 +56,6 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     # build test pipeline
     ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(bs)
-    ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(1)
 
     # define which normalization layer to use in network
@@ -125,10 +123,6 @@ def test_compare_bn_layers():
     assert result1 == result2
 
 
-def test_custom_bn_accum_compatibility():
-    run_experiment(custom_bn=True, accum_steps=4)
-
-
 def test_compare_accum_bn_expected_result():
     # set seed
     reset()
@@ -144,8 +138,8 @@ def test_compare_accum_bn_expected_result():
 
     print(result1, result2)
 
-    np.testing.assert_almost_equal(result1, result2, decimal=2)
-    #assert result1 == result2
+    # np.testing.assert_almost_equal(result1, result2, decimal=2)
+    assert result1 == result2
 
 
 if __name__ == "__main__":
