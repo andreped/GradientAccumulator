@@ -72,8 +72,8 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(32),
-        tf.keras.layers.Activation("relu"),
         normalization_layer,  # @TODO: BN before or after ReLU?
+        tf.keras.layers.Activation("relu"),  # @TODO: Having it before results in different results and BN no longer the same (!)
         tf.keras.layers.Dense(10)
     ])
 

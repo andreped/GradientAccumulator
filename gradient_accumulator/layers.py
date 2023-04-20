@@ -118,8 +118,8 @@ class AccumBatchNormalization(Layer):
         #self.add_update(self.get_moving_average(self.moving_mean, mean))
         #self.add_update(self.get_moving_average(self.moving_variance, var))
 
-        self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
-        self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
+        self.add_update(self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean)))
+        self.add_update(self.moving_variance.assign(self.get_moving_average(self.moving_variance, var)))
 
         self.reset_accum()
     
