@@ -37,7 +37,7 @@ def reset():
     tf.config.experimental.enable_op_determinism()
 
 
-def run_experiment(custom_bn=True, bs=100, accum_steps=1):
+def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -62,7 +62,7 @@ def run_experiment(custom_bn=True, bs=100, accum_steps=1):
 
     # define which normalization layer to use in network
     if custom_bn:
-        normalization_layer = AccumBatchNormalization()
+        normalization_layer = AccumBatchNormalization(accum_steps=accum_steps)
     elif not custom_bn:
         normalization_layer = tf.keras.layers.BatchNormalization()
     else:
@@ -72,8 +72,8 @@ def run_experiment(custom_bn=True, bs=100, accum_steps=1):
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(32),
-        normalization_layer,  # tf.keras.layers.Activation("linear"),
-        #tf.keras.layers.Activation("relu"),  # @TODO: BN has specific behaviour for ReLU which our custom layer does not support (yet)
+        tf.keras.layers.Activation("relu"),
+        normalization_layer,  # @TODO: BN before or after ReLU?
         tf.keras.layers.Dense(10)
     ])
 
@@ -91,7 +91,7 @@ def run_experiment(custom_bn=True, bs=100, accum_steps=1):
     # train model
     model.fit(
         ds_train,
-        epochs=3,
+        epochs=epochs,
         validation_data=ds_test,
     )
 
@@ -111,20 +111,18 @@ def test_compare_bn_layers():
     reset()
     
     # custom BN without accum
-    result1 = run_experiment(custom_bn=True, accum_steps=1)[1]
+    result1 = run_experiment(custom_bn=True, accum_steps=1, epochs=3)[1]
     
     # reset before second run to get "identical" results
     reset()
 
     # keras BN without accum
-    result2 = run_experiment(custom_bn=False, accum_steps=1)[1]
+    result2 = run_experiment(custom_bn=False, accum_steps=1, epochs=3)[1]
 
     print(result1, result2)
 
-    # @TODO: currently, we do not get identical results. Disabled for now
-    # assert result1 == result2
-
-    np.testing.assert_almost_equal(result1, result2, decimal=2)
+    # results should be *identical* for accum_steps=1
+    assert result1 == result2
 
 
 def test_custom_bn_accum_compatibility():
@@ -147,7 +145,7 @@ def test_compare_accum_bn_expected_result():
     print(result1, result2)
 
     np.testing.assert_almost_equal(result1, result2, decimal=2)
-
+    #assert result1 == result2
 
 
 if __name__ == "__main__":
