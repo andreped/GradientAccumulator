@@ -22,4 +22,3 @@ open -a "Google Chrome" build/html/index.html
 ```
 
 When documentations are pushed to production, they will be available at [gradientaccumulator.readthedocs.io/](https://gradientaccumulator.readthedocs.io/).
-
