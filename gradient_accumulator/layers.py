@@ -8,7 +8,7 @@ import tensorflow as tf
 @tf.keras.utils.register_keras_serializable()
 class AccumBatchNormalization(Layer):
     """Custom Batch Normaliztion layer with gradient accumulation support."""
-    def __init__(self, accum_steps: int = 1, momentum: float = 0.9, epsilon:float = 1e-3, **kwargs):
+    def __init__(self, accum_steps: int = 1, momentum: float = 0.99, epsilon:float = 1e-3, trainable:bool = True, **kwargs):
         """Construct the AccumBatchNormalization layer.
 
         Args:
@@ -21,6 +21,7 @@ class AccumBatchNormalization(Layer):
         self.accum_steps_tf = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
         self.momentum = momentum
         self.epsilon = epsilon
+        self.trainable = trainable
         self.accum_step_counter = tf.Variable(
             0, dtype=tf.int32, trainable=False, name="accum_counter",
             synchronization=tf.VariableSynchronization.ON_READ,
@@ -34,46 +35,62 @@ class AccumBatchNormalization(Layer):
         Args:
             input_shape: input feature map size.
         """
-        self.num_features = input_shape[-1]
+        self.param_shape = input_shape[-1]
 
         self.beta = self.add_weight(
-            shape=(input_shape[-1]),
+            shape=(self.param_shape),
+            dtype=self._param_dtype,
             initializer="zeros",
             trainable=True,
             name="beta",
         )
 
         self.gamma = self.add_weight(
-            shape=(input_shape[-1]),
+            shape=(self.param_shape),
+            dtype=self._param_dtype,
             initializer="ones",
             trainable=True,
             name="gamma",
         )
 
         self.moving_mean = self.add_weight(
-            shape=(input_shape[-1]),
+            shape=(self.param_shape),
+            dtype=self._param_dtype,
             initializer="zeros",
             trainable=False,
             name="moving_mean",
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.MEAN,
         )
 
         self.moving_variance = self.add_weight(
-            shape=(input_shape[-1]),
+            shape=(self.param_shape),
+            dtype=self._param_dtype,
             initializer="ones",
             trainable=False,
             name="moving_variance",
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.MEAN,
         )
 
-        self.accum_mean = tf.Variable(
-            tf.zeros(input_shape[-1], dtype=tf.float32),
+        self.accum_mean = self.add_weight(
+            shape=(self.param_shape),
+            dtype=self._param_dtype,
+            initializer="zeros",
             trainable=False,
             name="accum_mean",
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.MEAN,
         )
 
-        self.accum_variance = tf.Variable(
-            tf.zeros(input_shape[-1], dtype=tf.float32),
+        self.accum_variance = self.add_weight(
+            shape=(self.param_shape),
+            dtype=self._param_dtype,
+            initializer="ones",
             trainable=False,
             name="accum_variance",
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.MEAN,
         )
 
     def get_moving_average(self, statistic, new_value):
@@ -86,10 +103,10 @@ class AccumBatchNormalization(Layer):
             Updated statistic.
         """
         decay = tf.convert_to_tensor(1.0 - self.momentum, name="decay")
-        #if decay.dtype != statistic.dtype.base_dtype:
-        decay = tf.cast(decay, statistic.dtype.base_dtype)
-        new_value = statistic - (statistic - tf.cast(new_value, statistic.dtype)) * decay
-        return statistic.assign(new_value)
+        if decay.dtype != statistic.dtype.base_dtype:
+            decay = tf.cast(decay, statistic.dtype.base_dtype)
+        delta = (statistic - tf.cast(new_value, statistic.dtype)) * decay
+        return statistic.assign_sub(delta)
     
     def update_variables(self, mean, var):
         """Updates the batch normalization variables.
@@ -98,6 +115,9 @@ class AccumBatchNormalization(Layer):
             mean: average for single feature
             var: variance for single feature
         """
+        #self.add_update(self.get_moving_average(self.moving_mean, mean))
+        #self.add_update(self.get_moving_average(self.moving_variance, var))
+
         self.moving_mean.assign(self.get_moving_average(self.moving_mean, mean))
         self.moving_variance.assign(self.get_moving_average(self.moving_variance, var))
 
@@ -105,8 +125,8 @@ class AccumBatchNormalization(Layer):
     
     def reset_accum(self):
         """Resets accumulator slots."""
-        self.accum_mean.assign(tf.zeros(self.num_features))
-        self.accum_variance.assign(tf.zeros(self.num_features))
+        self.accum_mean.assign(tf.zeros_like(self.accum_mean))
+        self.accum_variance.assign(tf.zeros_like(self.accum_variance))
 
         self.accum_step_counter.assign(0)
 
@@ -122,10 +142,10 @@ class AccumBatchNormalization(Layer):
         """
         if training:
             assert len(inputs.shape) in (2, 4)
-            #if len(inputs.shape) > 2:
-            #    axes = [0, 1, 2]
-            #else:
-            axes = [0]
+            if len(inputs.shape) > 2:
+                axes = [0, 1, 2]
+            else:
+                axes = [0]
             
             # step accum count
             self.accum_step_counter.assign_add(1)
@@ -138,11 +158,15 @@ class AccumBatchNormalization(Layer):
             var /= tf.cast(self.accum_steps_tf, tf.float32)
             
             # accumulate statistics
-            self.accum_mean.assign_add(mean)
-            self.accum_variance.assign_add(var)
+            self.add_update(self.accum_mean.assign_add(mean))
+            self.add_update(self.accum_variance.assign_add(var))
 
             # only update variables after n accumulation steps
-            tf.cond(tf.equal(self.accum_step_counter, self.accum_steps_tf), true_fn=lambda: self.update_variables(mean, var), false_fn=lambda: None)
+            tf.cond(
+                tf.equal(self.accum_step_counter, self.accum_steps_tf),
+                true_fn=lambda: self.update_variables(self.accum_mean, self.accum_variance),
+                false_fn=lambda: None
+            )
         else:
             mean, var = self.moving_mean, self.moving_variance
         
@@ -162,12 +186,29 @@ class AccumBatchNormalization(Layer):
 
         return outputs
     
+    @property
+    def trainable(self):
+        return self._trainable
+
+    @trainable.setter
+    def trainable(self, value):
+        self._trainable = value
+    
+    @property
+    def _param_dtype(self):
+        # Raise parameters of fp16 batch norm to fp32
+        if self.dtype == tf.float16 or self.dtype == tf.bfloat16:
+            return tf.float32
+        else:
+            return self.dtype or tf.float32
+    
     def get_config(self):
         """Returns configurations as dict."""
         config = {
             'accum_steps': self.accum_steps,
             'momentum': self.momentum,
             'epsilon': self.epsilon,
+            'trainable': self.trainable,
         }
         base_config = super().get_config()
         return dict(list(base_config.items()) + list(config.items()))
