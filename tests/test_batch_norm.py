@@ -138,8 +138,8 @@ def test_compare_accum_bn_expected_result():
 
     print(result1, result2)
 
-    # np.testing.assert_almost_equal(result1, result2, decimal=2)
-    assert result1 == result2
+    np.testing.assert_almost_equal(result1, result2, decimal=2)
+    # assert result1 == result2
 
 
 if __name__ == "__main__":

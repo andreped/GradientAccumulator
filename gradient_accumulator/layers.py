@@ -86,7 +86,7 @@ class AccumBatchNormalization(Layer):
         self.accum_variance = self.add_weight(
             shape=(self.param_shape),
             dtype=self._param_dtype,
-            initializer="ones",
+            initializer="zeros",  # NOTE: This should be "zeros" ass we use it for accumulation
             trainable=False,
             name="accum_variance",
             synchronization=tf.VariableSynchronization.ON_READ,
@@ -125,8 +125,8 @@ class AccumBatchNormalization(Layer):
     
     def reset_accum(self):
         """Resets accumulator slots."""
-        self.accum_mean.assign(tf.zeros_like(self.accum_mean))
-        self.accum_variance.assign(tf.zeros_like(self.accum_variance))
+        self.add_update(self.accum_mean.assign(tf.zeros_like(self.accum_mean)))
+        self.add_update(self.accum_variance.assign(tf.zeros_like(self.accum_variance)))
 
         self.accum_step_counter.assign(0)
 
@@ -154,8 +154,8 @@ class AccumBatchNormalization(Layer):
             mean, var = tf.nn.moments(inputs, axes=axes, keepdims=False)
 
             # scale mean and variance to produce mean later
-            mean /= tf.cast(self.accum_steps_tf, tf.float32)
-            var /= tf.cast(self.accum_steps_tf, tf.float32)
+            mean /= tf.cast(self.accum_steps_tf, self._param_dtype)
+            var /= tf.cast(self.accum_steps_tf, self._param_dtype)
             
             # accumulate statistics
             self.add_update(self.accum_mean.assign_add(mean))
