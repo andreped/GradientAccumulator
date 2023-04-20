@@ -169,9 +169,6 @@ class AccumBatchNormalization(Layer):
             )
         else:
             mean, var = self.moving_mean, self.moving_variance
-        
-        # @ TODO: Why are we not doing this for training?
-        # mean, var = self.moving_mean, self.moving_variance
 
         scale = self.gamma
         offset = self.beta
@@ -180,7 +177,6 @@ class AccumBatchNormalization(Layer):
         if scale is not None:
             inv *= scale
         
-        # @TODO: Why are we using mean and var here and not self.moving_mean and self.moving_variance?
         outputs =  inputs * tf.cast(inv, inputs.dtype) + \
             tf.cast(offset - mean * inv if offset is not None else -mean * inv, inputs.dtype)
 
