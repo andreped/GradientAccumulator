@@ -8,6 +8,7 @@ There has also been added experimental support for mixed precision:
 
     from tensorflow.keras import mixed_precision
     from tensorflow.keras.optimizers import Adam
+    from gradient_accumulator import GradientAccumulateModel
 
     mixed_precision.set_global_policy('mixed_float16')
     model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
