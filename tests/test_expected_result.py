@@ -7,13 +7,21 @@ from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
 
 
+# get current tf minor version
+tf_version = int(tf.version.VERSION.split(".")[1])
+
+
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     return tf.cast(image, tf.float32) / 255., label
 
 
 def reset():
+    # set tf log level
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    # disable GPU
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
@@ -30,10 +38,8 @@ def reset():
     tf.random.set_seed(1234)
 
     # https://stackoverflow.com/a/71311207
-    tf.config.experimental.enable_op_determinism()
-
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+    if tf_version > 6:
+        tf.config.experimental.enable_op_determinism()  # Exist only for Python >=3.7
 
 
 def run_experiment(bs=50, accum_steps=2, epochs=1):

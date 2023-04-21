@@ -82,9 +82,6 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     x2 = Dense(32, activation="relu")(x2)
     x2 = Dense(10, name="classifier")(x2)
 
-    # [2.0176000595092773, 0.09766767919063568, 1.9199140071868896, 0.46810001134872437]
-    # [1.6557999849319458, 0.08378496021032333, 1.5719828605651855, 0.6689000129699707]
-
     model = Model(inputs=[input1, input2], outputs=[x1, x2])
 
     # wrap model to use gradient accumulation

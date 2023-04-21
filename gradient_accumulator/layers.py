@@ -15,6 +15,7 @@ class AccumBatchNormalization(Layer):
             accum_steps: int > 0. Update gradient in every accumulation steps.
             momentum: float [0, 1]. Momentum used in variable update.
             epsilon: float > 0: Small value to aid numerical stability.
+            trainable: bool: Whether layer should be updated during training. Different from training/inference mode.
             **kwargs: keyword arguments. Supports various arguments from the Keras' Layer class.
         """
         self.accum_steps = accum_steps
@@ -91,7 +92,7 @@ class AccumBatchNormalization(Layer):
         self.accum_variance = self.add_weight(
             shape=(self.param_shape),
             dtype=self.dtype,
-            initializer="zeros",  # this should be "zeros" ass we use it for accumulation
+            initializer="zeros",  # this should be "zeros" as we use it for accumulation
             trainable=False,
             name="accum_variance",
             synchronization=tf.VariableSynchronization.ON_READ,
@@ -199,22 +200,40 @@ class AccumBatchNormalization(Layer):
     
     @property
     def trainable(self):
+        """Returns whether layer is trainable.
+        
+        Returns:
+            trainable boolean state.
+        """
         return self._trainable
 
     @trainable.setter
-    def trainable(self, value):
+    def trainable(self, value:bool):
+        """Sets trainable variable.
+        
+        Args:
+            value: which boolean state to change variable to.
+        """
         self._trainable = value
     
     @property
     def _param_dtype(self):
-        # Raise parameters of fp16 batch norm to fp32
+        """Raise parameters of fp16 batch norm to fp32
+        
+        Returns:
+            dtype of params.
+        """
         if self.dtype == tf.float16 or self.dtype == tf.bfloat16:
             return tf.float32
         else:
             return self.dtype or tf.float32
     
     def get_config(self):
-        """Returns configurations as dict."""
+        """Returns configurations as dict.
+        
+        Returns:
+            Configuration file.
+        """
         config = {
             'accum_steps': self.accum_steps,
             'momentum': self.momentum,

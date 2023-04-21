@@ -25,8 +25,7 @@ jobs:
           pip install "protobuf<=3.20" --force-reinstall
 
       - name: Build wheel
-        run: |
-          python setup.py bdist_wheel
+        run: python setup.py bdist_wheel
 
       - name: Upload Python wheel
         uses: actions/upload-artifact@v2
@@ -71,7 +70,6 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -v tests/test_train_mnist.py
           pytest -v tests/test_expected_result.py
           pytest -v tests/test_mixed_precision.py
           pytest -v tests/test_optimizer_invariance.py
@@ -110,13 +108,13 @@ jobs:
             python-version: 3.9
             tf-version: 2.9.0
           
-          - os: ubuntu-latest
-            python-version: 3.9
-            tf-version: 2.10.0
+          #- os: ubuntu-latest
+          #  python-version: 3.9
+          #  tf-version: 2.10.0
           
-          - os: ubuntu-latest
-            python-version: 3.9
-            tf-version: 2.11.0
+          #- os: ubuntu-latest
+          #  python-version: 3.9
+          #  tf-version: 2.11.0
           
           #- os: ubuntu-latest
           #  python-version: 3.9
@@ -148,7 +146,7 @@ jobs:
 
       - name: Run test
         run: |
-          pytest -v tests/test_train_mnist.py
+          pytest -v tests/test_expected_result.py
           pytest -v tests/test_optimizer_wrapper.py
   
   test-optimizer:

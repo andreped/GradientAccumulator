@@ -2,7 +2,6 @@ import multiprocessing as mp
 
 
 def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3, queue=None, mixed_precision=True):
-
     import tensorflow as tf
     import tensorflow_datasets as tfds
     from tensorflow.keras import mixed_precision
@@ -166,5 +165,3 @@ def test_mixed_precision():
     result4 = run_experiment_wrapper(custom_bn=True, accum_steps=1, bs=100, mixed_precision=True)[1]
 
     np.testing.assert_almost_equal(result3, result4, decimal=2)
-    
-    

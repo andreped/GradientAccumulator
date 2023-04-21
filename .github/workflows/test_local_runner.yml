@@ -20,8 +20,7 @@ jobs:
           python3 -m pip install tensorflow-metal
 
       - name: Build wheel
-        run: |
-          python3 setup.py bdist_wheel
+        run: python3 setup.py bdist_wheel
 
       - name: Upload Python wheel
         uses: actions/upload-artifact@v2
