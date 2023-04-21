@@ -36,11 +36,7 @@ class GradientAccumulateModel(tf.keras.Model):
         self.use_agc = use_agc
         self.clip_factor = clip_factor
         self.eps = eps
-        
-        self.dtype_value = tf.float32  # @TODO: This is probably not suited when tf.bloat32
-        #if mixed_precision:
-        #    self.dtype_value = tf.float16
-        
+        self.dtype_value = self.dtype  # @TODO: Does this dynamically changes based on mixed precision/variables dtype?
         self.gradient_accumulation = None
         self.reinit_grad_accum()
 
