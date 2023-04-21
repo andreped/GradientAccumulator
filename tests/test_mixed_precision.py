@@ -84,7 +84,6 @@ def run_experiment():
 def test_mixed_precision():
     # launch experiment in separate process, as we are enabling mixed precision
     # which will impact other unit tests, unless we do this
-
     try:
         from pytest_cov.embed import cleanup_on_sigterm
     except ImportError:

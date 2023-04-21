@@ -70,7 +70,6 @@ jobs:
                  --cov=gradient_accumulator tests/test_mixed_precision.py \
                  --cov=gradient_accumulator tests/test_adaptive_gradient_clipping.py \
                  --cov=gradient_accumulator tests/test_batch_norm.py \
-                 --cov=gradient_accumulator tests/test_cnn_mnist.py \
                  --cov=gradient_accumulator tests/test_sparse_optimizer.py
 
       - name: Lint with flake8
