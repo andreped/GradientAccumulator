@@ -108,13 +108,13 @@ jobs:
             python-version: 3.9
             tf-version: 2.9.0
           
-          - os: ubuntu-latest
-            python-version: 3.9
-            tf-version: 2.10.0
+          #- os: ubuntu-latest
+          #  python-version: 3.9
+          #  tf-version: 2.10.0
           
-          - os: ubuntu-latest
-            python-version: 3.9
-            tf-version: 2.11.0
+          #- os: ubuntu-latest
+          #  python-version: 3.9
+          #  tf-version: 2.11.0
           
           #- os: ubuntu-latest
           #  python-version: 3.9
@@ -147,7 +147,7 @@ jobs:
       - name: Run test
         run: |
           pytest -v tests/test_expected_result.py
-        #pytest -v tests/test_optimizer_wrapper.py
+          pytest -v tests/test_optimizer_wrapper.py
   
   test-optimizer:
     needs: build
