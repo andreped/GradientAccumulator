@@ -71,7 +71,6 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest -v tests/test_train_mnist.py
           pytest -v tests/test_expected_result.py
           pytest -v tests/test_mixed_precision.py
           pytest -v tests/test_optimizer_invariance.py
@@ -148,7 +147,7 @@ jobs:
 
       - name: Run test
         run: |
-          pytest -v tests/test_train_mnist.py
+          pytest -v tests/test_expected_result.py
           pytest -v tests/test_optimizer_wrapper.py
   
   test-optimizer:
