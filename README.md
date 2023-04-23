@@ -34,7 +34,7 @@ Or from source:
 pip install git+https://github.com/andreped/GradientAccumulator
 ```
 
-## [Quickstart](https://github.com/andreped/GradientAccumulator#quickstart)
+## [Getting started](https://github.com/andreped/GradientAccumulator#getting-started)
 
 A simple example to add gradient accumulation to an existing model is by:
 ```
@@ -49,7 +49,7 @@ Then simply use the `model` as you normally would!
 
 In practice, using gradient accumulation with a custom pipeline might require some extra overhead and tricks to get working.
 
-For more information, see documentations which are hosted at [gradientaccumulator.readthedocs.io](https://gradientaccumulator.readthedocs.io/en/latest/).
+For more information, see documentations which are hosted at [gradientaccumulator.readthedocs.io](https://gradientaccumulator.readthedocs.io/en/latest/)
 
 
 ## [What?](https://github.com/andreped/GradientAccumulator#what)
@@ -78,11 +78,9 @@ Our implementations enable theoretically **infinitely large batch size**, with *
 | `Batch Normalization` | `layer = AccumBatchNormalization(accum_steps=4)` |
 | `Mixed precision` | `model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)` |
 
-As batch normalization (BN) is not natively compatible with GA, we have implemented a custom BN layer which can be used as a drop-in replacement.
-
-Support for adaptive gradient clipping has been added as an alternative to BN.
-
-Mixed precision can also be utilized on both GPUs and TPUs.
+* As batch normalization (BN) is not natively compatible with GA, we have implemented a custom BN layer which can be used as a drop-in replacement.
+* Support for adaptive gradient clipping has been added as an alternative to BN.
+* Mixed precision can also be utilized on both GPUs and TPUs.
 
 For more information on usage, supported techniques, and examples, refer to [the documentations](https://gradientaccumulator.readthedocs.io/en/latest/).
 
