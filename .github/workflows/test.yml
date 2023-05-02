@@ -77,7 +77,7 @@ jobs:
           pytest -v tests/test_multitask.py
           pytest -v tests/test_adaptive_gradient_clipping.py
           pytest -v tests/test_batch_norm.py
-          pytest -v tests/test_bn_conv3d.py
+          pytest -v tests/test_bn_convnd.py
           pytest -v tests/test_mp_batch_norm.py
 
   tf-compatibility:

@@ -68,7 +68,8 @@ jobs:
                  --cov=gradient_accumulator tests/test_adaptive_gradient_clipping.py \
                  --cov=gradient_accumulator tests/test_sparse_optimizer.py \
                  --cov=gradient_accumulator tests/test_expected_result.py \
-                 --cov=gradient_accumulator tests/test_mp_batch_norm.py 
+                 --cov=gradient_accumulator tests/test_mp_batch_norm.py \
+                 --cov=gradient_accumulator tests/test_bn_convnd.py
 
       - name: Lint with flake8
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
