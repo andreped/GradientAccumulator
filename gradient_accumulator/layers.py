@@ -153,11 +153,9 @@ class AccumBatchNormalization(Layer):
             inputs = tf.cast(inputs, self.dtype)
 
         if training:
-            assert len(inputs.shape) in (2, 5)
-            if len(inputs.shape) > 3:
-                axes = [0, 1, 2, 3]
-            elif len(inputs.shape) > 2:
-                axes = [0, 1, 2]
+            assert len(inputs.shape) in (2, 4, 5)
+            if len(inputs.shape) > 2:
+                axes = list(range(len(inputs.shape)))[:-1]
             else:
                 axes = [0]
             
