@@ -5,7 +5,7 @@ from gradient_accumulator.layers import AccumBatchNormalization
 import numpy as np
 
 
-def test_bn_conv3d(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3):
+def test_bn_conv3d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
     # make toy dataset
     data = np.random.randint(2, size=(16, 8, 8, 8, 1))
     gt = np.expand_dims(np.random.randint(2, size=16), axis=-1)
@@ -27,7 +27,7 @@ def test_bn_conv3d(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
         tf.keras.layers.Dense(4),
         normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
         tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Dense(2)
+        tf.keras.layers.Dense(1, activation="sigmoid"),
     ])
 
     # wrap model to use gradient accumulation
@@ -37,7 +37,7 @@ def test_bn_conv3d(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     # compile model
     model.compile(
         optimizer=tf.keras.optimizers.SGD(1e-2),
-        loss=tf.keras.losses.binary_crossentropy(),
+        loss=tf.keras.losses.BinaryCrossentropy(),
         metrics=["acc"],
     )
 
