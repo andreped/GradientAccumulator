@@ -1,7 +1,7 @@
 import multiprocessing as mp
 
 
-def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3, queue=None, mixed_precision=True):
+def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3, queue=None, mixed_precision_flag=True):
     import tensorflow as tf
     import tensorflow_datasets as tfds
     from tensorflow.keras import mixed_precision
@@ -42,7 +42,7 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     tf.config.experimental.enable_op_determinism()
 
     # set mixed global precision policy
-    if mixed_precision:
+    if mixed_precision_flag:
         mixed_precision.set_global_policy('mixed_float16')
 
     # load dataset
@@ -76,7 +76,7 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     # create model
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(32),
+        tf.keras.layers.Dense(10),
         normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
         tf.keras.layers.Activation("relu"),
         tf.keras.layers.Dense(10, dtype=tf.float32)
@@ -85,13 +85,14 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     # wrap model to use gradient accumulation
     if accum_steps > 1:
         model = GradientAccumulateModel(
-            accum_steps=accum_steps, mixed_precision=mixed_precision,
+            accum_steps=accum_steps, mixed_precision=mixed_precision_flag,
             inputs=model.input, outputs=model.output
         )
 
     # need to scale optimizer for mixed precision
     opt = tf.keras.optimizers.SGD(1e-2)
-    opt = mixed_precision.LossScaleOptimizer(opt)
+    if mixed_precision_flag:
+        opt = mixed_precision.LossScaleOptimizer(opt)
 
     # compile model
     model.compile(
