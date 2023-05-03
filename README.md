@@ -6,7 +6,7 @@
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7831244.svg)](https://doi.org/10.5281/zenodo.7831244)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7890319.svg)](https://doi.org/10.5281/zenodo.7890319)
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
 
@@ -93,19 +93,17 @@ The documentations hosted [here](https://gradientaccumulator.readthedocs.io/en/l
 
   
 ## [How to cite?](https://github.com/andreped/GradientAccumulator#how-to-cite)
-If you used this package or found the project relevant in your research, please, considering including the following citation:
+If you used this package or found the project relevant in your research, please, include the following citation:
 
 ```
-@software{andre_pedersen_2023_7831244,
-  author       = {André Pedersen and
-                  Javier Pérez de Frutos and
-                  David Bouget},
-  title        = {andreped/GradientAccumulator: v0.4.0},
-  month        = apr,
+@software{andre_pedersen_2023_7890319,
+  author       = {André Pedersen and Javier Pérez de Frutos and David Bouget},
+  title        = {andreped/GradientAccumulator: v0.4.2},
+  month        = may,
   year         = 2023,
   publisher    = {Zenodo},
-  version      = {v0.4.0},
-  doi          = {10.5281/zenodo.7831244},
-  url          = {https://doi.org/10.5281/zenodo.7831244}
+  version      = {v0.4.2},
+  doi          = {10.5281/zenodo.7890319},
+  url          = {https://doi.org/10.5281/zenodo.7890319}
 }
 ```
