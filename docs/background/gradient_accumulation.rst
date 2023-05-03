@@ -11,3 +11,22 @@ gradients are the *accumulated* to produce the full batch gradient.
   :width: 70%
   :align: center
   :alt: Gradient accumulation update
+
+Gradients for *K* mini-batches of size *M* are calculated, before
+being scaled by *1/K* and summed. After *K* accumulation steps, the
+overall gradient is produced and the weights are updated. By doing so
+we approximate batch training of *K * M*, without the need to keep
+the entire batch in memory.
+
+A simple usage example can be seen below:
+
+.. code-block:: python
+
+  from tensorflow.keras import Model
+  from gradient_accumulator import GradientAccumulateModel
+  
+  model = Model()
+  model.compile(optimizer="adam", loss="cross-entropy")
+  model = GradientAccumulateModel(accum_steps=K, inputs=model.input, outputs=model.output)
+  
+  model.fit(train_set, epochs=10, batch_size=M)
