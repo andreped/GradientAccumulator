@@ -6,7 +6,7 @@
 [![Pip Downloads](https://img.shields.io/pypi/dm/gradient-accumulator?label=pip%20downloads&logo=python)](https://pypi.org/project/gradient-accumulator/)
 [![PyPI version](https://badge.fury.io/py/gradient-accumulator.svg)](https://badge.fury.io/py/gradient-accumulator)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7890319.svg)](https://doi.org/10.5281/zenodo.7890319)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7890319.svg)](https://doi.org/10.5281/zenodo.5597521)
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
 
@@ -103,7 +103,7 @@ If you used this package or found the project relevant in your research, please,
   year         = 2023,
   publisher    = {Zenodo},
   version      = {v0.4.2},
-  doi          = {10.5281/zenodo.7890319},
-  url          = {https://doi.org/10.5281/zenodo.7890319}
+  doi          = {10.5281/zenodo.5597521},
+  url          = {https://doi.org/10.5281/zenodo.5597521}
 }
 ```
