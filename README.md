@@ -10,7 +10,7 @@
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
 
-The package is available on PyPI and is compatible with and have been tested against `TensorFlow 2.2-2.12` and `Python 3.6-3.12`, and works cross-platform (Ubuntu, Windows, macOS).
+The package is available on PyPI and is compatible with and have been tested against `TensorFlow 2.2-2.10` and `Python 3.6-3.11`, and works cross-platform (Ubuntu, Windows, macOS).
 </div>
 
 ## [Continuous integration](https://github.com/andreped/GradientAccumulator#continuous-integration)
@@ -53,11 +53,13 @@ For more information, see documentations which are hosted at [gradientaccumulato
 
 
 ## [What?](https://github.com/andreped/GradientAccumulator#what)
-Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are the _accumulated_ to produce the full batch gradient.
+Gradient accumulation (GA) enables reduced GPU memory consumption through dividing a batch into smaller reduced batches, and performing gradient computation either in a distributing setting across multiple GPUs or sequentially on the same GPU. When the full batch is processed, the gradients are then _accumulated_ to produce the full batch gradient.
 
 <p align="center">
 <img src="assets/grad_accum.png" width="70%">
 </p>
+
+Note that the very natural how we perform gradient accumulation is slightly different to avoid us needing to have the entire batch in CPU memory. More information on what goes under the hood can be seen in the [documentations](https://gradientaccumulator.readthedocs.io/en/latest/background/gradient_accumulation.html).
 
 
 ## [Why?](https://github.com/andreped/GradientAccumulator#why)
@@ -68,7 +70,7 @@ In TensorFlow 2, there did not exist a plug-and-play method to use gradient accu
 | `GradientAccumulateModel` | `model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)` |
 | `GradientAccumulateOptimizer` | `opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))` |
 
-Both approaches control how frequently the weigths are updated, but in their own way. Approach (1) is for single-GPU only, whereas (2) supports both single-GPU and distributed training (multi-GPU). However, note that (2) is not yet working as intended. Hence, use (1) for most applications.
+Both approaches control how frequently the weigths are updated but in their own way. Approach (1) overrides the `train_step` method of a given Model, whereas approach (2) wraps the optimizer. (1) is only compatible with single-GPU usage, whereas (2) also supports distributed training (multi-GPU). Note that (2) is not reaching as accurate expected results in benchmarks as (1), hence, use (1) when appropriate.
 
 Our implementations enable theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. If a single GPU is used, this comes at the cost of increased training runtime. Multiple GPUs could be used to improve runtime performance.
 
@@ -89,7 +91,7 @@ For more information on usage, supported techniques, and examples, refer to [the
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 The optimizer wrapper is derived from [the implementation by @fsx950223 and @stefan-falk](https://github.com/tensorflow/addons/pull/2525).
 
-The documentations hosted [here](https://gradientaccumulator.readthedocs.io/en/latest/index.html) was made possible by the incredible [ReadTheDocs team](https://readthedocs.org/) which offer free documentation hosting!
+The documentations hosted [here](https://gradientaccumulator.readthedocs.io/en/latest/index.html) was made possible by the incredible [Read The Docs team](https://readthedocs.org/) which offer free documentation hosting!
 
   
 ## [How to cite?](https://github.com/andreped/GradientAccumulator#how-to-cite)
