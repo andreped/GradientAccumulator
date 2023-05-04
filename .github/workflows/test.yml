@@ -79,6 +79,7 @@ jobs:
           pytest -v tests/test_batch_norm.py
           pytest -v tests/test_bn_convnd.py
           pytest -v tests/test_mp_batch_norm.py
+          pytest -v tests/test_model_distribute.py
 
   tf-compatibility:
     needs: build
