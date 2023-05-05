@@ -393,7 +393,7 @@ class GradientAccumulateOptimizer(opt):
 
             return _apply(accum_gradient,var,apply_state)
 
-        def reset(self):
+        def reset(self):  # pragma: no cover
             """Resets the accumulated gradients on the current replica."""
             assign_ops = []
             if not self._gradients:
