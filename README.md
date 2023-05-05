@@ -70,7 +70,7 @@ In TensorFlow 2, there did not exist a plug-and-play method to use gradient accu
 | `GradientAccumulateModel` | `model = GradientAccumulateModel(accum_steps=4, inputs=model.input, outputs=model.output)` |
 | `GradientAccumulateOptimizer` | `opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))` |
 
-Both approaches control how frequently the weigths are updated but in their own way. Approach (1) overrides the `train_step` method of a given Model, whereas approach (2) wraps the optimizer. (1) is only compatible with single-GPU usage, whereas (2) also supports distributed training (multi-GPU). Note that (2) is not reaching as accurate expected results in benchmarks as (1), hence, use (1) when appropriate.
+Both approaches control how frequently the weigths are updated but in their own way. Approach (1) overrides the `train_step` method of a given Model, whereas approach (2) wraps the optimizer. (1) is only compatible with single-GPU usage, whereas (2) also supports distributed training (multi-GPU).
 
 Our implementations enable theoretically **infinitely large batch size**, with **identical memory consumption** as for a regular mini batch. If a single GPU is used, this comes at the cost of increased training runtime. Multiple GPUs could be used to improve runtime performance.
 
@@ -83,6 +83,7 @@ Our implementations enable theoretically **infinitely large batch size**, with *
 * As batch normalization (BN) is not natively compatible with GA, we have implemented a custom BN layer which can be used as a drop-in replacement.
 * Support for adaptive gradient clipping has been added as an alternative to BN.
 * Mixed precision can also be utilized on both GPUs and TPUs.
+* Multi-GPU distributed training using generic optimizer wrapper.
 
 For more information on usage, supported techniques, and examples, refer to [the documentations](https://gradientaccumulator.readthedocs.io/en/latest/).
 
