@@ -15,6 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=('tests', 'notebooks', 'assets', 'docs')),
     install_requires=[
         "tensorflow",
+        "numpy<=1.23.2",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
