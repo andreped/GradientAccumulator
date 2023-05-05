@@ -96,7 +96,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": curr_opt})
+    trained_model = load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)

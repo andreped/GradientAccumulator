@@ -447,7 +447,7 @@ class GradientAccumulateOptimizer(opt):
         def get_config(self):
             """Returns the configuration as dict."""
             config = {
-                "optimizer": tf.keras.optimizers.get(self._optimizer),
+                "optimizer": tf.keras.optimizers.serialize(self._optimizer),
                 "accum_steps": self._accum_steps,
                 "reduction": self._reduction,
             }
