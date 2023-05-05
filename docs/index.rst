@@ -8,7 +8,6 @@ techniques in TensorFlow. It is designed to be integrated seemlessly and be comp
 the most commonly used training pipelines for deep neural networks. To make it work with
 modern techniques such as batch normalization and gradient clipping, custom implementations
 have been made which can be used as drop-in replacement for existing implementations.
-custom implementations.
 
 Installation
 ------------
