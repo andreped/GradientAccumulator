@@ -250,7 +250,6 @@ class GradientAccumulateOptimizer(opt):
                     return self.step.assign_add(1, read_value=False)
 
 
-        
         def _resource_apply_dense(self, grad, var, apply_state=None):  # pragma: no cover
             """Performs gradient update on dense tensor.
 
@@ -296,7 +295,6 @@ class GradientAccumulateOptimizer(opt):
 
             return _apply(accum_gradient,var,apply_state)
 
-
         def _resource_apply_sparse(self, grad, var, indices, apply_state=None):  # pragma: no cover
             """Performs gradient update on sparse tensor.
 
@@ -309,8 +307,10 @@ class GradientAccumulateOptimizer(opt):
             """
 
             accum_gradient = self.get_slot(var, "ga")
+
             if accum_gradient is not None and grad is not None:
-                self._resource_scatter_add(grad  / self._accum_steps, indices, grad)
+                grad /= tf.cast(self._accum_steps, dtype=grad.dtype)
+                self._resource_scatter_add(accum_gradient, indices, grad)
 
             def _apply(accum_gradient,var,apply_state):
                 grad = tf.where(
@@ -334,7 +334,7 @@ class GradientAccumulateOptimizer(opt):
                     grad == accum_gradient, tf.zeros_like(accum_gradient), accum_gradient
                 )
                 reset_op = accum_gradient.assign(
-                    grad,
+                    reset_val,
                     use_locking=self._use_locking,
                     read_value=False,
                 )
@@ -359,26 +359,24 @@ class GradientAccumulateOptimizer(opt):
             accum_gradient = self.get_slot(var, "ga")
 
             if accum_gradient is not None and grad is not None:
-                #if self._reduction == "MEAN":
-                #    grad /= tf.cast(self._accum_steps, grad.dtype)
+                grad /= tf.cast(self._accum_steps, dtype=grad.dtype)
+                self._resource_scatter_add(accum_gradient, indices, grad)
 
-                self._resource_scatter_add(grad  / self._accum_steps, indices, grad)
-
-            def _apply(accum_gradient,var,apply_state):
+            def _apply(accum_gradient, var, apply_state):
                 grad = tf.where(
                     self.step % self._accum_steps == 0,
                     accum_gradient,
                     tf.zeros_like(var),
                 )
                 if "apply_state" in self.optimizer._sparse_apply_args:
-                    train_op = self.optimizer._resource_apply_sparse(
+                    train_op = self.optimizer._resource_apply_sparse_duplicate_indices(
                         accum_gradient.sparse_read(indices),
                         var,
                         indices,
                         apply_state=apply_state,
                     )
                 else:
-                    train_op = self.optimizer._resource_apply_sparse(
+                    train_op = self.optimizer._resource_apply_sparse_duplicate_indices(
                         accum_gradient.sparse_read(indices), var, indices
                     )
 
@@ -386,7 +384,7 @@ class GradientAccumulateOptimizer(opt):
                     grad == accum_gradient, tf.zeros_like(accum_gradient), accum_gradient
                 )
                 reset_op = accum_gradient.assign(
-                    grad,
+                    reset_val,
                     use_locking=self._use_locking,
                     read_value=False,
                 )
