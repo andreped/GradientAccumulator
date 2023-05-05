@@ -12,7 +12,10 @@ In order to train with multiple GPUs, you will have to use the Optimizer wrapper
     opt = GradientAccumulateOptimizer(accum_steps=4, optimizer=tf.keras.optimizers.SGD(1e-2))
 
 
-Just remember to wrap the optimizer within the `tf.distribute.MirroredStrategy`. A more comprehensive example can be seen below:
+Just remember to wrap the optimizer within the `tf.distribute.MirroredStrategy`.
+
+A more comprehensive example can be seen below:
+
 
 .. code-block:: python
 
