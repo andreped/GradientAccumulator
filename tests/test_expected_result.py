@@ -38,8 +38,10 @@ def reset():
     tf.random.set_seed(1234)
 
     # https://stackoverflow.com/a/71311207
-    if tf_version > 6:
-        tf.config.experimental.enable_op_determinism()  # Exist only for Python >=3.7
+    try:
+        tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
+    except AttributeError as e:
+        print(e)
 
 
 def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
@@ -132,3 +134,7 @@ def test_expected_result():
     # results should be identical (theoretically, even in practice on CPU)
     assert result1 == result2
     assert result2 == result3
+
+
+if __name__ == "__main__":
+    test_expected_result()
