@@ -4,7 +4,7 @@ import random as python_random
 import os
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateModel
+from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer
 
 
 # get current tf minor version
@@ -38,11 +38,13 @@ def reset():
     tf.random.set_seed(1234)
 
     # https://stackoverflow.com/a/71311207
-    if tf_version > 6:
-        tf.config.experimental.enable_op_determinism()  # Exist only for Python >=3.7
+    try:
+        tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
+    except AttributeError as e:
+        print(e)
 
 
-def run_experiment(bs=50, accum_steps=2, epochs=1):
+def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -63,20 +65,30 @@ def run_experiment(bs=50, accum_steps=2, epochs=1):
     ds_test = ds_test.prefetch(1)
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(128, activation='relu'),
+    input = tf.keras.layers.Input(shape=(28, 28))
+    x = tf.keras.layers.Flatten(input_shape=(28, 28))(input)
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
         # tf.keras.layers.BatchNormalization(),  # @TODO: BN not compatible with GA solution currently! Yields different results
-        tf.keras.layers.Dense(10)
-    ])
+    output = tf.keras.layers.Dense(10)(x)
 
-    # wrap model to use gradient accumulation
-    if accum_steps > 1:
-        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+    opt = tf.keras.optimizers.SGD(1e-3)
 
+    if accum_steps == 1:
+        model = tf.keras.Model(inputs=input, outputs=output)
+    else:
+        if modeloropt == "model":
+            # wrap model to use gradient accumulation
+            model = GradientAccumulateModel(accum_steps=accum_steps, inputs=input, outputs=output)
+        else:
+            # wrap optimizer to use gradient accumulation
+            opt = GradientAccumulateOptimizer(opt, accum_steps=accum_steps)
+
+            # compile model
+            model = tf.keras.Model(inputs=input, outputs=output)
+    
     # compile model
     model.compile(
-        optimizer=tf.keras.optimizers.SGD(1e-3),
+        optimizer=opt,
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
     )
@@ -105,13 +117,24 @@ def test_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=100, accum_steps=1, epochs=2)
+    result1 = run_experiment(bs=100, accum_steps=1, epochs=2, modeloropt="opt")
 
     # reset before second run to get identical results
     reset()
 
     # run again with different batch size and number of accumulations
-    result2 = run_experiment(bs=50, accum_steps=2, epochs=2)
+    result2 = run_experiment(bs=50, accum_steps=2, epochs=2, modeloropt="opt")
+    
+    # reset again
+    reset()
+
+    # test with model wrapper instead
+    result3 = run_experiment(bs=50, accum_steps=2, epochs=2, modeloropt="model")
 
     # results should be identical (theoretically, even in practice on CPU)
     assert result1 == result2
+    assert result2 == result3
+
+
+if __name__ == "__main__":
+    test_expected_result()

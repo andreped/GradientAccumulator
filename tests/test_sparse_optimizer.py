@@ -2,40 +2,79 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.text import one_hot
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+import tensorflow_datasets as tfds
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Flatten, Embedding, Dense
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateOptimizer
+import os
+import random as python_random
 
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
 
 
-def test_sparse_optimizer():
+def reset():
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-    # Define 10 restaurant reviews
-    reviews =[
-            'Never coming back!',
-            'horrible service',
-            'rude waitress',
-            'cold food',
-            'horrible food!',
-            'awesome',
-            'awesome services!',
-            'rocks',
-            'poor work',
-            'couldn\'t have done better'
-    ]
+    # disable GPU
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-    #Define labels
-    labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0])
+    # The below is necessary for starting Numpy generated random numbers
+    # in a well-defined initial state.
+    np.random.seed(123)
 
-    # setup toy dataset
-    vocab_size = 50
-    encoded_reviews = [one_hot(d, vocab_size) for d in reviews]
-    max_length = 4
-    padded_reviews = pad_sequences(encoded_reviews, maxlen=max_length, padding='post')
+    # The below is necessary for starting core Python generated random numbers
+    # in a well-defined state.
+    python_random.seed(123)
+
+    # The below set_seed() will make random number generation
+    # in the TensorFlow backend have a well-defined initial state.
+    # For further details, see:
+    # https://www.tensorflow.org/api_docs/python/tf/random/set_seed
+    tf.random.set_seed(1234)
+
+    # https://stackoverflow.com/a/71311207
+    try:
+        tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
+    except AttributeError as e:
+        print(e)
+
+
+def preprocess_data(ds, vocab_size, max_length):
+    def encode(x, y):
+        x = tf.strings.substr(x, 0, max_length)
+        x = tf.strings.reduce_join(tf.strings.unicode_split(x, input_encoding="UTF-8"), separator=' ')
+        x = tf.strings.split(x)
+        x_hashed = tf.strings.to_hash_bucket_fast(x, vocab_size)
+        x_padded = tf.pad(x_hashed, paddings=[[0, max_length - tf.shape(x_hashed)[-1]]], constant_values=0)
+        return x_padded, y
+
+    ds = ds.map(encode)
+    return ds
+
+
+
+def run_experiment(bs=100, accum_steps=1, epochs=2):
+    # Load the IMDb dataset
+    (ds_train, ds_test), ds_info = tfds.load(
+        'imdb_reviews',
+        split=['train', 'test'],
+        shuffle_files=True,
+        as_supervised=True,
+        with_info=True,
+    )
+
+    # Preprocess the dataset
+    vocab_size = 10000
+    max_length = 100
+    ds_train = preprocess_data(ds_train, vocab_size, max_length)
+    ds_test = preprocess_data(ds_test, vocab_size, max_length)
+
+    # Batch the dataset
+    ds_train = ds_train.batch(bs)
+    ds_test = ds_test.batch(bs)
 
     # define model
     model = Sequential()
@@ -46,11 +85,12 @@ def test_sparse_optimizer():
     # wrap optimizer to add gradient accumulation support
     # need to dynamically handle which Optimizer class to use dependent on tf version
     if tf_version > 10:
-        curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
+        opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
     else:
-        curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
+        opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
     
-    opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=4, reduction="MEAN")
+    if accum_steps > 1:
+        opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")
 
     model.compile(
         optimizer=opt,
@@ -59,9 +99,9 @@ def test_sparse_optimizer():
     )
 
     model.fit(
-        padded_reviews,
-        labels,
-        epochs=2,
+        ds_train,
+        batch_size=bs,
+        epochs=epochs,
         verbose=1,
     )
 
@@ -69,7 +109,28 @@ def test_sparse_optimizer():
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": curr_opt})
+    trained_model = load_model("./trained_model", compile=True)
 
-    result = trained_model.evaluate(padded_reviews, labels, verbose=1)
+    result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
+
+    return result[1]
+
+
+
+def test_sparse_expected_results():
+    # set seed
+    #reset()
+
+    # run once
+    #result1 = run_experiment(bs=100, accum_steps=1, epochs=2)
+
+    # reset before second run to get identical results
+    reset()
+
+    # run again with different batch size and number of accumulations
+    result2 = run_experiment(bs=50, accum_steps=2, epochs=2)
+
+
+    # results should be identical (theoretically, even in practice on CPU)
+    #assert result1 == result2

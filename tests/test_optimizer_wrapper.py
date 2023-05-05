@@ -36,8 +36,10 @@ def reset():
     tf.random.set_seed(1234)
 
     # https://stackoverflow.com/a/71311207
-    if tf_version > 6:
-        tf.config.experimental.enable_op_determinism()  # Exist only for Python >=3.7
+    try:
+        tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
+    except AttributeError as e:
+        print(e)
 
 
 def run_experiment(bs=16, accum_steps=4, epochs=1):
@@ -96,7 +98,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # load trained model and test
     del model
-    trained_model = load_model("./trained_model", compile=True, custom_objects={"SGD": curr_opt})
+    trained_model = load_model("./trained_model", compile=True)
 
     result = trained_model.evaluate(ds_test, verbose=1)
     print(result)
