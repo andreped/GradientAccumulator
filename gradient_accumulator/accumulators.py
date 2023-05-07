@@ -251,8 +251,13 @@ class GradientAccumulateOptimizer(opt):
         self._gradients = [self.get_slot(var, "ga") for var in var_list]
 
     @property
-    def step(self):
-        """Variable. The number of training steps this Optimizer has run."""
+    def step(self):  # pragma: no cover
+        """The number of training steps this Optimizer has run.
+        Initializes step variable if None.
+        
+        Returns:
+            Current number of optimizer steps.
+        """
         if self._step is None:
             with self._distribution_strategy_scope():
                 self._step = self.add_weight(
