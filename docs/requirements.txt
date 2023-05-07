@@ -1,3 +1,2 @@
 sphinx==5.3.0
 sphinx-rtd-theme
-urllib3==1.26.15
