@@ -56,10 +56,6 @@ installation if no existing version is found.
 The Team
 --------
 
-.. image:: https://www.indianbureaucracy.com/wp-content/uploads/2015/12/SINTEF_logo_indianbureaucracy.jpg
-   :width: 20%
-   :align: center
-
 The development of GradientAccumulator is led by André Pedersen with
 coworkers at the `SINTEF Medical Image Analysis <https://www.sintef.no/en/digital/departments-new/department-of-health-research/>`_
 research group. We are also very grateful to the open source community for

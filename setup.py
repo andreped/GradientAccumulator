@@ -5,14 +5,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="gradient-accumulator",
-    version="0.4.2",
-    author="André Pedersen and David Bouget and Javier Pérez de Frutos",
+    version="0.5.0",
+    author="André Pedersen and David Bouget and Javier Pérez de Frutos and Tor-Arne Schmidt Nordmo",
     author_email="andrped94@gmail.com",
     description="Package for gradient accumulation in TensorFlow",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/andreped/GradientAccumulator",
-    packages=setuptools.find_packages(exclude=('tests', 'notebooks', 'assets', 'docs')),
+    packages=setuptools.find_packages(exclude=('tests', 'notebooks', 'assets', 'docs', 'shell')),
     install_requires=[
         "tensorflow",
         "numpy<=1.23.2",

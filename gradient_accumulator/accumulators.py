@@ -1,8 +1,8 @@
 import tensorflow as tf
+
 from . import agc
 
-
-# need to dynamically handle which Optimizer class to use dependent on tf version
+# dynamically handle which Optimizer class to use dep on tf version
 opt = tf.keras.optimizers.Optimizer
 if int(tf.version.VERSION.split(".")[1]) > 10:
     opt = tf.keras.optimizers.legacy.Optimizer
@@ -10,11 +10,21 @@ if int(tf.version.VERSION.split(".")[1]) > 10:
 
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
-@tf.keras.utils.register_keras_serializable()  # adding this avoids needing to use custom_objects when loading model
+@tf.keras.utils.register_keras_serializable()
 class GradientAccumulateModel(tf.keras.Model):
     """Model wrapper for gradient accumulation."""
-    def __init__(self, accum_steps:int = 1, mixed_precision:bool = False, use_agc:bool = False,
-                    clip_factor:float = 0.01, eps:float = 1e-3, *args, **kwargs):
+
+    def __init__(
+        self,
+        accum_steps: int = 1,
+        mixed_precision: bool = False,
+        use_agc: bool = False,
+        clip_factor: float = 0.01,
+        eps: float = 1e-3,
+        experimental_distributed_support: bool = False,
+        *args,
+        **kwargs
+    ):
         """Adds gradient accumulation support to existing Keras Model.
 
         Args:
@@ -23,20 +33,31 @@ class GradientAccumulateModel(tf.keras.Model):
             use_agc: bool. Whether to enable adaptive gradient clipping.
             clip_factor: float > 0. Upper limit to gradient clipping.
             eps: float > 0. Small value to aid numerical stability.
+            experimental_distributed_support: bool. Whether to enable
+                experimental multi-gpu support. Only compatible with SGD. Can
+                be used with other optimizers but we do not have complete
+                control of the optimizer's state between accum_steps.
             **kwargs: keyword arguments.
         """
         super().__init__(*args, **kwargs)
-        self.accum_steps = tf.constant(accum_steps, dtype=tf.int32, name="accum_steps")
-        self.accum_step_counter = tf.Variable(0, dtype=tf.int32, trainable=False, name="accum_counter",
-                                                synchronization=tf.VariableSynchronization.ON_READ,
-                                                aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
-                                                )
+        self.accum_steps = tf.constant(
+            accum_steps, dtype=tf.int32, name="accum_steps"
+        )
+        self.accum_step_counter = tf.Variable(
+            0,
+            dtype=tf.int32,
+            trainable=False,
+            name="accum_counter",
+            synchronization=tf.VariableSynchronization.ON_READ,
+            aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
+        )
         self.first_call = True
         self.mixed_precision = mixed_precision
         self.use_agc = use_agc
         self.clip_factor = clip_factor
         self.eps = eps
-        self.dtype_value = self.dtype  # @TODO: Does this dynamically changes based on mixed precision/variables dtype?
+        self.experimental_distributed_support = experimental_distributed_support
+        self.dtype_value = self.dtype
         self.gradient_accumulation = None
         self.reinit_grad_accum()
 
@@ -71,91 +92,137 @@ class GradientAccumulateModel(tf.keras.Model):
                 sample_weight=sample_weight,
                 regularization_losses=self.losses,
             )
-            loss = loss / tf.cast(self.accum_steps, loss.dtype)  # MEAN reduction here IMPORTANT! Don't use SUM!
+            loss = loss / tf.cast(
+                self.accum_steps, loss.dtype
+            )  # MEAN reduction here IMPORTANT! Don't use SUM!
 
             # scale loss if mixed precision is enabled
             if self.mixed_precision:
                 loss = self.optimizer.get_scaled_loss(loss)
 
-        # Calculate batch gradients -> these are scaled gradients if mixed precision is enabled
-        gradients = tape.gradient(loss, self.trainable_variables, unconnected_gradients=tf.UnconnectedGradients.ZERO)
+        # Calculate batch gradients -> these are scaled gradients if mixed
+        # precision is enabled
+        gradients = tape.gradient(
+            loss,
+            self.trainable_variables,
+            unconnected_gradients=tf.UnconnectedGradients.ZERO,
+        )
 
         # scale gradients if mixed precision is enabled
         if self.mixed_precision:
             gradients = self.optimizer.get_unscaled_gradients(gradients)
 
-        # apply adaptive gradient clipping -> should be AFTER unscaling gradients
+        # apply adaptive gradient clipping -> should be AFTER unscaling
         if self.use_agc:
             gradients = agc.adaptive_clip_grad(
-                self.trainable_variables, gradients, clip_factor=self.clip_factor, eps=self.eps)
+                self.trainable_variables,
+                gradients,
+                clip_factor=self.clip_factor,
+                eps=self.eps,
+            )
 
         # Accumulate batch gradients
         for i in range(len(self.gradient_accumulation)):
-            self.gradient_accumulation[i].assign_add(gradients[i], read_value=False)
+            self.gradient_accumulation[i].assign_add(
+                gradients[i], read_value=False
+            )
 
-        # If accum_step_counter reach the accum_steps then we apply accumulated gradients to update the variables
-        # otherwise do nothing
-        #self.accum_steps.assign(self.accum_steps * tf.cast(tf.logical_not(tf.equal(self.accum_step_counter,self.accum_steps)), tf.int32))
-        tf.cond(tf.equal(self.accum_step_counter, self.accum_steps), true_fn=self.apply_accu_gradients,
-                false_fn=lambda: None)
-        
-        """
-        should_apply = tf.equal(self.accum_step_counter, self.accum_steps)
-        logical_grads = [tf.cast(should_apply, grad_component.dtype) * grad_component for grad_component in self.gradient_accumulation]
-        self.optimizer.apply_gradients(zip(logical_grads, self.trainable_variables))
-        self.accum_step_counter.assign(self.accum_step_counter * tf.cast(tf.logical_not(should_apply), tf.int32))
-        for i in range(len(self.gradient_accumulation)):
-            self.gradient_accumulation[i].assign_add(-1 * logical_grads[i])
+        # accumulate gradients only after certain number of steps
+        # self.accum_steps.assign(self.accum_steps * tf.cast(tf.logical_not(\
+        #   tf.equal(self.accum_step_counter,self.accum_steps)), tf.int32))
+        if not self.experimental_distributed_support:
+            tf.cond(
+                tf.equal(self.accum_step_counter, self.accum_steps),
+                true_fn=self.apply_accu_gradients,
+                false_fn=lambda: None,
+            )
 
-        """
+        else:
+            # NOTE: This enabled multi-gpu support, but only for SGD (!)
+            should_apply = tf.equal(self.accum_step_counter, self.accum_steps)
+            logical_grads = [
+                tf.cast(should_apply, grad_component.dtype) * grad_component
+                for grad_component in self.gradient_accumulation
+            ]
+            self.optimizer.apply_gradients(
+                zip(logical_grads, self.trainable_variables)
+            )
+            self.accum_step_counter.assign(
+                self.accum_step_counter
+                * tf.cast(tf.logical_not(should_apply), tf.int32)
+            )
+            for i in range(len(self.gradient_accumulation)):
+                self.gradient_accumulation[i].assign_add(-1 * logical_grads[i])
 
         # update metrics
-        self.compiled_metrics.update_state(y, y_pred, sample_weight=sample_weight)
+        self.compiled_metrics.update_state(
+            y, y_pred, sample_weight=sample_weight
+        )
         return {m.name: m.result() for m in self.metrics}
 
     def apply_accu_gradients(self):
         """Performs gradient update and resets slots afterwards."""
         # apply accumulated gradients
-        self.optimizer.apply_gradients(zip(self.gradient_accumulation, self.trainable_variables))
+        self.optimizer.apply_gradients(
+            zip(self.gradient_accumulation, self.trainable_variables)
+        )
 
         # reset
         self.accum_step_counter.assign(0)
         for i in range(len(self.gradient_accumulation)):
             self.gradient_accumulation[i].assign(
-                tf.zeros_like(self.trainable_variables[i], dtype=self.dtype_value), read_value=False)
+                tf.zeros_like(
+                    self.trainable_variables[i], dtype=self.dtype_value
+                ),
+                read_value=False,
+            )
 
     def reinit_grad_accum(self):
         """Reinitialized gradient accumulator slots."""
         # reinitialize gradient accumulator
         self.gradient_accumulation = [
-            tf.Variable(tf.zeros_like(v, dtype=self.dtype_value), trainable=False,
-            name="accum_" + str(i),
-            synchronization=tf.VariableSynchronization.ON_READ,
-            aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
-            ) for i, v in enumerate(self.trainable_variables)
+            tf.Variable(
+                tf.zeros_like(v, dtype=self.dtype_value),
+                trainable=False,
+                name="accum_" + str(i),
+                synchronization=tf.VariableSynchronization.ON_READ,
+                aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
+            )
+            for i, v in enumerate(self.trainable_variables)
         ]
 
+
 # Implementation was derived from:
-# https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py
-# and https://github.com/FreddeFrallan/Multilingual-CLIP/blob/5c82118452b3b59b41bb53714d61cd4990b1588d/multilingual_clip/TeacherLearning/Utils.py#L84
+# https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py  # noqa
+# https://github.com/FreddeFrallan/Multilingual-CLIP/blob/5c82118452b3b59b41bb53714d61cd4990b1588d/multilingual_clip/TeacherLearning/Utils.py#L84  # noqa
 @tf.keras.utils.register_keras_serializable()
 class GradientAccumulateOptimizer(opt):
     """Optimizer wrapper for gradient accumulation."""
-    def __init__(self, optimizer="SGD", accum_steps=1, reduction: str = "MEAN", name: str = "GradientAccumulateOptimizer", **kwargs):
+
+    def __init__(
+        self,
+        optimizer="SGD",
+        accum_steps=1,
+        reduction: str = "MEAN",
+        name: str = "GradientAccumulateOptimizer",
+        **kwargs
+    ):
         """Construct a new GradientAccumulateOptimizer optimizer.
 
-        Adding support for sparse tensors was tricky, but this resource was helpful.
-        Note that you need to implement both _resource_apply_sparse() and
-        _resource_apply_sparse_duplicate_indices() for it to work as intended.
+        Adding support for sparse tensors was tricky, but this resource was
+        helpful. Note that you need to implement both _resource_apply_sparse()
+        and _resource_apply_sparse_duplicate_indices() for it to work as
+        intended.
 
         See here for more information regarding implementation:
-        * https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
+        * https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93  # noqa
 
         Args:
             optimizer: str or `tf.keras.optimizers.Optimizer` that will be
                 used to compute and apply gradients.
             accum_steps: int > 0. Update gradient in every accumulation steps.
-            reduction: str. Which gradient reduction method to use. Defaults to 'SUM'.
+            reduction: str. Which gradient reduction method to use. Defaults
+                to 'SUM'.
             name: Optional name for the operations created when applying
                 gradients. Defaults to "GradientAccumulateOptimizer".
             **kwargs: keyword arguments. Allowed to be {`clipnorm`,
@@ -184,8 +251,13 @@ class GradientAccumulateOptimizer(opt):
         self._gradients = [self.get_slot(var, "ga") for var in var_list]
 
     @property
-    def step(self):
-        """Variable. The number of training steps this Optimizer has run."""
+    def step(self):  # pragma: no cover
+        """The number of training steps this Optimizer has run.
+        Initializes step variable if None.
+
+        Returns:
+            Current number of optimizer steps.
+        """
         if self._step is None:
             with self._distribution_strategy_scope():
                 self._step = self.add_weight(
@@ -201,6 +273,7 @@ class GradientAccumulateOptimizer(opt):
 
     @step.setter
     def step(self, variable):
+        """Sets the step value."""
         if self._step is not None:
             raise RuntimeError(
                 "Cannot set `step` to a new Variable after "
@@ -218,7 +291,8 @@ class GradientAccumulateOptimizer(opt):
         """
         if not self._gradients:
             raise ValueError(
-                "The accumulator should be called first to initialize the gradients"
+                "The accumulator should be called first to initialize the"
+                "gradients"
             )
         return list(
             gradient.read_value() if gradient is not None else gradient
@@ -229,7 +303,8 @@ class GradientAccumulateOptimizer(opt):
         """Updates weights using gradients.
 
         Args:
-            grads_and_vars: dict containing variables and corresponding gradients.
+            grads_and_vars: dict containing variables and corresponding
+                gradients.
             name: name to set when applying gradients.
             **kwargs: keyword arguments.
         Return:
@@ -238,19 +313,21 @@ class GradientAccumulateOptimizer(opt):
         train_op = super().apply_gradients(grads_and_vars, name, **kwargs)
         with tf.control_dependencies([train_op]):
             with tf.control_dependencies(
-                    [
-                        self._optimizer.iterations.assign_add(
-                            tf.cast(
-                                tf.where(self.step % self._accum_steps == 0, 1, 0), tf.int64
-                            ),
-                            read_value=False,
-                        )
-                    ]
+                [
+                    self._optimizer.iterations.assign_add(
+                        tf.cast(
+                            tf.where(self.step % self._accum_steps == 0, 1, 0),
+                            tf.int64,
+                        ),
+                        read_value=False,
+                    )
+                ]
             ):
                 return self.step.assign_add(1, read_value=False)
 
-
-    def _resource_apply_dense(self, grad, var, apply_state=None):  # pragma: no cover
+    def _resource_apply_dense(
+        self, grad, var, apply_state=None
+    ):  # pragma: no cover
         """Performs gradient update on dense tensor.
 
         Args:
@@ -263,10 +340,12 @@ class GradientAccumulateOptimizer(opt):
         accum_gradient = self.get_slot(var, "ga")
         if accum_gradient is not None and grad is not None:
             accum_gradient.assign_add(
-                grad / self._accum_steps, use_locking=self._use_locking, read_value=False
+                grad / self._accum_steps,
+                use_locking=self._use_locking,
+                read_value=False,
             )
 
-        def _apply(accum_gradient,var,apply_state):
+        def _apply(accum_gradient, var, apply_state):
             grad = tf.where(
                 self.step % self._accum_steps == 0,
                 accum_gradient,
@@ -278,60 +357,12 @@ class GradientAccumulateOptimizer(opt):
                     grad, var, apply_state=apply_state
                 )
             else:
-                train_op = self.optimizer._resource_apply_dense(
-                    grad, var
-                )
+                train_op = self.optimizer._resource_apply_dense(grad, var)
 
             reset_val = tf.where(
-                grad == accum_gradient, tf.zeros_like(accum_gradient), accum_gradient
-            )
-            reset_op = accum_gradient.assign(
-                reset_val,
-                use_locking=self._use_locking,
-                read_value=False,
-            )
-
-            return tf.group(train_op, reset_op)
-
-        return _apply(accum_gradient,var,apply_state)
-
-    def _resource_apply_sparse(self, grad, var, indices, apply_state=None):  # pragma: no cover
-        """Performs gradient update on sparse tensor.
-
-        Args:
-            grad: current gradient.
-            var: current variable.
-            indices: relevant indices to be used for masking the sparse tensor during update.
-        Returns:
-            apply_op.
-        """
-
-        accum_gradient = self.get_slot(var, "ga")
-
-        if accum_gradient is not None and grad is not None:
-            grad /= tf.cast(self._accum_steps, dtype=grad.dtype)
-            self._resource_scatter_add(accum_gradient, indices, grad)
-
-        def _apply(accum_gradient,var,apply_state):
-            grad = tf.where(
-                self.step % self._accum_steps == 0,
+                grad == accum_gradient,
+                tf.zeros_like(accum_gradient),
                 accum_gradient,
-                tf.zeros_like(var),
-            )
-            if "apply_state" in self.optimizer._sparse_apply_args:
-                train_op = self.optimizer._resource_apply_sparse(
-                    accum_gradient.sparse_read(indices),
-                    var,
-                    indices,
-                    apply_state=apply_state,
-                )
-            else:
-                train_op = self.optimizer._resource_apply_sparse(
-                    accum_gradient.sparse_read(indices), var, indices
-                )
-
-            reset_val = tf.where(
-                grad == accum_gradient, tf.zeros_like(accum_gradient), accum_gradient
             )
             reset_op = accum_gradient.assign(
                 reset_val,
@@ -341,17 +372,18 @@ class GradientAccumulateOptimizer(opt):
 
             return tf.group(train_op, reset_op)
 
-        return _apply(accum_gradient,var,apply_state)
+        return _apply(accum_gradient, var, apply_state)
 
-
-    #TODO: needs to be updated and tested
-    def _resource_apply_sparse_duplicate_indices(self, grad, var, indices, apply_state=None):  # pragma: no cover
+    def _resource_apply_sparse(
+        self, grad, var, indices, apply_state=None
+    ):  # pragma: no cover
         """Performs gradient update on sparse tensor.
 
         Args:
             grad: current gradient.
             var: current variable.
-            indices: relevant indices to be used for masking the sparse tensor during update.
+            indices: relevant indices to be used for masking the sparse tensor
+                during update.
         Returns:
             apply_op.
         """
@@ -369,19 +401,21 @@ class GradientAccumulateOptimizer(opt):
                 tf.zeros_like(var),
             )
             if "apply_state" in self.optimizer._sparse_apply_args:
-                train_op = self.optimizer._resource_apply_sparse_duplicate_indices(
+                train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices),
                     var,
                     indices,
                     apply_state=apply_state,
                 )
             else:
-                train_op = self.optimizer._resource_apply_sparse_duplicate_indices(
+                train_op = self.optimizer._resource_apply_sparse(
                     accum_gradient.sparse_read(indices), var, indices
                 )
 
             reset_val = tf.where(
-                grad == accum_gradient, tf.zeros_like(accum_gradient), accum_gradient
+                grad == accum_gradient,
+                tf.zeros_like(accum_gradient),
+                accum_gradient,
             )
             reset_op = accum_gradient.assign(
                 reset_val,
@@ -391,7 +425,65 @@ class GradientAccumulateOptimizer(opt):
 
             return tf.group(train_op, reset_op)
 
-        return _apply(accum_gradient,var,apply_state)
+        return _apply(accum_gradient, var, apply_state)
+
+    # TODO: needs to be updated and tested
+    def _resource_apply_sparse_duplicate_indices(
+        self, grad, var, indices, apply_state=None
+    ):  # pragma: no cover
+        """Performs gradient update on sparse tensor.
+
+        Args:
+            grad: current gradient.
+            var: current variable.
+            indices: relevant indices to be used for masking the sparse tensor
+                during update.
+        Returns:
+            apply_op.
+        """
+
+        accum_gradient = self.get_slot(var, "ga")
+
+        if accum_gradient is not None and grad is not None:
+            grad /= tf.cast(self._accum_steps, dtype=grad.dtype)
+            self._resource_scatter_add(accum_gradient, indices, grad)
+
+        def _apply(accum_gradient, var, apply_state):
+            grad = tf.where(
+                self.step % self._accum_steps == 0,
+                accum_gradient,
+                tf.zeros_like(var),
+            )
+            if "apply_state" in self.optimizer._sparse_apply_args:
+                train_op = (
+                    self.optimizer._resource_apply_sparse_duplicate_indices(
+                        accum_gradient.sparse_read(indices),
+                        var,
+                        indices,
+                        apply_state=apply_state,
+                    )
+                )
+            else:
+                train_op = (
+                    self.optimizer._resource_apply_sparse_duplicate_indices(
+                        accum_gradient.sparse_read(indices), var, indices
+                    )
+                )
+
+            reset_val = tf.where(
+                grad == accum_gradient,
+                tf.zeros_like(accum_gradient),
+                accum_gradient,
+            )
+            reset_op = accum_gradient.assign(
+                reset_val,
+                use_locking=self._use_locking,
+                read_value=False,
+            )
+
+            return tf.group(train_op, reset_op)
+
+        return _apply(accum_gradient, var, apply_state)
 
     def reset(self):  # pragma: no cover
         """Resets the accumulated gradients on the current replica."""
@@ -418,10 +510,15 @@ class GradientAccumulateOptimizer(opt):
 
     @property
     def iterations(self):
+        """Returns current iteration value of optimizer.
+
+        Returns:
+            iterations of optimizer."""
         return self._optimizer.iterations
 
     @iterations.setter
     def iterations(self, variable):
+        """Sets the iterations value of optimizer."""
         self._optimizer.iterations = variable
 
     @property
@@ -454,6 +551,7 @@ class GradientAccumulateOptimizer(opt):
 
     @classmethod
     def from_config(cls, config, custom_objects=None):
+        """Gets config of original optimizer and deserializes it."""
         optimizer = tf.keras.optimizers.deserialize(
             config.pop("optimizer"), custom_objects=custom_objects
         )

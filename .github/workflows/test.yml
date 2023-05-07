@@ -18,10 +18,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      
+      - name: Install lint dependencies
+        run: |
+          pip install wheel setuptools
+          pip install black==22.3.0 isort==5.10.1 flake8==4.0.1
+
+      - name: Lint the code
+        run: sh shell/lint.sh
 
       - name: Install dependencies
         run: |
-          pip install wheel setuptools
           pip install tensorflow==2.8.0 tensorflow-addons
           pip install "protobuf<=3.20" --force-reinstall
 
