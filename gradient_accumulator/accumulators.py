@@ -254,7 +254,7 @@ class GradientAccumulateOptimizer(opt):
     def step(self):  # pragma: no cover
         """The number of training steps this Optimizer has run.
         Initializes step variable if None.
-        
+
         Returns:
             Current number of optimizer steps.
         """
