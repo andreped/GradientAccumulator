@@ -15,9 +15,6 @@ sphinx:
   configuration: docs/conf.py
   fail_on_warning: false
 
-build:
-  image: latest
-
 # declare the Python requirements required to build your docs
 python:
   install:
