@@ -506,7 +506,7 @@ class GradientAccumulateOptimizer(opt):
     @property
     def iterations(self):
         """Returns current iteration value of optimizer.
-        
+
         Returns:
             iterations of optimizer."""
         return self._optimizer.iterations
