@@ -33,6 +33,10 @@ class GradientAccumulateModel(tf.keras.Model):
             use_agc: bool. Whether to enable adaptive gradient clipping.
             clip_factor: float > 0. Upper limit to gradient clipping.
             eps: float > 0. Small value to aid numerical stability.
+            experimental_distributed_support: bool. Whether to enable
+                experimental multi-gpu support. Only compatible with SGD. Can
+                be used with other optimizers but we do not have complete
+                control of the optimizer's state between accum_steps.
             **kwargs: keyword arguments.
         """
         super().__init__(*args, **kwargs)
@@ -264,6 +268,7 @@ class GradientAccumulateOptimizer(opt):
 
     @step.setter
     def step(self, variable):
+        """Sets the step value."""
         if self._step is not None:
             raise RuntimeError(
                 "Cannot set `step` to a new Variable after "
@@ -500,10 +505,15 @@ class GradientAccumulateOptimizer(opt):
 
     @property
     def iterations(self):
+        """Returns current iteration value of optimizer.
+        
+        Returns:
+            iterations of optimizer."""
         return self._optimizer.iterations
 
     @iterations.setter
     def iterations(self, variable):
+        """Sets the iterations value of optimizer."""
         self._optimizer.iterations = variable
 
     @property
@@ -536,6 +546,7 @@ class GradientAccumulateOptimizer(opt):
 
     @classmethod
     def from_config(cls, config, custom_objects=None):
+        """Gets config of original optimizer and deserializes it."""
         optimizer = tf.keras.optimizers.deserialize(
             config.pop("optimizer"), custom_objects=custom_objects
         )
