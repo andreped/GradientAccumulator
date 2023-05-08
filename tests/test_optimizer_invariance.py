@@ -44,6 +44,9 @@ def reset():
     # disable GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+    # clear keras session
+    tf.keras.backend.clear_session()
+
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
     np.random.seed(123)

@@ -5,7 +5,6 @@ from gradient_accumulator import GradientAccumulateModel
 
 
 def test_model_distribute():
-    # tf.keras.mixed_precision.set_global_policy("mixed_float16")  # Don't have GPU on the cloud when running CIs
     strategy = tf.distribute.MirroredStrategy()
 
     # load dataset

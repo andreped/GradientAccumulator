@@ -22,6 +22,8 @@ setuptools.setup(
         "black==22.3.0",
         "isort==5.10.1",
         "flake8==4.0.1",
+        "tensorflow-datasets<=4.8.2",
+        "protobuf<=3.20",
     ]},
     classifiers=[
         "Development Status :: 4 - Beta",
