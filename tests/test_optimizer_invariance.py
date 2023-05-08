@@ -12,34 +12,37 @@ tf_version = int(tf.version.VERSION.split(".")[1])
 
 
 def get_opt(opt_name):
-    if opt == "adam":
+    if opt_name == "adam":
         if tf_version > 10:
             curr_opt = tf.keras.optimizers.legacy.Adam(learning_rate=1e-3)
         else:
             curr_opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    elif opt == "adadelta":
+    elif opt_name == "adadelta":
         if tf_version > 10:
             curr_opt = tf.keras.optimizers.legacy.Adadelta(learning_rate=1e-2)
         else:
             curr_opt = tf.keras.optimizers.Adadelta(learning_rate=1e-2)
-    elif opt == "RMSprop":
+    elif opt_name == "RMSprop":
         if tf_version > 10:
             curr_opt = tf.keras.optimizers.legacy.RMSprop(learning_rate=1e-3)
         else:
             curr_opt = tf.keras.optimizers.RMSprop(learning_rate=1e-3)
-    elif opt == "SGD":
+    elif opt_name == "SGD":
         if tf_version > 10:
             curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
         else:
             curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)
     else:
-        raise ValueError("Unknown optimizer chosen.")
+        raise ValueError("Unknown optimizer chosen:", opt_name)
 
     return curr_opt
 
 
 def reset():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+    # disable GPU
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
@@ -56,13 +59,13 @@ def reset():
     tf.random.set_seed(1234)
 
     # https://stackoverflow.com/a/71311207
-    tf.config.experimental.enable_op_determinism()
+    try:
+        tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
+    except AttributeError as e:
+        print(e)
 
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-
-def run_experiment(bs=16, accum_steps=4, epochs=1, opt=None, wrapper="model"):
+def run_experiment(bs=100, accum_steps=1, epochs=1, opt_name="SGD", wrapper="model"):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         'mnist',
@@ -88,7 +91,7 @@ def run_experiment(bs=16, accum_steps=4, epochs=1, opt=None, wrapper="model"):
     ])
 
     # define optimizer
-    opt = get_opt(opt)
+    opt = get_opt(opt_name)
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
@@ -129,20 +132,20 @@ def test_optimizer_invariance():
     # run experiment for different optimizers, to see if GA is consistent 
     # within an optimizer. Note that it is expected for the results to
     # differ BETWEEN optimizers, as they behave differently.
-    for wrapper in ["optimizer", "model"]:
-        for opt in ["adam", "SGD", "RMSprop"]:
-            print("Current optimizer: " + opt)
+    for wrapper in ["model", "optimizer"]:
+        for opt_name in ["SGD", "adam", "RMSprop"]:
+            print("Current experiment:", wrapper, opt_name)
             # set seed
             reset()
 
             # run once
-            result1 = run_experiment(bs=100, accum_steps=1, epochs=1, opt=opt, wrapper=wrapper)
+            result1 = run_experiment(bs=100, accum_steps=1, epochs=2, opt_name=opt_name, wrapper=wrapper)
 
             # reset before second run to get identical results
             reset()
 
             # run again with different batch size and number of accumulations
-            result2 = run_experiment(bs=50, accum_steps=2, epochs=1, opt=opt, wrapper=wrapper)
+            result2 = run_experiment(bs=50, accum_steps=2, epochs=2, opt_name=opt_name, wrapper=wrapper)
 
             # results should be "identical" (on CPU, can be different on GPU)
             np.testing.assert_almost_equal(result1, result2, decimal=2)  # decimals=3 OK for model wrapper but not optimizer
