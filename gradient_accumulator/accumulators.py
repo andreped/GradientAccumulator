@@ -251,7 +251,7 @@ class GradientAccumulateOptimizer(opt):
         self._gradients = [self.get_slot(var, "ga") for var in var_list]
 
     @property
-    def step(self):  # pragma: no cover
+    def step(self):
         """The number of training steps this Optimizer has run.
         Initializes step variable if None.
 
@@ -272,7 +272,7 @@ class GradientAccumulateOptimizer(opt):
         return self._step
 
     @step.setter
-    def step(self, variable):
+    def step(self, variable):  # pragma: no cover
         """Sets the step value."""
         if self._step is not None:
             raise RuntimeError(
