@@ -59,7 +59,7 @@ Gradient accumulation (GA) enables reduced GPU memory consumption through dividi
 <img src="assets/grad_accum.png" width="70%">
 </p>
 
-Note that the very natural how we perform gradient accumulation is slightly different to avoid us needing to have the entire batch in CPU memory. More information on what goes under the hood can be seen in the [documentations](https://gradientaccumulator.readthedocs.io/en/latest/background/gradient_accumulation.html).
+Note that how we implemented gradient accumulation is slightly different from this illustration, as our design does not require having the entire batch in CPU memory. More information on what goes under the hood can be seen in the [documentations](https://gradientaccumulator.readthedocs.io/en/latest/background/gradient_accumulation.html).
 
 
 ## [Why?](https://github.com/andreped/GradientAccumulator#why)
