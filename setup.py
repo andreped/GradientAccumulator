@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="gradient-accumulator",
-    version="0.5.0",
+    version="0.5.1",
     author="André Pedersen and David Bouget and Javier Pérez de Frutos and Tor-Arne Schmidt Nordmo",
     author_email="andrped94@gmail.com",
     description="Package for gradient accumulation in TensorFlow",
@@ -17,6 +17,14 @@ setuptools.setup(
         "tensorflow",
         "numpy<=1.23.2",
     ],
+    extras_require={"dev": [
+        "pytest",
+        "black==22.3.0",
+        "isort==5.10.1",
+        "flake8==4.0.1",
+        "tensorflow-datasets<=4.8.2",
+        "protobuf<=3.20",
+    ]},
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",

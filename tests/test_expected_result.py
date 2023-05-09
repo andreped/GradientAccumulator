@@ -68,7 +68,6 @@ def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     input = tf.keras.layers.Input(shape=(28, 28))
     x = tf.keras.layers.Flatten(input_shape=(28, 28))(input)
     x = tf.keras.layers.Dense(128, activation='relu')(x)
-        # tf.keras.layers.BatchNormalization(),  # @TODO: BN not compatible with GA solution currently! Yields different results
     output = tf.keras.layers.Dense(10)(x)
 
     opt = tf.keras.optimizers.SGD(1e-3)

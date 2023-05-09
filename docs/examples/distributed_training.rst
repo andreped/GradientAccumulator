@@ -1,7 +1,10 @@
 Distributed training
 ====================
 
-In order to train with multiple GPUs, you will have to use the Optimizer wrapper:
+Optimizer wrapper
+-----------------
+
+In order to train with multiple GPUs, you can use the Optimizer wrapper:
 
 
 .. code-block:: python
@@ -78,3 +81,21 @@ A more comprehensive example can be seen below:
         validation_data=ds_test,
         verbose=1
     )
+
+
+Model wrapper
+-------------
+
+If model wrapping is more of interest, experimental multi-GPU support can be
+made available through the *experimental_distributed_support* flag:
+
+.. code-block: python
+    from gradient_accumulator import GradientAccumulateModel
+
+    model = GradientAccumulateModel(
+        accum_steps=8, experimental_distributed_support=True,
+        inputs=model.input, outputs=model.output
+    )
+
+To test usage, replace the optimizer wrapper in the example above with this
+model wrapper.
