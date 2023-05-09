@@ -50,7 +50,7 @@ jobs:
       matrix:
         os: [windows-2019, ubuntu-20.04, macos-11]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
-        tf-version: [2.8.0, 2.9.1]
+        tf-version: [2.8.0, 2.11.1]
 
     steps:
       - uses: actions/checkout@v1
