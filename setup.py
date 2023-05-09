@@ -18,7 +18,9 @@ setuptools.setup(
         "numpy<=1.23.2",
     ],
     extras_require={"dev": [
-        "pytest",
+        "wheel",
+        "setuptools",
+        "pytest-cov",
         "black==22.3.0",
         "isort==5.10.1",
         "flake8==4.0.1",

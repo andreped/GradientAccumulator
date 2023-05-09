@@ -11,11 +11,7 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     import random as python_random
     import numpy as np
     import os
-
-
-    def normalize_img(image, label):
-        """Normalizes images: `uint8` -> `float32`."""
-        return tf.cast(image, tf.float32) / 255., label
+    from .utils import normalize_img, get_opt
 
 
     ## reset session and seed stuff before running experiment
@@ -90,7 +86,7 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
         )
 
     # need to scale optimizer for mixed precision
-    opt = tf.keras.optimizers.SGD(1e-2)
+    opt = get_opt("SGD")
     if mixed_precision_flag:
         opt = mixed_precision.LossScaleOptimizer(opt)
 

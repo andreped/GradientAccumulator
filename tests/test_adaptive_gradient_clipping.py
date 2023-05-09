@@ -5,11 +5,7 @@ from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator import unitwise_norm
 from tensorflow.keras import mixed_precision
 import os
-
-
-def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
+from .utils import normalize_img
 
 
 def test_unitwise_norm():

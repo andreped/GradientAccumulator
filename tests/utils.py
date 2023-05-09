@@ -42,7 +42,9 @@ def reset(seed=123):
     tf.config.threading.set_intra_op_parallelism_threads(1)
 
 
-def get_opt(opt_name, tf_version):
+def get_opt(opt_name, tf_version=None):
+    if tf_version is None:
+        tf_version = int(tf.version.VERSION.split(".")[1])
     if opt_name == "adam":
         if tf_version > 10:
             curr_opt = tf.keras.optimizers.legacy.Adam(learning_rate=1e-3)
@@ -68,3 +70,7 @@ def get_opt(opt_name, tf_version):
 
     return curr_opt
 
+
+def normalize_img(image, label):
+    """Normalizes images: `uint8` -> `float32`."""
+    return tf.cast(image, tf.float32) / 255., label

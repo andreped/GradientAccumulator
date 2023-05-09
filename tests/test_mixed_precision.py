@@ -6,12 +6,8 @@ def run_experiment():
     import tensorflow_datasets as tfds
     from tensorflow.keras import mixed_precision
     from gradient_accumulator import GradientAccumulateModel
+    from .utils import normalize_img
     import os
-
-
-    def normalize_img(image, label):
-        """Normalizes images: `uint8` -> `float32`."""
-        return tf.cast(image, tf.float32) / 255., label
 
 
     # disable GPU

@@ -7,39 +7,11 @@ from tensorflow.keras.models import Model, load_model
 from gradient_accumulator import GradientAccumulateModel
 from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D, UpSampling2D,\
     MaxPooling2D, Activation
-
-
-def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
+from .utils import normalize_img, reset
 
 
 def create_multi_input_output(image, label):
     return (image, image), (image, label)
-
-
-def reset():
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-    # The below is necessary for starting Numpy generated random numbers
-    # in a well-defined initial state.
-    np.random.seed(123)
-
-    # The below is necessary for starting core Python generated random numbers
-    # in a well-defined state.
-    python_random.seed(123)
-
-    # The below set_seed() will make random number generation
-    # in the TensorFlow backend have a well-defined initial state.
-    # For further details, see:
-    # https://www.tensorflow.org/api_docs/python/tf/random/set_seed
-    tf.random.set_seed(1234)
-
-    # https://stackoverflow.com/a/71311207
-    tf.config.experimental.enable_op_determinism()
-
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 def run_experiment(bs=16, accum_steps=4, epochs=1):
