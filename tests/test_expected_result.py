@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import random as python_random
 import os
+from .utils import get_opt, normalize_img, reset
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer
@@ -9,39 +10,6 @@ from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOpti
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
-
-
-def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
-
-
-def reset():
-    # set tf log level
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-    # The below is necessary for starting Numpy generated random numbers
-    # in a well-defined initial state.
-    np.random.seed(123)
-
-    # The below is necessary for starting core Python generated random numbers
-    # in a well-defined state.
-    python_random.seed(123)
-
-    # The below set_seed() will make random number generation
-    # in the TensorFlow backend have a well-defined initial state.
-    # For further details, see:
-    # https://www.tensorflow.org/api_docs/python/tf/random/set_seed
-    tf.random.set_seed(1234)
-
-    # https://stackoverflow.com/a/71311207
-    try:
-        tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
-    except AttributeError as e:
-        print(e)
 
 
 def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
@@ -70,7 +38,7 @@ def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     x = tf.keras.layers.Dense(128, activation='relu')(x)
     output = tf.keras.layers.Dense(10)(x)
 
-    opt = tf.keras.optimizers.SGD(1e-3)
+    opt = get_opt(opt_name="SGD", tf_version=tf_version)
 
     if accum_steps == 1:
         model = tf.keras.Model(inputs=input, outputs=output)

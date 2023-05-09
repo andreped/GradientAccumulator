@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
+from .utils import get_opt
 
 
 def test_model_distribute():
@@ -38,14 +39,11 @@ def test_model_distribute():
         )
 
         # define optimizer - currently only SGD compatible with GAOptimizerWrapper
-        if int(tf.version.VERSION.split(".")[1]) > 10:
-            curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
-        else:
-            curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)
+        opt = get_opt("SGD")
 
         # compile model
         model.compile(
-            optimizer=curr_opt,
+            optimizer=opt,
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
         )

@@ -60,7 +60,6 @@ def test_bn_conv2d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
     return result
 
 
-
 def test_bn_conv3d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
     # make toy dataset
     data = np.random.randint(2, size=(16, 8, 8, 8, 1))

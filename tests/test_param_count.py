@@ -3,6 +3,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from gradient_accumulator import GradientAccumulateModel
 
+
 def create_model():
     input = tf.keras.layers.Input(shape=(10,))
     x = Dense(32, input_shape=(10,), activation='relu')(input)
@@ -38,7 +39,3 @@ def test_param_count_with_wrapper():
     assert original_param_count == wrapped_param_count, \
         f"Parameter count mismatch: Original model has {original_param_count} parameters, " \
         f"wrapped model has {wrapped_param_count} parameters."
-
-
-# Run the test
-test_param_count_with_wrapper()

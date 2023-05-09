@@ -3,14 +3,21 @@ import tensorflow as tf
 from . import agc
 
 # dynamically handle which Optimizer class to use dep on tf version
-opt = tf.keras.optimizers.Optimizer
 if int(tf.version.VERSION.split(".")[1]) > 10:
+    #from tensorflow.keras.optimizers.legacy import optimizer_v2
+    #from tensorflow.keras.optimizers.legacy import optimizer_v2
     opt = tf.keras.optimizers.legacy.Optimizer
+    #print(opt._create_slots("test"))
+    #opt = tf.keras.optimizers.legacy.optimizer_v2.OptimizerV2
+    #from tensorflow.keras.optimizers.legacy import optimizer_v2
+    #opt = keras.optimizers.legacy.Optimizer#optimizer_v2.OptimizerV2
+else:
+    opt = tf.keras.optimizers.Optimizer
 
 
 # https://stackoverflow.com/a/66524901
 # https://keras.io/guides/customizing_what_happens_in_fit/
-@tf.keras.utils.register_keras_serializable()
+@tf.keras.utils.register_keras_serializable("gradient-accumulator")
 class GradientAccumulateModel(tf.keras.Model):
     """Model wrapper for gradient accumulation."""
 
@@ -195,7 +202,7 @@ class GradientAccumulateModel(tf.keras.Model):
 # Implementation was derived from:
 # https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py  # noqa
 # https://github.com/FreddeFrallan/Multilingual-CLIP/blob/5c82118452b3b59b41bb53714d61cd4990b1588d/multilingual_clip/TeacherLearning/Utils.py#L84  # noqa
-@tf.keras.utils.register_keras_serializable()
+@tf.keras.utils.register_keras_serializable("gradient-accumulator")
 class GradientAccumulateOptimizer(opt):
     """Optimizer wrapper for gradient accumulation."""
 
@@ -237,7 +244,7 @@ class GradientAccumulateOptimizer(opt):
         self._reduction = reduction
         self._step = None
         super().__init__(name, **kwargs)
-
+    
     def _create_slots(self, var_list):
         """Creates slots for optimizer gradients.
 

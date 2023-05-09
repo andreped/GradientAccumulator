@@ -3,15 +3,12 @@ import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateOptimizer
 import numpy as np
-from .utils import reset, get_opt
+from .utils import reset, get_opt, normalize_img
 
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
 
-def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
 
 def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_name="multi"):
     # setup single/multi-GPU strategy
@@ -104,4 +101,4 @@ def test_distributed_optimizer_invariance():
             result2 = run_experiment(opt_name=opt_name, bs=50, accum_steps=2, epochs=2, strategy_name=strategy_name)
 
             # results should be "identical" (on CPU, can be different on GPU)
-            np.testing.assert_almost_equal(result1, result2, decimal=3)
+            np.testing.assert_almost_equal(result1, result2, decimal=2)

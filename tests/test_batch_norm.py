@@ -6,35 +6,7 @@ from gradient_accumulator.layers import AccumBatchNormalization
 import random as python_random
 import numpy as np
 import os
-
-
-def normalize_img(image, label):
-    """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
-
-
-def reset():
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-    # disable GPU
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-    # The below is necessary for starting Numpy generated random numbers
-    # in a well-defined initial state.
-    np.random.seed(123)
-
-    # The below is necessary for starting core Python generated random numbers
-    # in a well-defined state.
-    python_random.seed(123)
-
-    # The below set_seed() will make random number generation
-    # in the TensorFlow backend have a well-defined initial state.
-    # For further details, see:
-    # https://www.tensorflow.org/api_docs/python/tf/random/set_seed
-    tf.random.set_seed(1234)
-
-    # https://stackoverflow.com/a/71311207
-    tf.config.experimental.enable_op_determinism()
+from .utils import reset, normalize_img
 
 
 def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3):
