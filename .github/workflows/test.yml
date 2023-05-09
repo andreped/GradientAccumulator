@@ -49,8 +49,8 @@ jobs:
       # max-parallel: 10
       matrix:
         os: [windows-2019, ubuntu-20.04, macos-11]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
-        tf-version: [2.8, 2.11]
+        python-version: ["3.8", "3.9", "3.10"]
+        tf-version: [2.8, 2.11.1]
 
     steps:
       - uses: actions/checkout@v1
@@ -72,6 +72,9 @@ jobs:
 
       - name: Install wheel
         run: pip install --find-links=${{github.workspace}} gradient_accumulator
+      
+      - name: Debug pip deps
+        run: pip list
 
       - name: Test library accessibility
         run: python -c "from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer"
