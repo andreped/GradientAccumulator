@@ -9,6 +9,9 @@ from .utils import reset, get_opt
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
 
+def normalize_img(image, label):
+    """Normalizes images: `uint8` -> `float32`."""
+    return tf.cast(image, tf.float32) / 255., label
 
 def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_name="multi"):
     # setup single/multi-GPU strategy
@@ -29,10 +32,12 @@ def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_na
     )
 
     # build train pipeline
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
 
     # build test pipeline
+    ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(1)
 

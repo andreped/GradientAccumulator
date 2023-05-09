@@ -10,7 +10,6 @@ from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOpti
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
 
-
 def get_opt(opt_name):
     if opt_name == "adam":
         if tf_version > 10:
@@ -37,6 +36,10 @@ def get_opt(opt_name):
 
     return curr_opt
 
+
+def normalize_img(image, label):
+    """Normalizes images: `uint8` -> `float32`."""
+    return tf.cast(image, tf.float32) / 255., label
 
 def reset():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -79,19 +82,30 @@ def run_experiment(bs=100, accum_steps=1, epochs=1, opt_name="SGD", wrapper="mod
     )
 
     # build train pipeline
+    ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
     # build test pipeline
+    ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
     # create model
+    """
     model = tf.keras.models.Sequential([
         tf.keras.layers.Flatten(input_shape=(28, 28)),
         tf.keras.layers.Dense(128, activation='relu'),
         tf.keras.layers.Dense(10)
     ])
+    """
+
+    input = tf.keras.layers.Input(shape=(28, 28))
+    x = tf.keras.layers.Flatten(input_shape=(28, 28))(input)
+    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    output = tf.keras.layers.Dense(10)(x)
+
+    model = tf.keras.models.Model(inputs=input, outputs=output)
 
     # define optimizer
     opt = get_opt(opt_name)
@@ -99,7 +113,7 @@ def run_experiment(bs=100, accum_steps=1, epochs=1, opt_name="SGD", wrapper="mod
     # wrap model to use gradient accumulation
     if accum_steps > 1:
         if wrapper == "model":
-            model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+            model = GradientAccumulateModel(accum_steps=accum_steps, inputs=input, outputs=output)
         elif wrapper == "optimizer":
             opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps)
         else:
