@@ -3,16 +3,9 @@ import tensorflow as tf
 from . import agc
 
 # dynamically handle which Optimizer class to use dep on tf version
+opt = tf.keras.optimizers.Optimizer
 if int(tf.version.VERSION.split(".")[1]) > 10:
-    #from tensorflow.keras.optimizers.legacy import optimizer_v2
-    #from tensorflow.keras.optimizers.legacy import optimizer_v2
     opt = tf.keras.optimizers.legacy.Optimizer
-    #print(opt._create_slots("test"))
-    #opt = tf.keras.optimizers.legacy.optimizer_v2.OptimizerV2
-    #from tensorflow.keras.optimizers.legacy import optimizer_v2
-    #opt = keras.optimizers.legacy.Optimizer#optimizer_v2.OptimizerV2
-else:
-    opt = tf.keras.optimizers.Optimizer
 
 
 # https://stackoverflow.com/a/66524901
@@ -244,7 +237,7 @@ class GradientAccumulateOptimizer(opt):
         self._reduction = reduction
         self._step = None
         super().__init__(name, **kwargs)
-    
+
     def _create_slots(self, var_list):
         """Creates slots for optimizer gradients.
 
