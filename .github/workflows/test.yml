@@ -70,6 +70,7 @@ jobs:
             pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2"
             pip install "protobuf<=3.20" --force-reinstall
           fi
+        shell: bash
 
       - name: Download artifact
         uses: actions/download-artifact@master
