@@ -60,10 +60,16 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
+        run: pip install wheel setuptools flake8 pytest-cov
+
+      - name: Install tensorflow-datasets
         run: |
-          pip install wheel setuptools flake8 pytest-cov
-          pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2"
-          pip install "protobuf<=3.20" --force-reinstall
+          if [[ ${{ matrix.tf-version }} == 2.12 ]]; then
+            pip install tensorflow-datasets --upgrade
+          else
+            pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2"
+            pip install "protobuf<=3.20" --force-reinstall
+          fi
 
       - name: Download artifact
         uses: actions/download-artifact@master
