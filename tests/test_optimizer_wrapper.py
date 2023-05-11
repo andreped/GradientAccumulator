@@ -39,14 +39,8 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     ])
 
     # wrap optimizer to add gradient accumulation support
-    # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    # need to dynamically handle which Optimizer class to use dependent on tf version
-    if tf_version > 10:
-        curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
-    else:
-        curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
-
-    opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
+    opt = get_opt("SGD")
+    opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
 
     # compile model
     model.compile(
