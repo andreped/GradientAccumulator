@@ -1,16 +1,24 @@
+import os
+
 import tensorflow as tf
 import tensorflow_datasets as tfds
+from tensorflow.keras import mixed_precision
 from tensorflow.keras.models import load_model
+
 from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator import unitwise_norm
-from tensorflow.keras import mixed_precision
-import os
+
 from .utils import normalize_img
 
 
 def test_unitwise_norm():
     for i in range(7):
-        x = tf.zeros([1,] * i)
+        x = tf.zeros(
+            [
+                1,
+            ]
+            * i
+        )
         try:
             unitwise_norm(x)
         except ValueError as e:
@@ -22,8 +30,8 @@ def test_unitwise_norm():
 def test_train_mnist():
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -35,7 +43,7 @@ def test_train_mnist():
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
-    ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
+    ds_train = ds_train.shuffle(ds_info.splits["train"].num_examples)
     ds_train = ds_train.batch(100)  # multiplum of 8
     ds_train = ds_train.prefetch(1)
 
@@ -46,14 +54,24 @@ def test_train_mnist():
     ds_test = ds_test.prefetch(1)
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(32, activation='relu'),  # 32 multiplum of 8
-        tf.keras.layers.Dense(10, dtype='float32')  # output not numerically stable with float16
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Flatten(input_shape=(28, 28)),
+            tf.keras.layers.Dense(32, activation="relu"),  # 32 multiplum of 8
+            tf.keras.layers.Dense(
+                10, dtype="float32"
+            ),  # output not numerically stable with float16
+        ]
+    )
 
     # wrap model to use gradient accumulation
-    model = GradientAccumulateModel(accum_steps=4, mixed_precision=False, use_agc=True, inputs=model.input, outputs=model.output)
+    model = GradientAccumulateModel(
+        accum_steps=4,
+        mixed_precision=False,
+        use_agc=True,
+        inputs=model.input,
+        outputs=model.output,
+    )
 
     # need to scale optimizer for mixed precision
     opt = tf.keras.optimizers.SGD(1e-2)

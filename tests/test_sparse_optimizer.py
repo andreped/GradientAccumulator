@@ -1,16 +1,20 @@
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.preprocessing.text import one_hot
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-import tensorflow_datasets as tfds
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Flatten, Embedding, Dense
-from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateOptimizer
 import os
 import random as python_random
-from .utils import reset
 
+import numpy as np
+import tensorflow as tf
+import tensorflow_datasets as tfds
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Embedding
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import one_hot
+
+from gradient_accumulator import GradientAccumulateOptimizer
+
+from .utils import reset
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
@@ -19,10 +23,16 @@ tf_version = int(tf.version.VERSION.split(".")[1])
 def preprocess_data(ds, vocab_size, max_length):
     def encode(x, y):
         x = tf.strings.substr(x, 0, max_length)
-        x = tf.strings.reduce_join(tf.strings.unicode_split(x, input_encoding="UTF-8"), separator=' ')
+        x = tf.strings.reduce_join(
+            tf.strings.unicode_split(x, input_encoding="UTF-8"), separator=" "
+        )
         x = tf.strings.split(x)
         x_hashed = tf.strings.to_hash_bucket_fast(x, vocab_size)
-        x_padded = tf.pad(x_hashed, paddings=[[0, max_length - tf.shape(x_hashed)[-1]]], constant_values=0)
+        x_padded = tf.pad(
+            x_hashed,
+            paddings=[[0, max_length - tf.shape(x_hashed)[-1]]],
+            constant_values=0,
+        )
         return x_padded, y
 
     ds = ds.map(encode)
@@ -32,8 +42,8 @@ def preprocess_data(ds, vocab_size, max_length):
 def run_experiment(bs=100, accum_steps=1, epochs=2):
     # Load the IMDb dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'imdb_reviews',
-        split=['train', 'test'],
+        "imdb_reviews",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -51,25 +61,27 @@ def run_experiment(bs=100, accum_steps=1, epochs=2):
 
     # define model
     model = Sequential()
-    model.add(Embedding(input_dim=vocab_size, output_dim=8, input_length=max_length))
+    model.add(
+        Embedding(input_dim=vocab_size, output_dim=8, input_length=max_length)
+    )
     model.add(Flatten())
-    model.add(Dense(1, activation='sigmoid'))
+    model.add(Dense(1, activation="sigmoid"))
 
     # wrap optimizer to add gradient accumulation support
     # need to dynamically handle which Optimizer class to use dependent on tf version
     if tf_version > 10:
         opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
     else:
-        opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
-    
-    if accum_steps > 1:
-        opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps, reduction="MEAN")
+        opt = tf.keras.optimizers.SGD(
+            learning_rate=1e-2
+        )  # IDENTICAL RESULTS WITH SGD!!!
 
-    model.compile(
-        optimizer=opt,
-        loss='binary_crossentropy',
-        metrics=['acc']
-    )
+    if accum_steps > 1:
+        opt = GradientAccumulateOptimizer(
+            optimizer=opt, accum_steps=accum_steps, reduction="MEAN"
+        )
+
+    model.compile(optimizer=opt, loss="binary_crossentropy", metrics=["acc"])
 
     model.fit(
         ds_train,
@@ -92,10 +104,10 @@ def run_experiment(bs=100, accum_steps=1, epochs=2):
 
 def test_sparse_expected_results():
     # set seed
-    #reset()
+    # reset()
 
     # run once
-    #result1 = run_experiment(bs=100, accum_steps=1, epochs=2)
+    # result1 = run_experiment(bs=100, accum_steps=1, epochs=2)
 
     # reset before second run to get identical results
     reset()
@@ -103,6 +115,5 @@ def test_sparse_expected_results():
     # run again with different batch size and number of accumulations
     result2 = run_experiment(bs=50, accum_steps=2, epochs=2)
 
-
     # results should be identical (theoretically, even in practice on CPU)
-    #assert result1 == result2
+    # assert result1 == result2

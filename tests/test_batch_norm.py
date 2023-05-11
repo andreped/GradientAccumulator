@@ -1,19 +1,25 @@
+import os
+import random as python_random
+
+import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
+
 from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator.layers import AccumBatchNormalization
-import random as python_random
-import numpy as np
-import os
-from .utils import reset, normalize_img
+
+from .utils import normalize_img
+from .utils import reset
 
 
-def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3):
+def run_experiment(
+    custom_bn: bool = True, bs: int = 100, accum_steps: int = 1, epochs: int = 3
+):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -21,7 +27,7 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
 
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
-    ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
+    ds_train = ds_train.shuffle(ds_info.splits["train"].num_examples)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
 
@@ -39,17 +45,21 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
         normalization_layer = tf.keras.layers.Activation("linear")
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(32),
-        normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
-        tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Dense(10)
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Flatten(input_shape=(28, 28)),
+            tf.keras.layers.Dense(32),
+            normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
+            tf.keras.layers.Activation("relu"),
+            tf.keras.layers.Dense(10),
+        ]
+    )
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+        model = GradientAccumulateModel(
+            accum_steps=accum_steps, inputs=model.input, outputs=model.output
+        )
 
     # compile model
     model.compile(
@@ -79,10 +89,10 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
 def test_compare_bn_layers():
     # set seed
     reset()
-    
+
     # custom BN without accum
     result1 = run_experiment(custom_bn=True, accum_steps=1, epochs=3)[1]
-    
+
     # reset before second run to get "identical" results
     reset()
 
@@ -98,10 +108,10 @@ def test_compare_bn_layers():
 def test_compare_accum_bn_expected_result():
     # set seed
     reset()
-    
+
     # custom BN without accum
     result1 = run_experiment(custom_bn=True, accum_steps=4, bs=25)[1]
-    
+
     # reset before second run to get "identical" results
     reset()
 

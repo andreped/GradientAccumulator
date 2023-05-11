@@ -1,21 +1,31 @@
 import multiprocessing as mp
 
 
-def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epochs:int = 3, queue=None, mixed_precision_flag=True):
+def run_experiment(
+    custom_bn: bool = True,
+    bs: int = 100,
+    accum_steps: int = 1,
+    epochs: int = 3,
+    queue=None,
+    mixed_precision_flag=True,
+):
+    import os
+    import random as python_random
+
+    import numpy as np
     import tensorflow as tf
     import tensorflow_datasets as tfds
     from tensorflow.keras import mixed_precision
     from tensorflow.keras.models import load_model
+
     from gradient_accumulator import GradientAccumulateModel
     from gradient_accumulator.layers import AccumBatchNormalization
-    import random as python_random
-    import numpy as np
-    import os
-    from .utils import normalize_img, get_opt
 
+    from .utils import get_opt
+    from .utils import normalize_img
 
     ## reset session and seed stuff before running experiment
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
     # disable GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -39,12 +49,12 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
 
     # set mixed global precision policy
     if mixed_precision_flag:
-        mixed_precision.set_global_policy('mixed_float16')
+        mixed_precision.set_global_policy("mixed_float16")
 
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -52,7 +62,7 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
 
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
-    ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
+    ds_train = ds_train.shuffle(ds_info.splits["train"].num_examples)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
 
@@ -70,19 +80,23 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
         normalization_layer = tf.keras.layers.Activation("linear")
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(10),
-        normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
-        tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Dense(10, dtype=tf.float32)
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Flatten(input_shape=(28, 28)),
+            tf.keras.layers.Dense(10),
+            normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
+            tf.keras.layers.Activation("relu"),
+            tf.keras.layers.Dense(10, dtype=tf.float32),
+        ]
+    )
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
         model = GradientAccumulateModel(
-            accum_steps=accum_steps, mixed_precision=mixed_precision_flag,
-            inputs=model.input, outputs=model.output
+            accum_steps=accum_steps,
+            mixed_precision=mixed_precision_flag,
+            inputs=model.input,
+            outputs=model.output,
         )
 
     # need to scale optimizer for mixed precision
@@ -117,7 +131,9 @@ def run_experiment(custom_bn:bool = True, bs:int = 100, accum_steps:int = 1, epo
     queue.put(result)
 
 
-def run_experiment_wrapper(custom_bn=True, bs=100, accum_steps=1, epochs=3, mixed_precision=True):
+def run_experiment_wrapper(
+    custom_bn=True, bs=100, accum_steps=1, epochs=3, mixed_precision=True
+):
     # launch experiment in separate process, as we are enabling mixed precision
     # which will impact other unit tests, unless we do this
     try:
@@ -126,19 +142,29 @@ def run_experiment_wrapper(custom_bn=True, bs=100, accum_steps=1, epochs=3, mixe
         pass
     else:
         cleanup_on_sigterm()
-    
+
     try:
-        mp.set_start_method('spawn', force=True)  # set start method to 'spawn' BEFORE instantiating the queue and the event
+        mp.set_start_method(
+            "spawn", force=True
+        )  # set start method to 'spawn' BEFORE instantiating the queue and the event
     except RuntimeError:
         pass
-    
+
     queue = mp.Queue()
-    p = mp.Process(target=run_experiment(custom_bn=custom_bn, bs=bs, accum_steps=accum_steps, epochs=epochs, queue=queue))
+    p = mp.Process(
+        target=run_experiment(
+            custom_bn=custom_bn,
+            bs=bs,
+            accum_steps=accum_steps,
+            epochs=epochs,
+            queue=queue,
+        )
+    )
     try:
         p.start()
     finally:
         p.join()  # necessary so that the Process exists before the test suite exits (thus coverage is collected)
-    
+
     return queue.get()
 
 
@@ -146,19 +172,26 @@ def test_mixed_precision():
     import numpy as np
 
     # custom BN without accum
-    result1 = run_experiment_wrapper(custom_bn=True, accum_steps=4, bs=25, mixed_precision=False)[1]
+    result1 = run_experiment_wrapper(
+        custom_bn=True, accum_steps=4, bs=25, mixed_precision=False
+    )[1]
 
     # keras BN without accum
-    result2 = run_experiment_wrapper(custom_bn=True, accum_steps=1, bs=100, mixed_precision=False)[1]
+    result2 = run_experiment_wrapper(
+        custom_bn=True, accum_steps=1, bs=100, mixed_precision=False
+    )[1]
 
     # assert result1 == result2
     np.testing.assert_almost_equal(result1, result2, decimal=2)
 
-
     # custom BN with accum with mixed precision
-    result3 = run_experiment_wrapper(custom_bn=True, accum_steps=4, bs=25, mixed_precision=True)[1]
+    result3 = run_experiment_wrapper(
+        custom_bn=True, accum_steps=4, bs=25, mixed_precision=True
+    )[1]
 
     # keras BN without accum
-    result4 = run_experiment_wrapper(custom_bn=True, accum_steps=1, bs=100, mixed_precision=True)[1]
+    result4 = run_experiment_wrapper(
+        custom_bn=True, accum_steps=1, bs=100, mixed_precision=True
+    )[1]
 
     np.testing.assert_almost_equal(result3, result4, decimal=2)

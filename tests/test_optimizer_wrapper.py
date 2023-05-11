@@ -1,12 +1,16 @@
+import os
+import random as python_random
+
 import numpy as np
 import tensorflow as tf
-import random as python_random
-import os
-from .utils import get_opt, reset, normalize_img
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
+
 from gradient_accumulator import GradientAccumulateOptimizer
 
+from .utils import get_opt
+from .utils import normalize_img
+from .utils import reset
 
 tf_version = int(tf.version.VERSION.split(".")[1])
 
@@ -14,8 +18,8 @@ tf_version = int(tf.version.VERSION.split(".")[1])
 def run_experiment(bs=16, accum_steps=4, epochs=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -32,21 +36,19 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
     ds_test = ds_test.prefetch(1)
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(32, activation='relu'),
-        tf.keras.layers.Dense(10),
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Flatten(input_shape=(28, 28)),
+            tf.keras.layers.Dense(32, activation="relu"),
+            tf.keras.layers.Dense(10),
+        ]
+    )
 
     # wrap optimizer to add gradient accumulation support
-    # opt = tf.keras.optimizers.Adam(learning_rate=1e-3)
-    # need to dynamically handle which Optimizer class to use dependent on tf version
-    if tf_version > 10:
-        curr_opt = tf.keras.optimizers.legacy.SGD(learning_rate=1e-2)
-    else:
-        curr_opt = tf.keras.optimizers.SGD(learning_rate=1e-2)  # IDENTICAL RESULTS WITH SGD!!!
-
-    opt = GradientAccumulateOptimizer(optimizer=curr_opt, accum_steps=accum_steps, reduction="MEAN")  # MEAN REDUCTION IMPORTANT!!!
+    opt = get_opt("SGD")
+    opt = GradientAccumulateOptimizer(
+        optimizer=opt, accum_steps=accum_steps, reduction="MEAN"
+    )  # MEAN REDUCTION IMPORTANT!!!
 
     # compile model
     model.compile(
@@ -80,7 +82,9 @@ def test_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=500, accum_steps=1, epochs=3)  # NOTE: AS TO BE DIVISIBLE BY TRAIN SET SIZE = 50000 (!)
+    result1 = run_experiment(
+        bs=500, accum_steps=1, epochs=3
+    )  # NOTE: AS TO BE DIVISIBLE BY TRAIN SET SIZE = 50000 (!)
 
     # reset before second run to get identical results
     reset()
@@ -101,8 +105,8 @@ def test_expected_result():
     # result4 = run_experiment(bs=1, accum_steps=500, epochs=2)
 
     # results should be identical (theoretically, even in practice on CPU)
-    #assert result1 == result2
-    #assert result1 == result3
+    # assert result1 == result2
+    # assert result1 == result3
 
     # reduced constraint for temporarily
     np.testing.assert_almost_equal(result1, result2, decimal=2)

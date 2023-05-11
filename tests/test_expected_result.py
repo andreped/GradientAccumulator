@@ -1,12 +1,17 @@
+import os
+import random as python_random
+
 import numpy as np
 import tensorflow as tf
-import random as python_random
-import os
-from .utils import get_opt, normalize_img, reset
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer
 
+from gradient_accumulator import GradientAccumulateModel
+from gradient_accumulator import GradientAccumulateOptimizer
+
+from .utils import get_opt
+from .utils import normalize_img
+from .utils import reset
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
@@ -15,8 +20,8 @@ tf_version = int(tf.version.VERSION.split(".")[1])
 def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -35,7 +40,7 @@ def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     # create model
     input = tf.keras.layers.Input(shape=(28, 28))
     x = tf.keras.layers.Flatten(input_shape=(28, 28))(input)
-    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dense(128, activation="relu")(x)
     output = tf.keras.layers.Dense(10)(x)
 
     opt = get_opt(opt_name="SGD", tf_version=tf_version)
@@ -45,14 +50,16 @@ def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     else:
         if modeloropt == "model":
             # wrap model to use gradient accumulation
-            model = GradientAccumulateModel(accum_steps=accum_steps, inputs=input, outputs=output)
+            model = GradientAccumulateModel(
+                accum_steps=accum_steps, inputs=input, outputs=output
+            )
         else:
             # wrap optimizer to use gradient accumulation
             opt = GradientAccumulateOptimizer(opt, accum_steps=accum_steps)
 
             # compile model
             model = tf.keras.Model(inputs=input, outputs=output)
-    
+
     # compile model
     model.compile(
         optimizer=opt,
@@ -91,7 +98,7 @@ def test_expected_result():
 
     # run again with different batch size and number of accumulations
     result2 = run_experiment(bs=50, accum_steps=2, epochs=2, modeloropt="opt")
-    
+
     # reset again
     reset()
 

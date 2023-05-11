@@ -2,24 +2,26 @@ import multiprocessing as mp
 
 
 def run_experiment():
+    import os
+
     import tensorflow as tf
     import tensorflow_datasets as tfds
     from tensorflow.keras import mixed_precision
-    from gradient_accumulator import GradientAccumulateModel
-    from .utils import normalize_img
-    import os
 
+    from gradient_accumulator import GradientAccumulateModel
+
+    from .utils import normalize_img
 
     # disable GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     # set mixed global precision policy
-    mixed_precision.set_global_policy('mixed_float16')
+    mixed_precision.set_global_policy("mixed_float16")
 
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -28,8 +30,10 @@ def run_experiment():
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.cache()
-    ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
-    ds_train = ds_train.batch(32)  # multiplum of 8 on GPU to maximize performance
+    ds_train = ds_train.shuffle(ds_info.splits["train"].num_examples)
+    ds_train = ds_train.batch(
+        32
+    )  # multiplum of 8 on GPU to maximize performance
     ds_train = ds_train.prefetch(1)
 
     # build test pipeline
@@ -39,14 +43,23 @@ def run_experiment():
     ds_test = ds_test.prefetch(1)
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Flatten(input_shape=(28, 28)),
-        tf.keras.layers.Dense(32, activation='relu'),  # 32 multiplum of 8
-        tf.keras.layers.Dense(10, dtype='float32')  # output not numerically stable with float16
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Flatten(input_shape=(28, 28)),
+            tf.keras.layers.Dense(32, activation="relu"),  # 32 multiplum of 8
+            tf.keras.layers.Dense(
+                10, dtype="float32"
+            ),  # output not numerically stable with float16
+        ]
+    )
 
     # wrap model to use gradient accumulation
-    model = GradientAccumulateModel(accum_steps=4, mixed_precision=True, inputs=model.input, outputs=model.output)
+    model = GradientAccumulateModel(
+        accum_steps=4,
+        mixed_precision=True,
+        inputs=model.input,
+        outputs=model.output,
+    )
 
     # need to scale optimizer for mixed precision
     opt = tf.keras.optimizers.Adam(1e-3)
@@ -65,7 +78,7 @@ def run_experiment():
         epochs=1,
         validation_data=ds_test,
     )
-    
+
     # save model on disk
     model.save("./trained_model")
 
@@ -86,9 +99,11 @@ def test_mixed_precision():
         pass
     else:
         cleanup_on_sigterm()
-    
+
     try:
-        mp.set_start_method('spawn', force=True)  # set start method to 'spawn' BEFORE instantiating the queue and the event
+        mp.set_start_method(
+            "spawn", force=True
+        )  # set start method to 'spawn' BEFORE instantiating the queue and the event
     except RuntimeError:
         pass
 

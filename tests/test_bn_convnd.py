@@ -1,11 +1,14 @@
+import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+
 from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator.layers import AccumBatchNormalization
-import numpy as np
 
 
-def test_bn_conv2d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
+def test_bn_conv2d(
+    custom_bn: bool = True, accum_steps: int = 1, epochs: int = 1
+):
     # make toy dataset
     data = np.random.randint(2, size=(16, 8, 8, 1))
     gt = np.expand_dims(np.random.randint(2, size=16), axis=-1)
@@ -19,20 +22,24 @@ def test_bn_conv2d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
         normalization_layer = tf.keras.layers.Activation("linear")
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Conv2D(4, 3, input_shape=(8, 8, 1)),
-        normalization_layer,
-        tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(4),
-        normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
-        tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Dense(1, activation="sigmoid"),
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Conv2D(4, 3, input_shape=(8, 8, 1)),
+            normalization_layer,
+            tf.keras.layers.Activation("relu"),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(4),
+            normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
+            tf.keras.layers.Activation("relu"),
+            tf.keras.layers.Dense(1, activation="sigmoid"),
+        ]
+    )
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+        model = GradientAccumulateModel(
+            accum_steps=accum_steps, inputs=model.input, outputs=model.output
+        )
 
     # compile model
     model.compile(
@@ -60,7 +67,9 @@ def test_bn_conv2d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
     return result
 
 
-def test_bn_conv3d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
+def test_bn_conv3d(
+    custom_bn: bool = True, accum_steps: int = 1, epochs: int = 1
+):
     # make toy dataset
     data = np.random.randint(2, size=(16, 8, 8, 8, 1))
     gt = np.expand_dims(np.random.randint(2, size=16), axis=-1)
@@ -74,20 +83,24 @@ def test_bn_conv3d(custom_bn:bool = True, accum_steps:int = 1, epochs:int = 1):
         normalization_layer = tf.keras.layers.Activation("linear")
 
     # create model
-    model = tf.keras.models.Sequential([
-        tf.keras.layers.Conv3D(4, 3, input_shape=(8, 8, 8, 1)),
-        normalization_layer,
-        tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(4),
-        normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
-        tf.keras.layers.Activation("relu"),
-        tf.keras.layers.Dense(1, activation="sigmoid"),
-    ])
+    model = tf.keras.models.Sequential(
+        [
+            tf.keras.layers.Conv3D(4, 3, input_shape=(8, 8, 8, 1)),
+            normalization_layer,
+            tf.keras.layers.Activation("relu"),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(4),
+            normalization_layer,  # @TODO: BN before or after ReLU? Leads to different performance
+            tf.keras.layers.Activation("relu"),
+            tf.keras.layers.Dense(1, activation="sigmoid"),
+        ]
+    )
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+        model = GradientAccumulateModel(
+            accum_steps=accum_steps, inputs=model.input, outputs=model.output
+        )
 
     # compile model
     model.compile(
