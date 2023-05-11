@@ -37,9 +37,8 @@ def reset(seed=123):
     # in the TensorFlow backend have a well-defined initial state.
     # For further details, see:
     # https://www.tensorflow.org/api_docs/python/tf/random/set_seed
-    tf.random.set_seed(
-        1234
-    )  # @TODO: Should this seed be different than for python and numpy?
+    # @TODO: Should this seed be different than for python and numpy?
+    tf.random.set_seed(seed)
 
     # https://stackoverflow.com/a/71311207
     try:
