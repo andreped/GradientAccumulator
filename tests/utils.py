@@ -1,11 +1,13 @@
+import os
 import random as python_random
+
+import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
-import numpy as np
-import os
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer
 
+from gradient_accumulator import GradientAccumulateModel
+from gradient_accumulator import GradientAccumulateOptimizer
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
@@ -13,7 +15,7 @@ tf_version = int(tf.version.VERSION.split(".")[1])
 
 def reset(seed=123):
     # set tf log level
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
     # disable GPU
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -35,14 +37,16 @@ def reset(seed=123):
     # in the TensorFlow backend have a well-defined initial state.
     # For further details, see:
     # https://www.tensorflow.org/api_docs/python/tf/random/set_seed
-    tf.random.set_seed(1234)  # @TODO: Should this seed be different than for python and numpy?
+    tf.random.set_seed(
+        1234
+    )  # @TODO: Should this seed be different than for python and numpy?
 
     # https://stackoverflow.com/a/71311207
     try:
         tf.config.experimental.enable_op_determinism()  # Exist only for TF > 2.7
     except AttributeError as e:
         print(e)
-    
+
     # force cpu threading determinism
     # https://stackoverflow.com/questions/36288235/how-to-get-stable-results-with-tensorflow-setting-random-seed
     tf.config.threading.set_inter_op_parallelism_threads(1)
@@ -80,14 +84,14 @@ def get_opt(opt_name, tf_version=None):
 
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
-    return tf.cast(image, tf.float32) / 255., label
+    return tf.cast(image, tf.float32) / 255.0, label
 
 
 def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -106,7 +110,7 @@ def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     # create model
     input = tf.keras.layers.Input(shape=(28, 28))
     x = tf.keras.layers.Flatten(input_shape=(28, 28))(input)
-    x = tf.keras.layers.Dense(128, activation='relu')(x)
+    x = tf.keras.layers.Dense(128, activation="relu")(x)
     output = tf.keras.layers.Dense(10)(x)
 
     opt = get_opt(opt_name="SGD", tf_version=tf_version)
@@ -116,14 +120,16 @@ def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     else:
         if modeloropt == "model":
             # wrap model to use gradient accumulation
-            model = GradientAccumulateModel(accum_steps=accum_steps, inputs=input, outputs=output)
+            model = GradientAccumulateModel(
+                accum_steps=accum_steps, inputs=input, outputs=output
+            )
         else:
             # wrap optimizer to use gradient accumulation
             opt = GradientAccumulateOptimizer(opt, accum_steps=accum_steps)
 
             # compile model
             model = tf.keras.Model(inputs=input, outputs=output)
-    
+
     # compile model
     model.compile(
         optimizer=opt,

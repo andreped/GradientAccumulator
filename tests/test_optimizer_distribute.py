@@ -1,16 +1,21 @@
+import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateOptimizer
-import numpy as np
-from .utils import reset, get_opt, normalize_img
 
+from gradient_accumulator import GradientAccumulateOptimizer
+
+from .utils import get_opt
+from .utils import normalize_img
+from .utils import reset
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
 
 
-def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_name="multi"):
+def run_experiment(
+    opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_name="multi"
+):
     # setup single/multi-GPU strategy
     if strategy_name == "single":
         strategy = tf.distribute.get_strategy()  # get default strategy
@@ -21,8 +26,8 @@ def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_na
 
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -40,22 +45,28 @@ def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_na
 
     with strategy.scope():
         # create model
-        model = tf.keras.models.Sequential([
-            tf.keras.layers.Flatten(input_shape=(28, 28)),
-            tf.keras.layers.Dense(128, activation='relu'),
-            tf.keras.layers.Dense(10)
-        ])
+        model = tf.keras.models.Sequential(
+            [
+                tf.keras.layers.Flatten(input_shape=(28, 28)),
+                tf.keras.layers.Dense(128, activation="relu"),
+                tf.keras.layers.Dense(10),
+            ]
+        )
 
         # define optimizer - currently only SGD compatible with GAOptimizerWrapper
         opt = get_opt(opt_name=opt_name, tf_version=tf_version)
 
         # wrap optimizer to add gradient accumulation support
-        opt = GradientAccumulateOptimizer(optimizer=opt, accum_steps=accum_steps)
+        opt = GradientAccumulateOptimizer(
+            optimizer=opt, accum_steps=accum_steps
+        )
 
         # compile model
         model.compile(
             optimizer=opt,
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(
+                from_logits=True
+            ),
             metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
         )
 
@@ -65,7 +76,7 @@ def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_na
         batch_size=bs,
         epochs=epochs,
         validation_data=ds_test,
-        verbose=1
+        verbose=1,
     )
 
     model.save("./trained_model")
@@ -82,7 +93,7 @@ def run_experiment(opt_name="adam", bs=100, accum_steps=1, epochs=1, strategy_na
 
 
 def test_distributed_optimizer_invariance():
-    # run experiment for different optimizers, to see if GA is consistent 
+    # run experiment for different optimizers, to see if GA is consistent
     # within an optimizer. Note that it is expected for the results to
     # differ BETWEEN optimizers, as they behave differently.
     for strategy_name in ["single", "multi"]:
@@ -92,13 +103,25 @@ def test_distributed_optimizer_invariance():
             reset()
 
             # run once
-            result1 = run_experiment(opt_name=opt_name, bs=100, accum_steps=1, epochs=2, strategy_name=strategy_name)
+            result1 = run_experiment(
+                opt_name=opt_name,
+                bs=100,
+                accum_steps=1,
+                epochs=2,
+                strategy_name=strategy_name,
+            )
 
             # reset before second run to get identical results
             reset()
 
             # run again with different batch size and number of accumulations
-            result2 = run_experiment(opt_name=opt_name, bs=50, accum_steps=2, epochs=2, strategy_name=strategy_name)
+            result2 = run_experiment(
+                opt_name=opt_name,
+                bs=50,
+                accum_steps=2,
+                epochs=2,
+                strategy_name=strategy_name,
+            )
 
             # results should be "identical" (on CPU, can be different on GPU)
             np.testing.assert_almost_equal(result1, result2, decimal=2)

@@ -1,9 +1,14 @@
 import numpy as np
 import tensorflow as tf
-from .utils import get_opt, normalize_img, reset, run_experiment
 from tensorflow.keras.models import load_model
-from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer
 
+from gradient_accumulator import GradientAccumulateModel
+from gradient_accumulator import GradientAccumulateOptimizer
+
+from .utils import get_opt
+from .utils import normalize_img
+from .utils import reset
+from .utils import run_experiment
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
@@ -14,7 +19,9 @@ def test_model_expected_result():
     reset()
 
     # run once
-    result1 = run_experiment(bs=100, accum_steps=1, epochs=2, modeloropt="model")
+    result1 = run_experiment(
+        bs=100, accum_steps=1, epochs=2, modeloropt="model"
+    )
 
     # reset before second run to get identical results
     reset()

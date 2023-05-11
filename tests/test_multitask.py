@@ -1,13 +1,23 @@
+import os
+import random as python_random
+
 import numpy as np
 import tensorflow as tf
-import random as python_random
-import os
 import tensorflow_datasets as tfds
-from tensorflow.keras.models import Model, load_model
+from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.layers import UpSampling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.models import load_model
+
 from gradient_accumulator import GradientAccumulateModel
-from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D, UpSampling2D,\
-    MaxPooling2D, Activation
-from .utils import normalize_img, reset
+
+from .utils import normalize_img
+from .utils import reset
 
 
 def create_multi_input_output(image, label):
@@ -17,8 +27,8 @@ def create_multi_input_output(image, label):
 def run_experiment(bs=16, accum_steps=4, epochs=1):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
-        'mnist',
-        split=['train', 'test'],
+        "mnist",
+        split=["train", "test"],
         shuffle_files=True,
         as_supervised=True,
         with_info=True,
@@ -58,13 +68,19 @@ def run_experiment(bs=16, accum_steps=4, epochs=1):
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
-        model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+        model = GradientAccumulateModel(
+            accum_steps=accum_steps, inputs=model.input, outputs=model.output
+        )
 
     # compile model
     model.compile(
         optimizer=tf.keras.optimizers.SGD(1e-3),
-        loss={"classifier": tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-              "reconstructor": "mse"},
+        loss={
+            "classifier": tf.keras.losses.SparseCategoricalCrossentropy(
+                from_logits=True
+            ),
+            "reconstructor": "mse",
+        },
         metrics={"classifier": tf.keras.metrics.SparseCategoricalAccuracy()},
     )
 
