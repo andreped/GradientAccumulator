@@ -114,7 +114,7 @@ def test_expected_result():
         # approximation worse for tf >= 2.11
         np.testing.assert_almost_equal(result1, result2, decimal=2)
         np.testing.assert_almost_equal(result2, result3, decimal=2)
-    else
+    else:
         assert result1 == result2
         assert result2 == result3
 
