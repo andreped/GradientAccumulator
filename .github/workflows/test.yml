@@ -99,7 +99,6 @@ jobs:
           pytest -v tests/test_optimizer_distribute.py
           pytest -v tests/test_model_distribute.py
 
-
   tf-compability:
     needs: build
     runs-on: ${{ matrix.os }}

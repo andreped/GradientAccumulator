@@ -106,13 +106,17 @@ def test_expected_result():
     result3 = run_experiment(bs=50, accum_steps=2, epochs=2, modeloropt="model")
 
     # results should be identical (theoretically, even in practice on CPU)
-    if tf_version <= 10:
-        assert result1 == result2
-        assert result2 == result3
-    else:
+    if tf_version <= 6:
+        # approximation poorer as enable_op_determinism() not available for tf < 2.7
+        np.testing.assert_almost_equal(result1, result2, decimal=4)
+        np.testing.assert_almost_equal(result2, result3, decimal=4)
+    elif tf_version > 10:
         # approximation worse for tf >= 2.11
         np.testing.assert_almost_equal(result1, result2, decimal=2)
         np.testing.assert_almost_equal(result2, result3, decimal=2)
+    else:
+        assert result1 == result2
+        assert result2 == result3
 
 
 if __name__ == "__main__":
