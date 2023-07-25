@@ -88,6 +88,12 @@ Our implementations enable theoretically **infinitely large batch size**, with *
 For more information on usage, supported techniques, and examples, refer to [the documentations](https://gradientaccumulator.readthedocs.io/en/latest/).
 
 
+## [Applications](https://github.com/andreped/GradientAccumulator#applications)
+* Helland et al., Segmentation of glioblastomas in early post-operative multi-modal MRI with deep neural networks, arXiv, 2023, https://arxiv.org/abs/2304.08881
+* Bouget et al., Raidionics: an open software for pre- and postoperative central nervous system tumor segmentation and standardized reporting, arXiv, 2023, https://arxiv.org/abs/2305.14351
+* Pedersen et al., H2G-Net: A multi-resolution refinement approach for segmentation of breast cancer region in gigapixel histopathological images, Frontiers in Medicine, 2023, https://doi.org/10.3389/fmed.2022.971873
+
+
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
 The gradient accumulator model wrapper is based on the implementation presented in [this thread](https://stackoverflow.com/a/66524901) on stack overflow. The adaptive gradient clipping method is based on [the implementation by @sayakpaul](https://github.com/sayakpaul/Adaptive-Gradient-Clipping).
 The optimizer wrapper is derived from [the implementation by @fsx950223 and @stefan-falk](https://github.com/tensorflow/addons/pull/2525).
