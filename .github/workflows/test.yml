@@ -78,13 +78,7 @@ jobs:
           name: "Python wheel"
 
       - name: Install wheel
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            $TARGET = Resolve-Path "./gradient_accumulator-*" | Select -ExpandProperty Path
-            pip install --find-links=. $TARGET
-          else
-            pip install --find-links=. gradient_accumulator-*
-          fi
+        run: pip install --find-links=. gradient_accumulator-*
         shell: bash
       
       - name: Debug pip deps
@@ -136,13 +130,7 @@ jobs:
           name: "Python wheel"
 
       - name: Install wheel
-        run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            $TARGET = Resolve-Path "./gradient_accumulator-*" | Select -ExpandProperty Path
-            pip install --find-links=. $TARGET
-          else
-            pip install --find-links=. gradient_accumulator-*
-          fi
+        run: pip install --find-links=. gradient_accumulator-*
         shell: bash
       
       - name: Debug pip deps
