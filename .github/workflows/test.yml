@@ -78,7 +78,7 @@ jobs:
           name: "Python wheel"
 
       - name: Install wheel
-        run: pip install --find-links=${{github.workspace}} gradient_accumulator-*
+        run: pip install --find-links=. gradient_accumulator-*
       
       - name: Debug pip deps
         run: pip list
@@ -129,7 +129,7 @@ jobs:
           name: "Python wheel"
 
       - name: Install wheel
-        run: pip install --find-links=${{github.workspace}} gradient_accumulator-*
+        run: pip install --find-links=. gradient_accumulator-*
       
       - name: Debug pip deps
         run: pip list
