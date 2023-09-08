@@ -14,6 +14,7 @@ the *vanilla* batch normalization layer is the most used.
 
 .. code-block:: python
 
+    import tensorflow as tf
     from gradient_accumulator import GradientAccumulateModel, AccumBatchNormalization
 
     # sets it here as we will set it for both the layer and model wrapper
@@ -29,6 +30,27 @@ the *vanilla* batch normalization layer is the most used.
     ])
 
     # needs this as well to update the remaining variables
+    model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
+
+
+You can also easily replace the existing Batch Norm layers in a
+pretrained model, i.e., MobileNetV2. Below is an example on how to do that:
+
+
+.. code-block:: python
+
+    import tensorflow as tf
+    from gradient_accumulator import GradientAccumulateModel
+    from gradient_accumulator.layers import AccumBatchNormalization
+    from gradient_accumulator.utils import replace_batchnorm_layers
+
+    accum_steps = 4
+
+    # replace BN layer with AccumBatchNormalization
+    model = tf.keras.applications.MobileNetV2(input_shape(28, 28, 3))
+    model = replace_batchnorm_layers(model, accum_steps=accum_steps)
+
+    # add gradient accumulation to existing model
     model = GradientAccumulateModel(accum_steps=accum_steps, inputs=model.input, outputs=model.output)
 
 

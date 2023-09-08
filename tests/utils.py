@@ -86,6 +86,16 @@ def normalize_img(image, label):
     return tf.cast(image, tf.float32) / 255.0, label
 
 
+def gray2rgb(image, label):
+    """Converts images from gray to RGB."""
+    return tf.concat([image, image, image], axis=-1), label
+
+
+def resizeImage(image, label, output_shape=(32, 32)):
+    """Resizes images."""
+    return tf.image.resize(image, output_shape, method="nearest"), label
+
+
 def run_experiment(bs=50, accum_steps=2, epochs=1, modeloropt="opt"):
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(

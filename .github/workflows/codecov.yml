@@ -70,6 +70,7 @@ jobs:
                  --cov=gradient_accumulator tests/test_expected_result.py \
                  --cov=gradient_accumulator tests/test_mp_batch_norm.py \
                  --cov=gradient_accumulator tests/test_bn_convnd.py \
+                 --cov=gradient_accumulator tests/test_bn_pretrained_swap.py \
                  --cov=gradient_accumulator tests/test_model_distribute.py
 
       - name: Lint with flake8
