@@ -10,12 +10,13 @@ from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator.layers import AccumBatchNormalization
 from gradient_accumulator.utils import replace_batchnorm_layers
 
+from .utils import gray2rgb
 from .utils import normalize_img
 from .utils import reset
-from .utils import gray2rgb
+from .utils import resizeImage
 
 
-def run_experiment(
+def test_swap_layer(
     custom_bn: bool = True, bs: int = 100, accum_steps: int = 1, epochs: int = 1
 ):
     # load dataset
@@ -30,6 +31,7 @@ def run_experiment(
     # build train pipeline
     ds_train = ds_train.map(normalize_img)
     ds_train = ds_train.map(gray2rgb)
+    ds_train = ds_train.map(resizeImage)
     ds_train = ds_train.shuffle(ds_info.splits["train"].num_examples)
     ds_train = ds_train.batch(bs)
     ds_train = ds_train.prefetch(1)
@@ -37,12 +39,18 @@ def run_experiment(
     # build test pipeline
     ds_test = ds_test.map(normalize_img)
     ds_test = ds_test.map(gray2rgb)
+    ds_test = ds_test.map(resizeImage)
     ds_test = ds_test.batch(bs)
     ds_test = ds_test.prefetch(1)
 
     # create model
-    model = tf.keras.applications.MobileNetV2(input_shape(28, 28, 3))
-    model = replace_batchnorm_layers(model, accum_steps=accum_steps)
+    base_model = tf.keras.applications.MobileNetV2(input_shape=(32, 32, 3), weights="imagenet", include_top=False)
+    base_model = replace_batchnorm_layers(base_model, accum_steps=accum_steps)
+
+    input_ = tf.keras.layers.Input(shape=(32, 32, 3))
+    x = base_model(input_)
+    x = tf.keras.layers.Dense(10, activation="softmax")(x)
+    model = tf.keras.Model(inputs=input_, outputs=x)
 
     # wrap model to use gradient accumulation
     if accum_steps > 1:
@@ -62,6 +70,8 @@ def run_experiment(
         ds_train,
         epochs=epochs,
         validation_data=ds_test,
+        steps_per_epoch=4,
+        validation_steps=4,
     )
 
     model.save("./trained_model")

@@ -3,7 +3,7 @@ import tensorflow as tf
 from .layers import AccumBatchNormalization
 
 
-def replace_batchnorm_layers(model, accum_steps, position="after"):
+def replace_batchnorm_layers(model, accum_steps, position="replace"):
     # Auxiliary dictionary to describe the network graph
     network_dict = {"input_layers_of": {}, "new_output_tensor_of": {}}
 
