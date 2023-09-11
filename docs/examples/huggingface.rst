@@ -1,7 +1,7 @@
-HuggingFace
+Hugging Face
 ===========
 
-Note that HuggingFace provides a variety of different pretrained models. However, it was observed that when loading these models into TensorFlow, the computational graph may not be set up correctly, such that the `model.input` and `model.output` exist.
+Note that Hugging Face provides a variety of different pretrained models. However, it was observed that when loading these models into TensorFlow, the computational graph may not be set up correctly, such that the `model.input` and `model.output` exist.
 
 To fix this, we basically wrap the model into a new `tf.keras.Model`, but define the inputs and outputs ourselves:
 
