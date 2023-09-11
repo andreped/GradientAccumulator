@@ -3,7 +3,7 @@ PyTorch
 
 For PyTorch, I would recommend using
 `accelerate <https://pypi.org/project/accelerate/>`_.
-HuggingFace :hugs: has a great tutorial on how to use it
+Hugging Face :hugs: has a great tutorial on how to use it
 `here <https://huggingface.co/docs/accelerate/usage_guides/gradient_accumulation>`_.
 
 However, if you wish to use native PyTorch and you are implementing
