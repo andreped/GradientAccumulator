@@ -89,11 +89,11 @@ For more information on usage, supported techniques, and examples, refer to [the
 
 
 ## [Applications](https://github.com/andreped/GradientAccumulator#applications)
-* Helland et al., Segmentation of glioblastomas in early post-operative multi-modal MRI with deep neural networks, arXiv, 2023, https://arxiv.org/abs/2304.08881
-* Bouget et al., Raidionics: an open software for pre- and postoperative central nervous system tumor segmentation and standardized reporting, arXiv, 2023, https://arxiv.org/abs/2305.14351
-* Pérez de Frutos et al., Learning deep abdominal CT registration through adaptive loss weighting and synthetic data generation, PLOS ONE, 2023, https://doi.org/10.1371/journal.pone.0282110
-* Bouget et al., Preoperative Brain Tumor Imaging: Models and Software for Segmentation and Standardized Reporting, Frontiers in Neurology, 2022, https://doi.org/10.3389/fneur.2022.932219
-* Pedersen et al., H2G-Net: A multi-resolution refinement approach for segmentation of breast cancer region in gigapixel histopathological images, Frontiers in Medicine, 2022, https://doi.org/10.3389/fmed.2022.971873
+* Bouget et al., Raidionics: an open software for pre- and postoperative central nervous system tumor segmentation and standardized reporting (2023), Scientific Reports, https://doi.org/10.1038/s41598-023-42048-7
+* Helland et al., Segmentation of glioblastomas in early post-operative multi-modal MRI with deep neural networks (2023), arXiv (preprint), https://arxiv.org/abs/2304.08881
+* Pérez de Frutos et al., Learning deep abdominal CT registration through adaptive loss weighting and synthetic data generation (2023), PLOS ONE, https://doi.org/10.1371/journal.pone.0282110
+* Bouget et al., Preoperative Brain Tumor Imaging: Models and Software for Segmentation and Standardized Reporting, (2022) Frontiers in Neurology, https://doi.org/10.3389/fneur.2022.932219
+* Pedersen et al., H2G-Net: A multi-resolution refinement approach for segmentation of breast cancer region in gigapixel histopathological images (2022), Frontiers in Medicine, https://doi.org/10.3389/fmed.2022.971873
 
 
 ## [Acknowledgements](https://github.com/andreped/GradientAccumulator#acknowledgements)
