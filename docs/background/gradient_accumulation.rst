@@ -26,7 +26,8 @@ A simple usage example can be seen below:
   from gradient_accumulator import GradientAccumulateModel
   
   model = Model()
-  model.compile(optimizer="adam", loss="cross-entropy")
   model = GradientAccumulateModel(accum_steps=K, inputs=model.input, outputs=model.output)
   
+  model.compile(optimizer="adam", loss="cross-entropy")
+
   model.fit(train_set, epochs=10, batch_size=M)
