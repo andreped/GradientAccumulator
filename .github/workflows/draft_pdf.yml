@@ -1,4 +1,6 @@
-on: [push]
+name: Build paper PDF
+
+on: [push, workflow_dispatch]
 
 jobs:
   paper:
