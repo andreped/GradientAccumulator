@@ -17,14 +17,14 @@ authors:
     orcid: 0000-0002-5669-9514
     affiliation: 2
 affiliations:
- - name: Department of Clinical and Molecular Medicine, Norwegian University of Science and Technology (NTNU), Trondheim, Norway
-   index: 1
- - name: Department of Health Research, SINTEF, Trondheim, Norway
-   index: 2
- - name: Application Solutions, Sopra Steria, Trondheim, Norway
-   index: 3
- - name: Department of Computer Science, UiT: The Arctic University of Norway, Tromsø, Norway
-   index: 4
+  - name: Department of Clinical and Molecular Medicine, Norwegian University of Science and Technology (NTNU), Trondheim, Norway
+    index: 1
+  - name: Department of Health Research, SINTEF, Trondheim, Norway
+    index: 2
+  - name: Application Solutions, Sopra Steria, Trondheim, Norway
+    index: 3
+  - name: Department of Computer Science, UiT: The Arctic University of Norway, Tromsø, Norway
+    index: 4
 date: 22 January 2024
 bibliography: paper.bib
 ---
