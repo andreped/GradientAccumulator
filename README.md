@@ -10,8 +10,9 @@
 
 **GradientAccumulator** was developed by SINTEF Health due to the lack of an easy-to-use method for gradient accumulation in TensorFlow 2.
 
-The package is available on PyPI and is compatible with and have been tested against `TensorFlow 2.2-2.12` and `Python 3.6-3.11`, and works cross-platform (Ubuntu, Windows, macOS).
+The package is available on PyPI and is compatible with and have been tested against `TensorFlow 2.2-2.15` and `Python 3.6-3.11`, and works cross-platform (Ubuntu, Windows, macOS).
 </div>
+
 
 ## [Continuous integration](https://github.com/andreped/GradientAccumulator#continuous-integration)
 
@@ -33,6 +34,9 @@ Or from source:
 ```
 pip install git+https://github.com/andreped/GradientAccumulator
 ```
+
+**Disclaimer:** Note that different `TensorFlow` versions supports different Python versions. Therefore, be sure to check which Python versions are supported when you install a specific `TensorFlow` version. `GradientAccumulator` does not support Python `>3.11`, as `TensorFlow` has yet to add support for them.
+
 
 ## [Getting started](https://github.com/andreped/GradientAccumulator#getting-started)
 
