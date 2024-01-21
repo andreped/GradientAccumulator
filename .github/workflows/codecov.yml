@@ -51,7 +51,7 @@ jobs:
           pip install "protobuf<=3.20" --force-reinstall
 
       - name: Download artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/download-artifact@master
         with:
           name: "Python wheel"
       
