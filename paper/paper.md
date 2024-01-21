@@ -3,6 +3,7 @@ title: 'GradientAccumulator: Efficient and seamless gradient accumulation for Te
 tags:
   - Python
   - TensorFlow
+  - Optimization
   - Deep Learning
   - Gradient Descent
 authors:
@@ -50,7 +51,10 @@ GradientAccumulator has already been used in several research studies [@pedersen
 `GradientAccumulator` implements two main approaches to add gradient accumulation support to an existing TensorFlow model. GA support can either be added through model or optimizer wrapping. By wrapping the model, the `train_step` of a given Keras [@chollet2015keras] model is updated such that the gradients are updated only after a user-defined number of backward steps. Wrapping the optimizer works somewhat similar, but this update control is handled directly in the optimizer itself. This is done in such a way that _any_ optimizer can be used with this approach.
 
 
-The package solely depends on `TensorFlow`, hence adds no additional dependencing to your projects. 
+The package solely depends on `TensorFlow`, hence adds no additional dependencing to your projects.
+
+
+`BatchNormalization` (BN) [@ioffe2015batchnormalization] is one of the most commonly used normalization techniques, commonly used with convolutional neural networks. BN has to be handled with care, as it is one of the only commonly used layers to update both in the forward and backward steps. Thus, if this layer is used naively with any of the wrappers, the mean and standard deviations will not update correctly. To add proper support, we have implemented a drop-in replacement for batch normalization called `AccumBatchNormalization`. To use it in a pretrained network for finetuning applications, you can simply use the provided `replace_batchnorm_layers` method, which will use the weights of the old `BatchNormalization` layer for any given layer. Note that for the mean and standard devations are computed using full precision, similarly to the original Keras implementation.
 
 
 More details and tutorials on getting started with the `GradientAccumulator` package, can be found in the `GradientAccumulator `\href{(https://gradientaccumulator.readthedocs.io/}{documentation}.
