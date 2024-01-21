@@ -39,7 +39,7 @@ A popular approach to counter this problem, is to utilize technique called gradi
 
 # Statement of need 
 
-Despite existing open-source implementation of gradient accumulation in various frameworks, TensorFlow has yet to offer a seemless and easy to use solution for gradient accumulation. To the best of our knowledge, `GradientAccumulator` is the first open-source Python package to enable gradient accumulation to be seamlessly added to TensorFlow model training pipelines. 
+Despite existing open-source implementation of gradient accumulation in various frameworks, TensorFlow [@tensorflow2015abadi] has yet to offer a seemless and easy to use solution for gradient accumulation. To the best of our knowledge, `GradientAccumulator` is the first open-source Python package to enable gradient accumulation to be seamlessly added to TensorFlow model training pipelines. 
 
 
 GradientAccumulator has already been used in several research studies [@pedersen2023h2gnet; @helland2023postopglioblastoma].
