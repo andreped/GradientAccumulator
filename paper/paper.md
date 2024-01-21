@@ -25,7 +25,7 @@ affiliations:
    index: 3
  - name: Department of Computer Science, UiT: The Arctic University of Norway, Tromsø, Norway
    index: 4
-date: 22 January, 2024
+date: 22 January 2024
 bibliography: paper.bib
 ---
 
