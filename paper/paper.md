@@ -47,7 +47,7 @@ GradientAccumulator has already been used in several research studies [@pedersen
   
 # Implementation 
 
-`GradientAccumulator` implements two main approaches to add gradient accumulation support to an existing TensorFlow model. GA support can either be added through model or optimizer wrapping. By wrapping the model, the `train_step` of a given Keras model is updated such that the gradients are updated only after a user-defined number of backward steps. Wrapping the optimizer works somewhat similar, but this update control is handled directly in the optimizer itself. This is done in such a way that _any_ optimizer can be used with this approach.
+`GradientAccumulator` implements two main approaches to add gradient accumulation support to an existing TensorFlow model. GA support can either be added through model or optimizer wrapping. By wrapping the model, the `train_step` of a given Keras [@chollet2015keras] model is updated such that the gradients are updated only after a user-defined number of backward steps. Wrapping the optimizer works somewhat similar, but this update control is handled directly in the optimizer itself. This is done in such a way that _any_ optimizer can be used with this approach.
 
 
 More details and tutorials on getting started with the `GradientAccumulator` package, can be found in the `GradientAccumulator `\href{(https://gradientaccumulator.readthedocs.io/}{documentation}.
