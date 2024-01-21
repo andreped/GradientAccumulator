@@ -204,7 +204,7 @@ def get_gradients(gradients: list):
 # https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py  # noqa
 # https://github.com/FreddeFrallan/Multilingual-CLIP/blob/5c82118452b3b59b41bb53714d61cd4990b1588d/multilingual_clip/TeacherLearning/Utils.py#L84  # noqa
 @tf.keras.utils.register_keras_serializable("gradient-accumulator")
-class GradientAccumulateOptimizer(tf.keras.optimizers.Optimizer):
+class GradientAccumulateOptimizer(opt):
     """Optimizer wrapper for gradient accumulation."""
 
     def __init__(
