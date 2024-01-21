@@ -163,9 +163,7 @@ jobs:
         run: pip install wheel setuptools flake8 pytest-cov
 
       - name: Install tensorflow-datasets
-        run: |
-            pip install tensorflow==${{ matrix.tf-version }} "tensorflow-datasets<=4.8.2"
-            pip install "protobuf<=3.20" --force-reinstall
+        run: pip install tensorflow==${{ matrix.tf-version }} tensorflow-datasets
 
       - name: Download artifact
         uses: actions/download-artifact@v3
