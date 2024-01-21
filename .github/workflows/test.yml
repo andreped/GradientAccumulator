@@ -73,7 +73,7 @@ jobs:
         shell: bash
 
       - name: Download artifact
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         with:
           name: "Python wheel"
 
@@ -126,7 +126,7 @@ jobs:
             pip install "protobuf<=3.20" --force-reinstall
 
       - name: Download artifact
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         with:
           name: "Python wheel"
 
