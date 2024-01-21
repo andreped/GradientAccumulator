@@ -50,7 +50,20 @@ GradientAccumulator has already been used in several research studies [@pedersen
 `GradientAccumulator` implements two main approaches to add gradient accumulation support to an existing TensorFlow model. GA support can either be added through model or optimizer wrapping. By wrapping the model, the `train_step` of a given Keras [@chollet2015keras] model is updated such that the gradients are updated only after a user-defined number of backward steps. Wrapping the optimizer works somewhat similar, but this update control is handled directly in the optimizer itself. This is done in such a way that _any_ optimizer can be used with this approach.
 
 
+The package solely depends on `TensorFlow`, hence adds no additional dependencing to your projects. 
+
+
 More details and tutorials on getting started with the `GradientAccumulator` package, can be found in the `GradientAccumulator `\href{(https://gradientaccumulator.readthedocs.io/}{documentation}.
+
+
+# Limitations and caveats
+
+As `TensorFlow` is a highly evolving library and tend to introduce breaking changes between minor releases, it makes it challenging to have complete support for all `TensorFlow` versions. As the `train_step` overriding solution used in the model wrapper approach was only introduced in `TensorFlow` v2.2, `TensorFlow` versions < 2.2 are not supported. Furthermore, the optimizer has had a breaking changes, and due to this we chose we are not able to support `TensorFlow` < 2.7 for the optimizer wrapper.
+
+
+# Future developments
+
+`GradientAccumulator` is in active development. However, `TensorFlow` has likely made their last release of version 2, as Keras 3 has made its first official release. It is likely that the research community will move to Keras 3 in the future, but Keras 3 has yet to add as broad support for gradient accumulation as our package offers. Keras 3 also seems to favour `Jax` [@deepmind2020jax] for gradient accumulation instead of `TensorFlow`.
 
 
 # Acknowledgements
