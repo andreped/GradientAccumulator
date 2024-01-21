@@ -143,7 +143,7 @@ jobs:
       - name: Run tests
         run: pytest -v tests/test_model_expected_result.py
 
-  tf-2.15:
+  latest-tf-compatibility:
     needs: build
     runs-on: ${{ matrix.os }}
     strategy:
