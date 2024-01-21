@@ -23,7 +23,7 @@ jobs:
         run: python3 setup.py bdist_wheel
 
       - name: Upload Python wheel
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Python wheel
           path: ${{github.workspace}}/dist/gradient_accumulator-*.whl
