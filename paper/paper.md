@@ -8,7 +8,7 @@ tags:
 authors:
   - name: André Pedersen
     orcid: 0000-0002-3637-953X
-    affiliation: 1, 2, 3
+    affiliation: 1
     corresponding: true
   - name: Tor-Arne S. Nordmo
     orcid: 0000-0002-2843-9643
