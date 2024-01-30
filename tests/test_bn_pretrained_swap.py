@@ -1,19 +1,11 @@
-import os
-import random as python_random
-
-import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 
 from gradient_accumulator import GradientAccumulateModel
-from gradient_accumulator.layers import AccumBatchNormalization
 from gradient_accumulator.utils import replace_batchnorm_layers
 
-from .utils import gray2rgb
-from .utils import normalize_img
-from .utils import reset
-from .utils import resizeImage
+from tests.utils import gray2rgb, normalize_img, resizeImage
 
 
 def test_swap_layer(

@@ -1,23 +1,13 @@
-import os
-import random as python_random
-
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow.keras.layers import Activation
-from tensorflow.keras.layers import Conv2D
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Input
-from tensorflow.keras.layers import MaxPooling2D
-from tensorflow.keras.layers import UpSampling2D
-from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, Input, MaxPooling2D, UpSampling2D
+from tensorflow.keras import Model
 from tensorflow.keras.models import load_model
 
 from gradient_accumulator import GradientAccumulateModel
 
-from .utils import normalize_img
-from .utils import reset
+from tests.utils import normalize_img, reset
 
 
 def create_multi_input_output(image, label):

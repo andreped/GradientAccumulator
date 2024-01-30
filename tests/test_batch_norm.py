@@ -1,6 +1,3 @@
-import os
-import random as python_random
-
 import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
@@ -9,8 +6,7 @@ from tensorflow.keras.models import load_model
 from gradient_accumulator import GradientAccumulateModel
 from gradient_accumulator.layers import AccumBatchNormalization
 
-from .utils import normalize_img
-from .utils import reset
+from tests.utils import normalize_img, reset
 
 
 def run_experiment(

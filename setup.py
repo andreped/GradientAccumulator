@@ -14,7 +14,9 @@ setuptools.setup(
     url="https://github.com/andreped/GradientAccumulator",
     packages=setuptools.find_packages(exclude=('tests', 'notebooks', 'assets', 'docs', 'shell')),
     install_requires=[
-        "tensorflow<=2.10.0",
+        "protobuf<=3.19.6",
+        'tensorflow<=2.10.0,>=2.0.0; platform_system!="Darwin"',
+        'tensorflow-macos<=2.10.0,>=2.0.0; platform_system=="Darwin"',
         "numpy<=1.23.2",
     ],
     extras_require={"dev": [
@@ -24,8 +26,7 @@ setuptools.setup(
         "black==22.3.0",
         "isort==5.10.1",
         "flake8==4.0.1",
-        "tensorflow-datasets<=4.8.2",
-        "protobuf<=3.20",
+        "tensorflow-datasets<=4.8.0",
     ]},
     classifiers=[
         "Development Status :: 4 - Beta",

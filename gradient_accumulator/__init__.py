@@ -1,6 +1,3 @@
-from .accumulators import GradientAccumulateModel
-from .accumulators import GradientAccumulateOptimizer
-from .agc import adaptive_clip_grad
-from .agc import compute_norm
-from .agc import unitwise_norm
-from .layers import AccumBatchNormalization
+from gradient_accumulator.accumulators import GradientAccumulateModel, GradientAccumulateOptimizer
+from gradient_accumulator.agc import adaptive_clip_grad, compute_norm, unitwise_norm
+from gradient_accumulator.layers import AccumBatchNormalization

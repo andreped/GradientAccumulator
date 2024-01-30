@@ -1,7 +1,7 @@
 import tensorflow as tf
 from typing import Optional
 
-from . import agc
+from gradient_accumulator import agc
 
 # dynamically handle which Optimizer class to use dep on tf version
 opt = tf.keras.optimizers.Optimizer

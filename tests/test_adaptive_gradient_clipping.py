@@ -2,13 +2,11 @@ import os
 
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow.keras import mixed_precision
 from tensorflow.keras.models import load_model
 
-from gradient_accumulator import GradientAccumulateModel
-from gradient_accumulator import unitwise_norm
+from gradient_accumulator import GradientAccumulateModel, unitwise_norm
 
-from .utils import normalize_img
+from tests.utils import normalize_img
 
 
 def test_unitwise_norm():

@@ -6,8 +6,7 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from tensorflow.keras.models import load_model
 
-from gradient_accumulator import GradientAccumulateModel
-from gradient_accumulator import GradientAccumulateOptimizer
+from gradient_accumulator import GradientAccumulateModel, GradientAccumulateOptimizer
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])

@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 
 from gradient_accumulator import GradientAccumulateModel
 
-from .utils import get_opt
+from tests.utils import get_opt
 
 
 def test_model_distribute():
