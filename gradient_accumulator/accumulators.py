@@ -1,5 +1,6 @@
-import tensorflow as tf
 from typing import Optional
+
+import tensorflow as tf
 
 from gradient_accumulator import agc
 
@@ -10,7 +11,7 @@ if int(tf.version.VERSION.split(".")[1]) > 10:
 
 
 # https://stackoverflow.com/a/66524901
-# https://keras.io/guides/customizing_what_happens_in_fit/
+# https://keras.io/guides/customizing_what_happens_in_fit/ # noqa
 @tf.keras.utils.register_keras_serializable("gradient-accumulator")
 class GradientAccumulateModel(tf.keras.Model):
     """Model wrapper for gradient accumulation."""
@@ -24,7 +25,7 @@ class GradientAccumulateModel(tf.keras.Model):
         eps: float = 1e-3,
         experimental_distributed_support: bool = False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """Adds gradient accumulation support to existing Keras Model.
 
@@ -200,6 +201,7 @@ def get_gradients(gradients: list):
         if tf.reduce_all(tf.not_equal(tf.size(gradient), 0))
     ]
 
+
 # Implementation was derived from:
 # https://github.com/fsx950223/addons/blob/67c1e8ea19e82c3f2a5706674dd81f15ab5002a2/tensorflow_addons/optimizers/gradient_accumulator.py  # noqa
 # https://github.com/FreddeFrallan/Multilingual-CLIP/blob/5c82118452b3b59b41bb53714d61cd4990b1588d/multilingual_clip/TeacherLearning/Utils.py#L84  # noqa
@@ -234,20 +236,23 @@ class GradientAccumulateOptimizer(opt):
         mixed_precision : bool, optional
             Whether to use mixed precision. Defaults to False.
         name : str, optional
-            Name for the operations created when applying gradients. Defaults to "GradientAccumulateOptimizer".
+            Name for the operations created when applying gradients. Defaults to
+            "GradientAccumulateOptimizer".
         **kwargs : dict
             Additional keyword arguments. Allowed keys are:
             - `clip_factor`: Sets upper limit for gradient clipping. Defaults to 0.01.
-            - `lr`: Learning rate, included for backward compatibility. Use `learning_rate` instead.
+            - `lr`: Learning rate, included for backward compatibility. Use
+            `learning_rate` instead.
 
         Notes
         -----
-        Adding support for sparse tensors was tricky. For correct implementation, both `_resource_apply_sparse()`
+        Adding support for sparse tensors was tricky. For correct implementation, both
+        `_resource_apply_sparse()`
         and `_resource_apply_sparse_duplicate_indices()` methods need to be implemented.
 
         References
         ----------
-        .. [1] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93
+        .. [1] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93 # noqa
 
         """
         super().__init__(name, **kwargs)
@@ -259,7 +264,9 @@ class GradientAccumulateOptimizer(opt):
             else tf.keras.optimizers.get(optimizer)
         )
         self.base_optimizer = (
-            self._optimizer.inner_optimizer if mixed_precision else self._optimizer
+            self._optimizer.inner_optimizer
+            if mixed_precision
+            else self._optimizer
         )
         self.mixed_precision = mixed_precision
         self._mixed_precision = tf.constant(mixed_precision, dtype=tf.bool)
@@ -367,11 +374,16 @@ class GradientAccumulateOptimizer(opt):
 
     @tf.function(experimental_relax_shapes=True)
     def _apply_agc(self, grad: tf.Tensor, var: tf.Variable):
-        return agc.adaptive_clip_grad([var], [grad], clip_factor=self.clip_factor)[0]
+        return agc.adaptive_clip_grad(
+            [var], [grad], clip_factor=self.clip_factor
+        )[0]
 
     @tf.function(experimental_relax_shapes=True, reduce_retracing=True)
-    def _parse_grad(self, accum_gradient: tf.Tensor, var: tf.Variable) -> tf.Tensor:
-        """Parses the accumulated gradient and returns the gradient to be applied."""
+    def _parse_grad(
+        self, accum_gradient: tf.Tensor, var: tf.Variable
+    ) -> tf.Tensor:
+        """Parses the accumulated gradient and returns the gradient to be
+        applied."""
 
         apply_condition = tf.fill(
             tf.shape(accum_gradient),
@@ -384,10 +396,16 @@ class GradientAccumulateOptimizer(opt):
         def return_grad():
             return accum_gradient
 
-        return tf.where(apply_condition, tf.cond(self._agc, apply_agc, return_grad), tf.zeros_like(var, dtype=accum_gradient.dtype))
+        return tf.where(
+            apply_condition,
+            tf.cond(self._agc, apply_agc, return_grad),
+            tf.zeros_like(var, dtype=accum_gradient.dtype),
+        )
 
     @tf.function(experimental_relax_shapes=True, reduce_retracing=True)
-    def reset_accum_gradient(self, accum_gradient: tf.Tensor, should_reset: tf.Tensor):
+    def reset_accum_gradient(
+        self, accum_gradient: tf.Tensor, should_reset: tf.Tensor
+    ):
         return tf.where(
             should_reset,
             accum_gradient.assign(tf.zeros_like(accum_gradient)),
@@ -395,7 +413,10 @@ class GradientAccumulateOptimizer(opt):
         )
 
     def _resource_apply_dense(
-        self, grad: tf.Tensor, var: tf.Variable, apply_state: Optional[str] = None
+        self,
+        grad: tf.Tensor,
+        var: tf.Variable,
+        apply_state: Optional[str] = None,
     ):
         """
         Performs gradient update on sparse tensor.
@@ -466,7 +487,8 @@ class GradientAccumulateOptimizer(opt):
         var : tensor
             The current variable.
         indices : tensor
-            Relevant indices to be used for masking the sparse tensor during update.
+            Relevant indices to be used for masking the sparse tensor during
+            update.
         apply_state : str, optional
             State of the optimizer. Defaults to None.
 
@@ -532,7 +554,8 @@ class GradientAccumulateOptimizer(opt):
         var : tf.Variable
             Current variable.
         indices : tf.Tensor
-            Relevant indices to be used for masking the sparse tensor during update.
+            Relevant indices to be used for masking the sparse tensor during
+            update.
         apply_state : str, optional
             State of the optimizer. Defaults to None.
 
@@ -579,7 +602,9 @@ class GradientAccumulateOptimizer(opt):
     @tf.function(experimental_relax_shapes=True, reduce_retracing=True)
     def _reset_single_gradient(self, gradient: tf.Tensor):
         return gradient.assign(
-            tf.zeros_like(gradient), use_locking=self._use_locking, read_value=False
+            tf.zeros_like(gradient),
+            use_locking=self._use_locking,
+            read_value=False,
         )
 
     def reset(self):
@@ -593,7 +618,8 @@ class GradientAccumulateOptimizer(opt):
 
     @property
     def optimizer(self) -> tf.keras.optimizers.Optimizer:
-        """The optimizer that this AccumOptimizer is wrapping. In the case of mixed precision, this is the LossScaleOptimizer."""
+        """The optimizer that this AccumOptimizer is wrapping. In the case of mixed
+        precision, this is the LossScaleOptimizer."""
         return self._optimizer
 
     @property
@@ -647,7 +673,9 @@ class GradientAccumulateOptimizer(opt):
         return config
 
     @classmethod
-    def from_config(cls, config: dict, custom_objects: Optional[str] = None) -> object:
+    def from_config(
+        cls, config: dict, custom_objects: Optional[str] = None
+    ) -> object:
         """Creates an instance of the optimizer from its config."""
         optimizer_config = config.pop("optimizer")
         optimizer = tf.keras.optimizers.deserialize(

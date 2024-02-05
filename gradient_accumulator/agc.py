@@ -1,6 +1,5 @@
 import tensorflow as tf
 
-
 # implementation from: https://github.com/sayakpaul/Adaptive-Gradient-Clipping/blob/main/agc.py  # noqa
 SCALAR = tf.constant([], dtype=tf.int32)
 LINEAR = tf.constant([0], dtype=tf.int32)
@@ -51,7 +50,9 @@ def unitwise_norm(x):
         )
         return axes
 
-    return compute_norm(x, axis=compute_reduction_axes(tf.rank(x)), keepdims=True)
+    return compute_norm(
+        x, axis=compute_reduction_axes(tf.rank(x)), keepdims=True
+    )
 
 
 @tf.function
@@ -59,7 +60,8 @@ def adaptive_clip_grad(
     parameters, gradients, clip_factor: float = 0.01, eps: float = 1e-3
 ):
     """
-    Performs adaptive gradient clipping on a given set of parameters and gradients.
+    Performs adaptive gradient clipping on a given set of parameters and
+    gradients.
     """
 
     def clip_grad(param, grad):
@@ -67,7 +69,9 @@ def adaptive_clip_grad(
             tf.math.maximum(unitwise_norm(param), eps), clip_factor
         )
         grad_norm = unitwise_norm(grad)
-        adjusted_norm = tf.math.divide(max_norm, tf.math.maximum(grad_norm, 1e-6))
+        adjusted_norm = tf.math.divide(
+            max_norm, tf.math.maximum(grad_norm, 1e-6)
+        )
         new_grad = tf.where(
             tf.math.less(grad_norm, max_norm),
             grad,
@@ -76,7 +80,9 @@ def adaptive_clip_grad(
         return new_grad
 
     new_grads = tf.map_fn(
-        lambda x: clip_grad(x[0], x[1]), (parameters, gradients), dtype=tf.float32
+        lambda x: clip_grad(x[0], x[1]),
+        (parameters, gradients),
+        dtype=tf.float32,
     )
 
     return new_grads

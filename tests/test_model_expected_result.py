@@ -24,7 +24,7 @@ def test_model_expected_result():
 
     # test with model wrapper instead
     result2 = run_experiment(bs=50, accum_steps=2, epochs=2, modeloropt="model")
-    
+
     # results should be identical (theoretically, even in practice on CPU)
     if tf_version <= 6:
         # approximation poorer as enable_op_determinism() not available for tf < 2.7
