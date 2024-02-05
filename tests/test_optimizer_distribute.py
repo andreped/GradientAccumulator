@@ -5,7 +5,9 @@ from tensorflow.keras.models import load_model
 
 from gradient_accumulator import GradientAccumulateOptimizer
 
-from tests.utils import get_opt, normalize_img, reset
+from .utils import get_opt
+from .utils import normalize_img
+from .utils import reset
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])

@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
 
 from gradient_accumulator import GradientAccumulateModel
 

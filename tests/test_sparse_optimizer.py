@@ -1,11 +1,20 @@
+import os
+import random as python_random
+
+import numpy as np
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow.keras.layers import Dense, Embedding, Flatten
-from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Embedding
+from tensorflow.keras.layers import Flatten
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import one_hot
 
 from gradient_accumulator import GradientAccumulateOptimizer
 
-from tests.utils import reset
+from .utils import reset
 
 # get current tf minor version
 tf_version = int(tf.version.VERSION.split(".")[1])
