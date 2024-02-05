@@ -372,13 +372,13 @@ class GradientAccumulateOptimizer(opt):
             ):
                 return self.step.assign_add(1, read_value=False)
 
-    @tf.function(experimental_relax_shapes=True)
+    @tf.function
     def _apply_agc(self, grad: tf.Tensor, var: tf.Variable):
         return agc.adaptive_clip_grad(
             [var], [grad], clip_factor=self.clip_factor
         )[0]
 
-    @tf.function(experimental_relax_shapes=True, reduce_retracing=True)
+    @tf.function
     def _parse_grad(
         self, accum_gradient: tf.Tensor, var: tf.Variable
     ) -> tf.Tensor:
@@ -402,7 +402,7 @@ class GradientAccumulateOptimizer(opt):
             tf.zeros_like(var, dtype=accum_gradient.dtype),
         )
 
-    @tf.function(experimental_relax_shapes=True, reduce_retracing=True)
+    @tf.function
     def reset_accum_gradient(
         self, accum_gradient: tf.Tensor, should_reset: tf.Tensor
     ):
@@ -599,7 +599,7 @@ class GradientAccumulateOptimizer(opt):
 
         return _apply(accum_gradient, var, apply_state)
 
-    @tf.function(experimental_relax_shapes=True, reduce_retracing=True)
+    @tf.function
     def _reset_single_gradient(self, gradient: tf.Tensor):
         return gradient.assign(
             tf.zeros_like(gradient),

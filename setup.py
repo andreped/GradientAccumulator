@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/andreped/GradientAccumulator",
     packages=setuptools.find_packages(exclude=('tests', 'notebooks', 'assets', 'docs', 'shell')),
     install_requires=[
-        "tensorflow<=2.10.0",
+        "tensorflow",
         "numpy<=1.23.2",
     ],
     extras_require={"dev": [

@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-from gradient_accumulator.layers import AccumBatchNormalization
+from .layers import AccumBatchNormalization
 
 
 def replace_batchnorm_layers(model, accum_steps, position="replace"):
