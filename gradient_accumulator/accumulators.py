@@ -2,7 +2,8 @@ from typing import Optional
 
 import tensorflow as tf
 
-from gradient_accumulator import agc
+from . import agc
+from .utils import get_gradients
 
 # dynamically handle which Optimizer class to use dep on tf version
 opt = tf.keras.optimizers.Optimizer
@@ -192,14 +193,6 @@ class GradientAccumulateModel(tf.keras.Model):
             )
             for i, v in enumerate(self.trainable_variables)
         ]
-
-
-def get_gradients(gradients: list):
-    return [
-        gradient.read_value()
-        for gradient in gradients
-        if tf.reduce_all(tf.not_equal(tf.size(gradient), 0))
-    ]
 
 
 # Implementation was derived from:
