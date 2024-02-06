@@ -395,18 +395,13 @@ class GradientAccumulateOptimizer(opt):
             tf.zeros_like(var, dtype=accum_gradient.dtype),
         )
 
+    @tf.function
     def reset_accum_gradient(self, accum_gradient: tf.Tensor, grad: tf.Tensor):
-        reset_val = tf.where(
-            grad == accum_gradient,
+        return tf.where(
+            tf.math.equal(grad, accum_gradient),
             tf.zeros_like(accum_gradient),
             accum_gradient,
         )
-        reset_op = accum_gradient.assign(
-            reset_val,
-            use_locking=self._use_locking,
-            read_value=False,
-        )
-        return reset_op
 
     def _resource_apply_dense(
         self,
@@ -459,7 +454,11 @@ class GradientAccumulateOptimizer(opt):
                 apply_state=apply_state if apply_state else None,
             )
 
-            reset_op = self.reset_accum_gradient(accum_gradient, grad)
+            reset_op = accum_gradient.assign(
+                self.reset_accum_gradient(accum_gradient, grad),
+                use_locking=self._use_locking,
+                read_value=False,
+            )
 
             return tf.group(train_op, reset_op)
 
@@ -523,7 +522,11 @@ class GradientAccumulateOptimizer(opt):
                 apply_state=apply_state if apply_state else None,
             )
 
-            reset_op = self.reset_accum_gradient(accum_gradient, grad)
+            reset_op = accum_gradient.assign(
+                self.reset_accum_gradient(accum_gradient, grad),
+                use_locking=self._use_locking,
+                read_value=False,
+            )
 
             return tf.group(train_op, reset_op)
 
@@ -584,7 +587,11 @@ class GradientAccumulateOptimizer(opt):
                 )
             )
 
-            reset_op = self.reset_accum_gradient(accum_gradient, grad)
+            reset_op = accum_gradient.assign(
+                self.reset_accum_gradient(accum_gradient, grad),
+                use_locking=self._use_locking,
+                read_value=False,
+            )
 
             return tf.group(train_op, reset_op)
 
