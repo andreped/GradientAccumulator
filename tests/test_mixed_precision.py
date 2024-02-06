@@ -2,7 +2,7 @@ from typing import Optional
 
 import tensorflow as tf
 
-from . import agc
+from gradient_accumulator import agc
 from .utils import get_gradients
 
 # dynamically handle which Optimizer class to use dep on tf version
