@@ -395,15 +395,18 @@ class GradientAccumulateOptimizer(opt):
             tf.zeros_like(var, dtype=accum_gradient.dtype),
         )
 
-    @tf.function
-    def reset_accum_gradient(
-        self, accum_gradient: tf.Tensor, should_reset: tf.Tensor
-    ):
-        return tf.where(
-            should_reset,
-            accum_gradient.assign(tf.zeros_like(accum_gradient)),
+    def reset_accum_gradient(self, accum_gradient: tf.Tensor, grad: tf.Tensor):
+        reset_val = tf.where(
+            grad == accum_gradient,
+            tf.zeros_like(accum_gradient),
             accum_gradient,
         )
+        reset_op = accum_gradient.assign(
+            reset_val,
+            use_locking=self._use_locking,
+            read_value=False,
+        )
+        return reset_op
 
     def _resource_apply_dense(
         self,
@@ -448,17 +451,15 @@ class GradientAccumulateOptimizer(opt):
         )
 
         def _apply(accum_gradient, var, apply_state):
+            grad = self._parse_grad(accum_gradient, var)
+
             train_op = self.base_optimizer._resource_apply_dense(
-                self._parse_grad(accum_gradient, var),
+                grad,
                 var,
-                apply_state=apply_state,
+                apply_state=apply_state if apply_state else None,
             )
 
-            should_reset = tf.equal(
-                tf.math.mod(self.step, self._accum_steps), self._zero
-            )
-
-            reset_op = self.reset_accum_gradient(accum_gradient, should_reset)
+            reset_op = self.reset_accum_gradient(accum_gradient, grad)
 
             return tf.group(train_op, reset_op)
 
@@ -513,18 +514,16 @@ class GradientAccumulateOptimizer(opt):
         )
 
         def _apply(accum_gradient, var, apply_state):
-            train_op = self._optimizer._resource_apply_sparse(
+            grad = self._parse_grad(accum_gradient, var)
+
+            train_op = self.base_optimizer._resource_apply_sparse(
                 accum_gradient.sparse_read(indices),
                 var,
                 indices,
-                apply_state=apply_state,
+                apply_state=apply_state if apply_state else None,
             )
 
-            should_reset = tf.equal(
-                tf.math.mod(self.step, self._accum_steps), self._zero
-            )
-
-            reset_op = self.reset_accum_gradient(accum_gradient, should_reset)
+            reset_op = self.reset_accum_gradient(accum_gradient, grad)
 
             return tf.group(train_op, reset_op)
 
@@ -574,19 +573,18 @@ class GradientAccumulateOptimizer(opt):
         )
 
         def _apply(accum_gradient, var, apply_state):
-            train_op = self._optimizer._resource_apply_sparse_duplicate_indices(
-                accum_gradient.sparse_read(indices),
-                var,
-                indices,
-                apply_state=apply_state,
+            grad = self._parse_grad(accum_gradient, var)
+
+            train_op = (
+                self.base_optimizer._resource_apply_sparse_duplicate_indices(
+                    accum_gradient.sparse_read(indices),
+                    var,
+                    indices,
+                    apply_state=apply_state if apply_state else None,
+                )
             )
 
-            # train operation must be executed before we can reset gradients
-            should_reset = tf.equal(
-                tf.math.mod(self.step, self._accum_steps), self._zero
-            )
-
-            reset_op = self.reset_accum_gradient(accum_gradient, should_reset)
+            reset_op = self.reset_accum_gradient(accum_gradient, grad)
 
             return tf.group(train_op, reset_op)
 
