@@ -273,6 +273,8 @@ class GradientAccumulateOptimizer(opt):
             dtype=tf.int64,
             aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
         )
+        if not hasattr(self, "_weights"):
+            self._weights = []
         self._weights.append(self._step)
         self._zero = tf.constant(0, dtype=tf.int64)
         self.dtype = dtype
