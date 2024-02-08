@@ -30,6 +30,12 @@ def test__learning_rate(optimizer):
     optimizer.learning_rate = 0.02
     assert optimizer._learning_rate == 0.02
 
+def test_step(optimizer):
+    assert optimizer.step == 1
+
+def test_optimizer_prop(optimizer):
+    assert optimizer.optimizer.__class__ == get_opt(opt_name="SGD", tf_version=tf_version).__class__
+
 def test_reset_single_gradient(optimizer):
     var = tf.Variable([1.0, 2.0], dtype=tf.float32)
     optimizer.add_slot(var, "ga", initializer=tf.constant([3.0, 4.0]))
@@ -50,3 +56,34 @@ def test_reset(optimizer):
     for var in [var1, var2]:
         gradient = optimizer.get_slot(var, "ga")
         assert tf.reduce_all(tf.equal(gradient, tf.zeros_like(gradient))).numpy() == True
+
+
+@pytest.mark.parametrize("accum_steps", [1, 2, 3])
+@pytest.mark.parametrize("use_agc", [True, False])
+def test_parse_grad(optimizer, use_agc, accum_steps):
+    if accum_steps == 1:
+        expected_grad = tf.zeros_like(var)  # gradients should not be applied yet
+    else:
+        expected_grad = tf.constant([3.0, 4.0])
+    var = tf.Variable([1.0, 2.0], dtype=tf.float32)
+    optimizer.add_slot(var, "ga", initializer=expected_grad)
+    accum_gradient = optimizer.get_slot(var, "ga")
+
+    optimizer.use_agc = use_agc
+    optimizer.step.assign(accum_steps)
+
+    parsed_grad = optimizer._parse_grad(accum_gradient, var)
+    assert tf.reduce_all(tf.equal(parsed_grad, expected_grad))
+
+
+if __name__ == "__main__":
+    test__learning_rate(optimizer())
+    test_learning_rate_getter(optimizer())
+    test_learning_rate_setter(optimizer())
+    test_lr_getter(optimizer())
+    test_lr_setter(optimizer())
+    test_step(optimizer())
+    test_optimizer_prop(optimizer())
+    test_reset_single_gradient(optimizer())
+    test_reset(optimizer())
+    test_parse_grad(optimizer())
