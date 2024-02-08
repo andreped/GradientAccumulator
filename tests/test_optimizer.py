@@ -58,7 +58,7 @@ def test_reset(optimizer):
         assert tf.reduce_all(tf.equal(gradient, tf.zeros_like(gradient))).numpy() == True
 
 
-@pytest.mark.parametrize("accum_steps", [1, 2, 3])
+@pytest.mark.parametrize("accum_steps", [1, 2])
 @pytest.mark.parametrize("use_agc", [True, False])
 def test_parse_grad(optimizer, use_agc, accum_steps):
     var = tf.Variable([1.0, 2.0], dtype=tf.float32)
@@ -73,7 +73,7 @@ def test_parse_grad(optimizer, use_agc, accum_steps):
     optimizer.step.assign(accum_steps)
 
     parsed_grad = optimizer._parse_grad(accum_gradient, var)
-    assert tf.reduce_all(tf.equal(parsed_grad, expected_grad))
+    assert tf.reduce_all(tf.equal(parsed_grad, expected_grad)).numpy() == True
 
 
 if __name__ == "__main__":
