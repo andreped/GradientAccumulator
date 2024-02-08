@@ -1,15 +1,16 @@
-import os
-
+import pytest
 import tensorflow as tf
 import tensorflow_datasets as tfds
-from tensorflow.keras import mixed_precision
 from tensorflow.keras.models import load_model
 
 from gradient_accumulator import GradientAccumulateModel
+from gradient_accumulator import GradientAccumulateOptimizer
 from gradient_accumulator import unitwise_norm
 
-from .utils import normalize_img
+from .utils import normalize_img, get_opt
 
+
+tf_version = int(tf.version.VERSION.split(".")[1])
 
 def test_unitwise_norm():
     for i in range(7):
@@ -27,7 +28,8 @@ def test_unitwise_norm():
                 raise e
 
 
-def test_train_mnist():
+@pytest.fixture
+def generate_experiment_prerequisites():
     # load dataset
     (ds_train, ds_test), ds_info = tfds.load(
         "mnist",
@@ -63,7 +65,14 @@ def test_train_mnist():
             ),  # output not numerically stable with float16
         ]
     )
+    return model, ds_train, ds_test
 
+
+def test_train_mnist_model(generate_experiment_prerequisites):
+
+    model, ds_train, ds_test = generate_experiment_prerequisites
+
+    # Test AGC with model
     # wrap model to use gradient accumulation
     model = GradientAccumulateModel(
         accum_steps=4,
@@ -74,7 +83,44 @@ def test_train_mnist():
     )
 
     # need to scale optimizer for mixed precision
-    opt = tf.keras.optimizers.SGD(1e-2)
+    opt = get_opt(opt_name="SGD", tf_version=tf_version)
+        
+    # compile model
+    model.compile(
+        optimizer=opt,
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        metrics=[tf.keras.metrics.SparseCategoricalAccuracy()],
+    )
+
+    # train model
+    model.fit(
+        ds_train,
+        epochs=1,
+        validation_data=ds_test,
+    )
+
+    model.save("./trained_model")
+
+    # load trained model and test
+    del model
+    trained_model = load_model("./trained_model", compile=True)
+
+    result = trained_model.evaluate(ds_test, verbose=1)
+    print(result)
+
+
+def test_train_mnist_optimizer(generate_experiment_prerequisites):
+
+    model, ds_train, ds_test = generate_experiment_prerequisites
+
+
+    # wrap model to use gradient accumulation
+    model = tf.keras.Model(inputs=model.input, outputs=model.output)
+
+    opt = get_opt(opt_name="SGD", tf_version=tf_version)
+
+    # need to scale optimizer for mixed precision
+    opt = GradientAccumulateOptimizer(opt, accum_steps=4, mixed_precision=False, use_agc=True)
 
     # compile model
     model.compile(
@@ -102,4 +148,5 @@ def test_train_mnist():
 
 # for running locally, outside pytest
 if __name__ == "__main__":
-    test_train_mnist()
+    test_train_mnist_model()
+    test_train_mnist_optimizer()

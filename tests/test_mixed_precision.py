@@ -53,7 +53,7 @@ def generate_experiment_prerequisites():
         ]
     )
     return model, ds_train, ds_test
-    
+
 
 def run_experiment_model(generate_experiment_prerequisites):
     import tensorflow as tf
@@ -63,7 +63,7 @@ def run_experiment_model(generate_experiment_prerequisites):
 
     # set mixed global precision policy
     mixed_precision.set_global_policy("mixed_float16")
-    
+
     model, ds_train, ds_test = generate_experiment_prerequisites
 
     # wrap model to use gradient accumulation
@@ -111,14 +111,14 @@ def run_experiment_optimizer(generate_experiment_prerequisites):
 
     # set mixed global precision policy
     mixed_precision.set_global_policy("mixed_float16")
-    
+
     model, ds_train, ds_test = generate_experiment_prerequisites
 
     # wrap model to use gradient accumulation
     model = tf.keras.Model(inputs=model.input, outputs=model.output)
 
     opt = get_opt(opt_name="adam", tf_version=tf_version)
-    
+
     # need to scale optimizer for mixed precision
     opt = GradientAccumulateOptimizer(opt, accum_steps=4, mixed_precision=True)
 
@@ -152,7 +152,7 @@ def test_mixed_precision():
     reset()
 
     # Model with mixed precision
-    
+
     # launch experiment in separate process, as we are enabling mixed precision
     # which will impact other unit tests, unless we do this
     try:
@@ -176,7 +176,7 @@ def test_mixed_precision():
         p.join()  # necessary so that the Process exists before the test suite exits (thus coverage is collected)
 
     reset()
-    
+
     # Optimizer with mixed precision
 
     # launch experiment in separate process, as we are enabling mixed precision
