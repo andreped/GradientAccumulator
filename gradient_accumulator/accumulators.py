@@ -276,7 +276,7 @@ class GradientAccumulateOptimizer(opt):
             aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
         )
         if not hasattr(self, "_weights"):
-            self._weights = [] # noqa
+            self._weights = []  # noqa
         if not hasattr(self, "_gradients"):
             self._gradients = []
         self._weights.append(self._step)
