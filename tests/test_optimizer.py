@@ -24,11 +24,17 @@ def test_lr_getter(optimizer):
 
 def test_lr_setter(optimizer):
     optimizer.lr = 0.02
+    updated_lr = optimizer.lr.numpy() if hasattr(optimizer.lr, 'numpy') else optimizer.lr
 
-    assert optimizer.lr == 0.02, "The lr getter did not return the updated learning rate."
+    assert updated_lr == pytest.approx(0.02), "The lr getter did not return the updated learning rate."
 
-    assert optimizer.base_optimizer.learning_rate == 0.02
-    assert optimizer._learning_rate == 0.02
+    base_lr = optimizer.base_optimizer.learning_rate
+    base_lr = base_lr.numpy() if hasattr(base_lr, 'numpy') else base_lr
+    assert base_lr == pytest.approx(0.02), "The base_optimizer's learning rate was not updated."
+
+    internal_lr = optimizer._learning_rate
+    internal_lr = internal_lr.numpy() if hasattr(internal_lr, 'numpy') else internal_lr
+    assert internal_lr == pytest.approx(0.02), "The internal _learning_rate attribute was not updated."
 
 def test__learning_rate(optimizer):
     assert optimizer._learning_rate == 0.01
@@ -45,7 +51,7 @@ def test_step_setter(optimizer):
 def test_iterations_setter(optimizer):
     optimizer.iterations = 1
     assert optimizer.iterations == 1
-    
+
 def test_optimizer_prop(optimizer):
     assert optimizer.optimizer.__class__ == get_opt(opt_name="SGD", tf_version=tf_version).__class__
 
