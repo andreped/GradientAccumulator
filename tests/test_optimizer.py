@@ -27,15 +27,8 @@ def test_lr_setter(optimizer):
 
     assert optimizer.lr == 0.02, "The lr getter did not return the updated learning rate."
 
-    assert optimizer.base_optimizer.learning_rate.numpy() == 0.02, "The base_optimizer's learning rate was not updated correctly."
-
-def test_lr_setter_and_getter(optimizer):
-    new_learning_rate = 0.02
-    optimizer.lr = new_learning_rate
-
-    assert optimizer.base_optimizer.learning_rate.numpy() == new_learning_rate, "The base_optimizer's learning rate was not updated correctly."
-
-    assert optimizer.lr == new_learning_rate, "The GradientAccumulateOptimizer's learning rate was not updated correctly."
+    assert optimizer.base_optimizer.learning_rate == 0.02
+    assert optimizer._learning_rate == 0.02
 
 def test__learning_rate(optimizer):
     assert optimizer._learning_rate == 0.01
@@ -52,7 +45,7 @@ def test_step_setter(optimizer):
 def test_iterations_setter(optimizer):
     optimizer.iterations = 1
     assert optimizer.iterations == 1
-
+    
 def test_optimizer_prop(optimizer):
     assert optimizer.optimizer.__class__ == get_opt(opt_name="SGD", tf_version=tf_version).__class__
 
@@ -128,11 +121,11 @@ def optimizer_adam():
 def optimizer_with_sparse_grads(optimizer_adam):
     opt = optimizer_adam
     var = tf.Variable(tf.zeros([10, 10]), dtype=tf.float32)
-
+    
     opt.add_slot(var, "ga", initializer=tf.zeros_like(var))
     opt.add_slot(var, "m", initializer=tf.zeros_like(var))
     opt.add_slot(var, "v", initializer=tf.zeros_like(var))
-
+    
     return opt, var
 
 def test_resource_apply_sparse(optimizer_with_sparse_grads):
@@ -151,7 +144,6 @@ def test_resource_apply_sparse(optimizer_with_sparse_grads):
     accumulated_grads = optimizer.get_slot(var, "ga")
     expected_accumulated_grads = tf.scatter_nd(tf.expand_dims(indices, 1), updates * 2, var.shape) / optimizer.accum_steps
     tf.debugging.assert_near(accumulated_grads, expected_accumulated_grads, atol=1e-5)
-
 
 def test_gradients_property(optimizer):
     var = tf.Variable([1.0, 2.0], dtype=tf.float32)
