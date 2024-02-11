@@ -233,7 +233,7 @@ class GradientAccumulateOptimizer(opt):
             "GradientAccumulateOptimizer".
         **kwargs : dict
             Additional keyword arguments. Allowed keys are:
-            - `clip_factor`: Sets upper limit for gradient clipping. Defaults to 0.01.
+            - `clipvalue`: Sets upper limit for gradient clipping. Defaults to 0.01.
             - `lr`: Learning rate, included for backward compatibility. Use
             `learning_rate` instead.
 
@@ -285,14 +285,14 @@ class GradientAccumulateOptimizer(opt):
         self.use_agc = use_agc
         self._use_agc = tf.constant(use_agc)
         if use_agc:
-            if "clip_factor" in kwargs:
-                self.clip_factor = tf.constant(
-                    kwargs.pop("clip_factor"), dtype=tf.float32
+            if "clipvalue" in kwargs:
+                self.clipvalue = tf.constant(
+                    kwargs.pop("clipvalue"), dtype=tf.float32
                 )
             else:
-                self.clip_factor = tf.constant(0.01, dtype=tf.float32)
+                self.clipvalue = tf.constant(0.01, dtype=tf.float32)
         else:
-            self.clip_factor = tf.constant(0.0, dtype=tf.float32)
+            self.clipvalue = tf.constant(0.0, dtype=tf.float32)
 
     def get_slot(self, *args, **kwargs):
         """Returns a slot created by the optimizer."""
@@ -394,7 +394,7 @@ class GradientAccumulateOptimizer(opt):
     def _apply_agc(self, grad: tf.Tensor, var: tf.Variable) -> tf.Tensor:
         """Applies adaptive gradient clipping to the gradient."""
         return agc.adaptive_clip_grad(
-            [var], [grad], clip_factor=self.clip_factor
+            [var], [grad], clipvalue=self.clipvalue
         )[0]
 
     @tf.function
