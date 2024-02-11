@@ -233,7 +233,7 @@ class GradientAccumulateOptimizer(opt):
             "GradientAccumulateOptimizer".
         **kwargs : dict
             Additional keyword arguments. Allowed keys are:
-            - `clipvalue`: Sets upper limit for gradient clipping. Defaults to 0.01.
+            - `clip_factor`: Sets upper limit for gradient clipping. Defaults to 0.01.
             - `lr`: Learning rate, included for backward compatibility. Use
             `learning_rate` instead.
 
@@ -248,6 +248,7 @@ class GradientAccumulateOptimizer(opt):
         .. [1] https://github.com/tensorflow/addons/blob/master/tensorflow_addons/optimizers/average_wrapper.py#L93 # noqa
 
         """
+        clip_factor = kwargs.pop("clip_factor", 0.01)
         super().__init__(name, **kwargs)
         optimizer = tf.keras.optimizers.get(optimizer)
         self._optimizer = (
@@ -285,14 +286,9 @@ class GradientAccumulateOptimizer(opt):
         self.use_agc = use_agc
         self._use_agc = tf.constant(use_agc)
         if use_agc:
-            if "clipvalue" in kwargs:
-                self.clipvalue = tf.constant(
-                    kwargs.pop("clipvalue"), dtype=tf.float32
-                )
-            else:
-                self.clipvalue = tf.constant(0.01, dtype=tf.float32)
+            self.clip_factor = tf.constant(clip_factor, dtype=tf.float32)
         else:
-            self.clipvalue = tf.constant(0.0, dtype=tf.float32)
+            self.clip_factor = tf.constant(0.0, dtype=tf.float32)
 
     def get_slot(self, *args, **kwargs):
         """Returns a slot created by the optimizer."""
@@ -394,7 +390,7 @@ class GradientAccumulateOptimizer(opt):
     def _apply_agc(self, grad: tf.Tensor, var: tf.Variable) -> tf.Tensor:
         """Applies adaptive gradient clipping to the gradient."""
         return agc.adaptive_clip_grad(
-            [var], [grad], clip_factor=self.clipvalue
+            [var], [grad], clip_factor=self.clip_factor
         )[0]
 
     @tf.function

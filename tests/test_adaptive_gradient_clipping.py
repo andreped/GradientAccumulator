@@ -120,7 +120,7 @@ def test_train_mnist_optimizer(generate_experiment_prerequisites):
     opt = get_opt(opt_name="SGD", tf_version=tf_version)
 
     # need to scale optimizer for mixed precision
-    opt = GradientAccumulateOptimizer(opt, accum_steps=4, mixed_precision=False, use_agc=True, clipvalue=0.01)
+    opt = GradientAccumulateOptimizer(opt, accum_steps=4, mixed_precision=False, use_agc=True, clip_factor=0.01)
 
     # compile model
     model.compile(
