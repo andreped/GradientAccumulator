@@ -73,3 +73,11 @@ def replace_batchnorm_layers(model, accum_steps, position="replace"):
             model_outputs.append(x)
 
     return tf.keras.Model(inputs=model.inputs, outputs=x)
+
+
+def get_gradients(gradients: list):
+    return [
+        gradient.read_value()
+        for gradient in gradients
+        if tf.reduce_all(tf.not_equal(tf.size(gradient), 0))
+    ]
