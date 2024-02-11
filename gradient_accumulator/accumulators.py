@@ -393,9 +393,9 @@ class GradientAccumulateOptimizer(opt):
     @tf.function
     def _apply_agc(self, grad: tf.Tensor, var: tf.Variable) -> tf.Tensor:
         """Applies adaptive gradient clipping to the gradient."""
-        return agc.adaptive_clip_grad(
-            [var], [grad], clipvalue=self.clipvalue
-        )[0]
+        return agc.adaptive_clip_grad([var], [grad], clipvalue=self.clipvalue)[
+            0
+        ]
 
     @tf.function
     def _parse_grad(
