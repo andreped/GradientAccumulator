@@ -276,7 +276,7 @@ class GradientAccumulateOptimizer(opt):
             aggregation=tf.VariableAggregation.ONLY_FIRST_REPLICA,
         )
         if not hasattr(self, "_weights"):
-            self._weights = []
+            self._weights = [] # noqa
         if not hasattr(self, "_gradients"):
             self._gradients = []
         self._weights.append(self._step)
@@ -341,7 +341,7 @@ class GradientAccumulateOptimizer(opt):
         """Returns the current accumulated gradients on the replica."""
         tf.debugging.assert_greater(
             tf.size(self._gradients),
-            self._zero,
+            tf.cast(self._zero, tf.int32),
             message="Gradients have not been computed yet. "
             "If you're using GradientAccumulateOptimizer with "
             "a custom training loop, please make sure to call "
@@ -349,8 +349,7 @@ class GradientAccumulateOptimizer(opt):
             "optimizer.gradients.",
         )
 
-        empty_grad_tensor = tf.zeros([], dtype=self._gradient.dtype)
-        return get_gradients(self._gradients, empty_grad_tensor)
+        return get_gradients(self._gradients)
 
     def apply_gradients(
         self, grads_and_vars: dict, name: Optional[str] = None, **kwargs

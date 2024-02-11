@@ -24,7 +24,18 @@ def test_lr_getter(optimizer):
 
 def test_lr_setter(optimizer):
     optimizer.lr = 0.02
-    assert optimizer.lr == 0.02
+
+    assert optimizer.lr == 0.02, "The lr getter did not return the updated learning rate."
+
+    assert optimizer.base_optimizer.learning_rate.numpy() == 0.02, "The base_optimizer's learning rate was not updated correctly."
+
+def test_lr_setter_and_getter(optimizer):
+    new_learning_rate = 0.02
+    optimizer.lr = new_learning_rate
+
+    assert optimizer.base_optimizer.learning_rate.numpy() == new_learning_rate, "The base_optimizer's learning rate was not updated correctly."
+
+    assert optimizer.lr == new_learning_rate, "The GradientAccumulateOptimizer's learning rate was not updated correctly."
 
 def test__learning_rate(optimizer):
     assert optimizer._learning_rate == 0.01
@@ -142,6 +153,23 @@ def test_resource_apply_sparse(optimizer_with_sparse_grads):
     tf.debugging.assert_near(accumulated_grads, expected_accumulated_grads, atol=1e-5)
 
 
+def test_gradients_property(optimizer):
+    var = tf.Variable([1.0, 2.0], dtype=tf.float32)
+
+    def loss_fn():
+        return var[0]**2 + var[1]**2
+
+    with tf.GradientTape() as tape:
+        loss = loss_fn()
+    grads = tape.gradient(loss, [var])
+
+    optimizer.apply_gradients(zip(grads, [var]))
+
+    accumulated_gradients = optimizer.gradients
+
+    assert accumulated_gradients is not None, "Expected accumulated gradients to exist."
+
+
 if __name__ == "__main__":
     test__learning_rate(optimizer())
     test_learning_rate_getter(optimizer())
@@ -156,3 +184,4 @@ if __name__ == "__main__":
     test_parse_grad(optimizer())
     test_reset_accum_gradient_condition(optimizer_with_grads())
     test_resource_apply_sparse(optimizer_with_sparse_grads())
+    test_gradients_property(optimizer())
